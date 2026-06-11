@@ -10,12 +10,40 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MarketsRouteImport } from './routes/markets'
+import { Route as CopytradingRouteImport } from './routes/copytrading'
+import { Route as CompanyRouteImport } from './routes/company'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MarketsIndexRouteImport } from './routes/markets.index'
+import { Route as MarketsStocksRouteImport } from './routes/markets.stocks'
+import { Route as MarketsRealEstateRouteImport } from './routes/markets.real-estate'
+import { Route as MarketsIndicesRouteImport } from './routes/markets.indices'
+import { Route as MarketsForexRouteImport } from './routes/markets.forex'
+import { Route as MarketsCryptoRouteImport } from './routes/markets.crypto'
+import { Route as MarketsCommoditiesRouteImport } from './routes/markets.commodities'
+import { Route as CompanyLegalRouteImport } from './routes/company.legal'
+import { Route as CompanyContactRouteImport } from './routes/company.contact'
+import { Route as CompanyCareersRouteImport } from './routes/company.careers'
+import { Route as CompanyAboutRouteImport } from './routes/company.about'
 
 const MarketsRoute = MarketsRouteImport.update({
   id: '/markets',
   path: '/markets',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CopytradingRoute = CopytradingRouteImport.update({
+  id: '/copytrading',
+  path: '/copytrading',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompanyRoute = CompanyRouteImport.update({
+  id: '/company',
+  path: '/company',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,32 +56,172 @@ const MarketsIndexRoute = MarketsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MarketsRoute,
 } as any)
+const MarketsStocksRoute = MarketsStocksRouteImport.update({
+  id: '/stocks',
+  path: '/stocks',
+  getParentRoute: () => MarketsRoute,
+} as any)
+const MarketsRealEstateRoute = MarketsRealEstateRouteImport.update({
+  id: '/real-estate',
+  path: '/real-estate',
+  getParentRoute: () => MarketsRoute,
+} as any)
+const MarketsIndicesRoute = MarketsIndicesRouteImport.update({
+  id: '/indices',
+  path: '/indices',
+  getParentRoute: () => MarketsRoute,
+} as any)
+const MarketsForexRoute = MarketsForexRouteImport.update({
+  id: '/forex',
+  path: '/forex',
+  getParentRoute: () => MarketsRoute,
+} as any)
+const MarketsCryptoRoute = MarketsCryptoRouteImport.update({
+  id: '/crypto',
+  path: '/crypto',
+  getParentRoute: () => MarketsRoute,
+} as any)
+const MarketsCommoditiesRoute = MarketsCommoditiesRouteImport.update({
+  id: '/commodities',
+  path: '/commodities',
+  getParentRoute: () => MarketsRoute,
+} as any)
+const CompanyLegalRoute = CompanyLegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => CompanyRoute,
+} as any)
+const CompanyContactRoute = CompanyContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => CompanyRoute,
+} as any)
+const CompanyCareersRoute = CompanyCareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
+  getParentRoute: () => CompanyRoute,
+} as any)
+const CompanyAboutRoute = CompanyAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => CompanyRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/company': typeof CompanyRouteWithChildren
+  '/copytrading': typeof CopytradingRoute
   '/markets': typeof MarketsRouteWithChildren
+  '/company/about': typeof CompanyAboutRoute
+  '/company/careers': typeof CompanyCareersRoute
+  '/company/contact': typeof CompanyContactRoute
+  '/company/legal': typeof CompanyLegalRoute
+  '/markets/commodities': typeof MarketsCommoditiesRoute
+  '/markets/crypto': typeof MarketsCryptoRoute
+  '/markets/forex': typeof MarketsForexRoute
+  '/markets/indices': typeof MarketsIndicesRoute
+  '/markets/real-estate': typeof MarketsRealEstateRoute
+  '/markets/stocks': typeof MarketsStocksRoute
   '/markets/': typeof MarketsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/company': typeof CompanyRouteWithChildren
+  '/copytrading': typeof CopytradingRoute
+  '/company/about': typeof CompanyAboutRoute
+  '/company/careers': typeof CompanyCareersRoute
+  '/company/contact': typeof CompanyContactRoute
+  '/company/legal': typeof CompanyLegalRoute
+  '/markets/commodities': typeof MarketsCommoditiesRoute
+  '/markets/crypto': typeof MarketsCryptoRoute
+  '/markets/forex': typeof MarketsForexRoute
+  '/markets/indices': typeof MarketsIndicesRoute
+  '/markets/real-estate': typeof MarketsRealEstateRoute
+  '/markets/stocks': typeof MarketsStocksRoute
   '/markets': typeof MarketsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/company': typeof CompanyRouteWithChildren
+  '/copytrading': typeof CopytradingRoute
   '/markets': typeof MarketsRouteWithChildren
+  '/company/about': typeof CompanyAboutRoute
+  '/company/careers': typeof CompanyCareersRoute
+  '/company/contact': typeof CompanyContactRoute
+  '/company/legal': typeof CompanyLegalRoute
+  '/markets/commodities': typeof MarketsCommoditiesRoute
+  '/markets/crypto': typeof MarketsCryptoRoute
+  '/markets/forex': typeof MarketsForexRoute
+  '/markets/indices': typeof MarketsIndicesRoute
+  '/markets/real-estate': typeof MarketsRealEstateRoute
+  '/markets/stocks': typeof MarketsStocksRoute
   '/markets/': typeof MarketsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/markets' | '/markets/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/company'
+    | '/copytrading'
+    | '/markets'
+    | '/company/about'
+    | '/company/careers'
+    | '/company/contact'
+    | '/company/legal'
+    | '/markets/commodities'
+    | '/markets/crypto'
+    | '/markets/forex'
+    | '/markets/indices'
+    | '/markets/real-estate'
+    | '/markets/stocks'
+    | '/markets/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/markets'
-  id: '__root__' | '/' | '/markets' | '/markets/'
+  to:
+    | '/'
+    | '/auth'
+    | '/company'
+    | '/copytrading'
+    | '/company/about'
+    | '/company/careers'
+    | '/company/contact'
+    | '/company/legal'
+    | '/markets/commodities'
+    | '/markets/crypto'
+    | '/markets/forex'
+    | '/markets/indices'
+    | '/markets/real-estate'
+    | '/markets/stocks'
+    | '/markets'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/company'
+    | '/copytrading'
+    | '/markets'
+    | '/company/about'
+    | '/company/careers'
+    | '/company/contact'
+    | '/company/legal'
+    | '/markets/commodities'
+    | '/markets/crypto'
+    | '/markets/forex'
+    | '/markets/indices'
+    | '/markets/real-estate'
+    | '/markets/stocks'
+    | '/markets/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  CompanyRoute: typeof CompanyRouteWithChildren
+  CopytradingRoute: typeof CopytradingRoute
   MarketsRoute: typeof MarketsRouteWithChildren
 }
 
@@ -64,6 +232,27 @@ declare module '@tanstack/react-router' {
       path: '/markets'
       fullPath: '/markets'
       preLoaderRoute: typeof MarketsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/copytrading': {
+      id: '/copytrading'
+      path: '/copytrading'
+      fullPath: '/copytrading'
+      preLoaderRoute: typeof CopytradingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/company': {
+      id: '/company'
+      path: '/company'
+      fullPath: '/company'
+      preLoaderRoute: typeof CompanyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -80,14 +269,113 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketsIndexRouteImport
       parentRoute: typeof MarketsRoute
     }
+    '/markets/stocks': {
+      id: '/markets/stocks'
+      path: '/stocks'
+      fullPath: '/markets/stocks'
+      preLoaderRoute: typeof MarketsStocksRouteImport
+      parentRoute: typeof MarketsRoute
+    }
+    '/markets/real-estate': {
+      id: '/markets/real-estate'
+      path: '/real-estate'
+      fullPath: '/markets/real-estate'
+      preLoaderRoute: typeof MarketsRealEstateRouteImport
+      parentRoute: typeof MarketsRoute
+    }
+    '/markets/indices': {
+      id: '/markets/indices'
+      path: '/indices'
+      fullPath: '/markets/indices'
+      preLoaderRoute: typeof MarketsIndicesRouteImport
+      parentRoute: typeof MarketsRoute
+    }
+    '/markets/forex': {
+      id: '/markets/forex'
+      path: '/forex'
+      fullPath: '/markets/forex'
+      preLoaderRoute: typeof MarketsForexRouteImport
+      parentRoute: typeof MarketsRoute
+    }
+    '/markets/crypto': {
+      id: '/markets/crypto'
+      path: '/crypto'
+      fullPath: '/markets/crypto'
+      preLoaderRoute: typeof MarketsCryptoRouteImport
+      parentRoute: typeof MarketsRoute
+    }
+    '/markets/commodities': {
+      id: '/markets/commodities'
+      path: '/commodities'
+      fullPath: '/markets/commodities'
+      preLoaderRoute: typeof MarketsCommoditiesRouteImport
+      parentRoute: typeof MarketsRoute
+    }
+    '/company/legal': {
+      id: '/company/legal'
+      path: '/legal'
+      fullPath: '/company/legal'
+      preLoaderRoute: typeof CompanyLegalRouteImport
+      parentRoute: typeof CompanyRoute
+    }
+    '/company/contact': {
+      id: '/company/contact'
+      path: '/contact'
+      fullPath: '/company/contact'
+      preLoaderRoute: typeof CompanyContactRouteImport
+      parentRoute: typeof CompanyRoute
+    }
+    '/company/careers': {
+      id: '/company/careers'
+      path: '/careers'
+      fullPath: '/company/careers'
+      preLoaderRoute: typeof CompanyCareersRouteImport
+      parentRoute: typeof CompanyRoute
+    }
+    '/company/about': {
+      id: '/company/about'
+      path: '/about'
+      fullPath: '/company/about'
+      preLoaderRoute: typeof CompanyAboutRouteImport
+      parentRoute: typeof CompanyRoute
+    }
   }
 }
 
+interface CompanyRouteChildren {
+  CompanyAboutRoute: typeof CompanyAboutRoute
+  CompanyCareersRoute: typeof CompanyCareersRoute
+  CompanyContactRoute: typeof CompanyContactRoute
+  CompanyLegalRoute: typeof CompanyLegalRoute
+}
+
+const CompanyRouteChildren: CompanyRouteChildren = {
+  CompanyAboutRoute: CompanyAboutRoute,
+  CompanyCareersRoute: CompanyCareersRoute,
+  CompanyContactRoute: CompanyContactRoute,
+  CompanyLegalRoute: CompanyLegalRoute,
+}
+
+const CompanyRouteWithChildren =
+  CompanyRoute._addFileChildren(CompanyRouteChildren)
+
 interface MarketsRouteChildren {
+  MarketsCommoditiesRoute: typeof MarketsCommoditiesRoute
+  MarketsCryptoRoute: typeof MarketsCryptoRoute
+  MarketsForexRoute: typeof MarketsForexRoute
+  MarketsIndicesRoute: typeof MarketsIndicesRoute
+  MarketsRealEstateRoute: typeof MarketsRealEstateRoute
+  MarketsStocksRoute: typeof MarketsStocksRoute
   MarketsIndexRoute: typeof MarketsIndexRoute
 }
 
 const MarketsRouteChildren: MarketsRouteChildren = {
+  MarketsCommoditiesRoute: MarketsCommoditiesRoute,
+  MarketsCryptoRoute: MarketsCryptoRoute,
+  MarketsForexRoute: MarketsForexRoute,
+  MarketsIndicesRoute: MarketsIndicesRoute,
+  MarketsRealEstateRoute: MarketsRealEstateRoute,
+  MarketsStocksRoute: MarketsStocksRoute,
   MarketsIndexRoute: MarketsIndexRoute,
 }
 
@@ -96,6 +384,9 @@ const MarketsRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  CompanyRoute: CompanyRouteWithChildren,
+  CopytradingRoute: CopytradingRoute,
   MarketsRoute: MarketsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
