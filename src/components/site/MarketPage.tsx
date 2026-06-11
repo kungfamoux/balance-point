@@ -105,16 +105,3 @@ export function MarketPage({ title, blurb, symbols, instruments }: MarketPagePro
   );
 }
 
-export function makeRoute(slug: string, meta: MarketPageProps) {
-  return createFileRoute(slug as any)({
-    head: () => ({
-      meta: [
-        { title: `${meta.title} — Balancepoint Capital` },
-        { name: "description", content: meta.description },
-        { property: "og:title", content: `${meta.title} — Balancepoint Capital` },
-        { property: "og:description", content: meta.description },
-      ],
-    }),
-    component: () => <MarketPage {...meta} />,
-  });
-}
