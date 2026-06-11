@@ -14,7 +14,322 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      copy_follows: {
+        Row: {
+          created_at: string
+          id: string
+          trader_handle: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          trader_handle: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          trader_handle?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      investments: {
+        Row: {
+          amount: number
+          created_at: string
+          end_at: string
+          id: string
+          plan_id: string
+          profit: number
+          roi_percent: number
+          start_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          end_at: string
+          id?: string
+          plan_id: string
+          profit?: number
+          roi_percent: number
+          start_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          end_at?: string
+          id?: string
+          plan_id?: string
+          profit?: number
+          roi_percent?: number
+          start_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investments_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plans: {
+        Row: {
+          duration_days: number
+          id: string
+          max_deposit: number
+          min_deposit: number
+          name: string
+          referral_percent: number
+          roi_percent: number
+          slug: string
+          sort_order: number
+          tagline: string | null
+        }
+        Insert: {
+          duration_days: number
+          id?: string
+          max_deposit: number
+          min_deposit: number
+          name: string
+          referral_percent?: number
+          roi_percent: number
+          slug: string
+          sort_order?: number
+          tagline?: string | null
+        }
+        Update: {
+          duration_days?: number
+          id?: string
+          max_deposit?: number
+          min_deposit?: number
+          name?: string
+          referral_percent?: number
+          roi_percent?: number
+          slug?: string
+          sort_order?: number
+          tagline?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          country: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          kyc_status: string
+          phone: string | null
+          referral_code: string
+          referred_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          country?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          kyc_status?: string
+          phone?: string | null
+          referral_code?: string
+          referred_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          country?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          kyc_status?: string
+          phone?: string | null
+          referral_code?: string
+          referred_by?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      public_ledger: {
+        Row: {
+          amount: number
+          gateway: string
+          hours_ago: number
+          id: string
+          kind: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          amount: number
+          gateway: string
+          hours_ago: number
+          id?: string
+          kind: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          amount?: number
+          gateway?: string
+          hours_ago?: number
+          id?: string
+          kind?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          bonus_amount: number
+          created_at: string
+          id: string
+          referred_id: string
+          referrer_id: string
+        }
+        Insert: {
+          bonus_amount?: number
+          created_at?: string
+          id?: string
+          referred_id: string
+          referrer_id: string
+        }
+        Update: {
+          bonus_amount?: number
+          created_at?: string
+          id?: string
+          referred_id?: string
+          referrer_id?: string
+        }
+        Relationships: []
+      }
+      ticket_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          ticket_id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          ticket_id: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          ticket_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tickets: {
+        Row: {
+          created_at: string
+          id: string
+          status: string
+          subject: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          status?: string
+          subject: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          status?: string
+          subject?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          gateway: string | null
+          id: string
+          meta: Json | null
+          status: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          gateway?: string | null
+          id?: string
+          meta?: Json | null
+          status?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          gateway?: string | null
+          id?: string
+          meta?: Json | null
+          status?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          active_investment: number
+          balance: number
+          referral_earnings: number
+          total_profit: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active_investment?: number
+          balance?: number
+          referral_earnings?: number
+          total_profit?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active_investment?: number
+          balance?: number
+          referral_earnings?: number
+          total_profit?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
