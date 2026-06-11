@@ -28,6 +28,19 @@ import { Route as CompanyCareersRouteImport } from './routes/company.careers'
 import { Route as CompanyAboutRouteImport } from './routes/company.about'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as AuthenticatedDashboardWithdrawRouteImport } from './routes/_authenticated/dashboard.withdraw'
+import { Route as AuthenticatedDashboardTransactionsRouteImport } from './routes/_authenticated/dashboard.transactions'
+import { Route as AuthenticatedDashboardTradeRouteImport } from './routes/_authenticated/dashboard.trade'
+import { Route as AuthenticatedDashboardSupportRouteImport } from './routes/_authenticated/dashboard.support'
+import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard.settings'
+import { Route as AuthenticatedDashboardSecurityRouteImport } from './routes/_authenticated/dashboard.security'
+import { Route as AuthenticatedDashboardReferralsRouteImport } from './routes/_authenticated/dashboard.referrals'
+import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard.profile'
+import { Route as AuthenticatedDashboardMyInvestmentsRouteImport } from './routes/_authenticated/dashboard.my-investments'
+import { Route as AuthenticatedDashboardKycRouteImport } from './routes/_authenticated/dashboard.kyc'
+import { Route as AuthenticatedDashboardInvestRouteImport } from './routes/_authenticated/dashboard.invest'
+import { Route as AuthenticatedDashboardDepositRouteImport } from './routes/_authenticated/dashboard.deposit'
+import { Route as AuthenticatedDashboardCopytradeRouteImport } from './routes/_authenticated/dashboard.copytrade'
 
 const MarketsRoute = MarketsRouteImport.update({
   id: '/markets',
@@ -124,6 +137,84 @@ const AuthenticatedDashboardIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardWithdrawRoute =
+  AuthenticatedDashboardWithdrawRouteImport.update({
+    id: '/withdraw',
+    path: '/withdraw',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardTransactionsRoute =
+  AuthenticatedDashboardTransactionsRouteImport.update({
+    id: '/transactions',
+    path: '/transactions',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardTradeRoute =
+  AuthenticatedDashboardTradeRouteImport.update({
+    id: '/trade',
+    path: '/trade',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardSupportRoute =
+  AuthenticatedDashboardSupportRouteImport.update({
+    id: '/support',
+    path: '/support',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardSettingsRoute =
+  AuthenticatedDashboardSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardSecurityRoute =
+  AuthenticatedDashboardSecurityRouteImport.update({
+    id: '/security',
+    path: '/security',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardReferralsRoute =
+  AuthenticatedDashboardReferralsRouteImport.update({
+    id: '/referrals',
+    path: '/referrals',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardProfileRoute =
+  AuthenticatedDashboardProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardMyInvestmentsRoute =
+  AuthenticatedDashboardMyInvestmentsRouteImport.update({
+    id: '/my-investments',
+    path: '/my-investments',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardKycRoute =
+  AuthenticatedDashboardKycRouteImport.update({
+    id: '/kyc',
+    path: '/kyc',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardInvestRoute =
+  AuthenticatedDashboardInvestRouteImport.update({
+    id: '/invest',
+    path: '/invest',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardDepositRoute =
+  AuthenticatedDashboardDepositRouteImport.update({
+    id: '/deposit',
+    path: '/deposit',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardCopytradeRoute =
+  AuthenticatedDashboardCopytradeRouteImport.update({
+    id: '/copytrade',
+    path: '/copytrade',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -143,6 +234,19 @@ export interface FileRoutesByFullPath {
   '/markets/real-estate': typeof MarketsRealEstateRoute
   '/markets/stocks': typeof MarketsStocksRoute
   '/markets/': typeof MarketsIndexRoute
+  '/dashboard/copytrade': typeof AuthenticatedDashboardCopytradeRoute
+  '/dashboard/deposit': typeof AuthenticatedDashboardDepositRoute
+  '/dashboard/invest': typeof AuthenticatedDashboardInvestRoute
+  '/dashboard/kyc': typeof AuthenticatedDashboardKycRoute
+  '/dashboard/my-investments': typeof AuthenticatedDashboardMyInvestmentsRoute
+  '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
+  '/dashboard/security': typeof AuthenticatedDashboardSecurityRoute
+  '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
+  '/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
+  '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
+  '/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
@@ -161,6 +265,19 @@ export interface FileRoutesByTo {
   '/markets/real-estate': typeof MarketsRealEstateRoute
   '/markets/stocks': typeof MarketsStocksRoute
   '/markets': typeof MarketsIndexRoute
+  '/dashboard/copytrade': typeof AuthenticatedDashboardCopytradeRoute
+  '/dashboard/deposit': typeof AuthenticatedDashboardDepositRoute
+  '/dashboard/invest': typeof AuthenticatedDashboardInvestRoute
+  '/dashboard/kyc': typeof AuthenticatedDashboardKycRoute
+  '/dashboard/my-investments': typeof AuthenticatedDashboardMyInvestmentsRoute
+  '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
+  '/dashboard/security': typeof AuthenticatedDashboardSecurityRoute
+  '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
+  '/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
+  '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
+  '/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
@@ -183,6 +300,19 @@ export interface FileRoutesById {
   '/markets/real-estate': typeof MarketsRealEstateRoute
   '/markets/stocks': typeof MarketsStocksRoute
   '/markets/': typeof MarketsIndexRoute
+  '/_authenticated/dashboard/copytrade': typeof AuthenticatedDashboardCopytradeRoute
+  '/_authenticated/dashboard/deposit': typeof AuthenticatedDashboardDepositRoute
+  '/_authenticated/dashboard/invest': typeof AuthenticatedDashboardInvestRoute
+  '/_authenticated/dashboard/kyc': typeof AuthenticatedDashboardKycRoute
+  '/_authenticated/dashboard/my-investments': typeof AuthenticatedDashboardMyInvestmentsRoute
+  '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/_authenticated/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
+  '/_authenticated/dashboard/security': typeof AuthenticatedDashboardSecurityRoute
+  '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/_authenticated/dashboard/support': typeof AuthenticatedDashboardSupportRoute
+  '/_authenticated/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
+  '/_authenticated/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
+  '/_authenticated/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
@@ -205,6 +335,19 @@ export interface FileRouteTypes {
     | '/markets/real-estate'
     | '/markets/stocks'
     | '/markets/'
+    | '/dashboard/copytrade'
+    | '/dashboard/deposit'
+    | '/dashboard/invest'
+    | '/dashboard/kyc'
+    | '/dashboard/my-investments'
+    | '/dashboard/profile'
+    | '/dashboard/referrals'
+    | '/dashboard/security'
+    | '/dashboard/settings'
+    | '/dashboard/support'
+    | '/dashboard/trade'
+    | '/dashboard/transactions'
+    | '/dashboard/withdraw'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -223,6 +366,19 @@ export interface FileRouteTypes {
     | '/markets/real-estate'
     | '/markets/stocks'
     | '/markets'
+    | '/dashboard/copytrade'
+    | '/dashboard/deposit'
+    | '/dashboard/invest'
+    | '/dashboard/kyc'
+    | '/dashboard/my-investments'
+    | '/dashboard/profile'
+    | '/dashboard/referrals'
+    | '/dashboard/security'
+    | '/dashboard/settings'
+    | '/dashboard/support'
+    | '/dashboard/trade'
+    | '/dashboard/transactions'
+    | '/dashboard/withdraw'
     | '/dashboard'
   id:
     | '__root__'
@@ -244,6 +400,19 @@ export interface FileRouteTypes {
     | '/markets/real-estate'
     | '/markets/stocks'
     | '/markets/'
+    | '/_authenticated/dashboard/copytrade'
+    | '/_authenticated/dashboard/deposit'
+    | '/_authenticated/dashboard/invest'
+    | '/_authenticated/dashboard/kyc'
+    | '/_authenticated/dashboard/my-investments'
+    | '/_authenticated/dashboard/profile'
+    | '/_authenticated/dashboard/referrals'
+    | '/_authenticated/dashboard/security'
+    | '/_authenticated/dashboard/settings'
+    | '/_authenticated/dashboard/support'
+    | '/_authenticated/dashboard/trade'
+    | '/_authenticated/dashboard/transactions'
+    | '/_authenticated/dashboard/withdraw'
     | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -391,15 +560,134 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/withdraw': {
+      id: '/_authenticated/dashboard/withdraw'
+      path: '/withdraw'
+      fullPath: '/dashboard/withdraw'
+      preLoaderRoute: typeof AuthenticatedDashboardWithdrawRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/transactions': {
+      id: '/_authenticated/dashboard/transactions'
+      path: '/transactions'
+      fullPath: '/dashboard/transactions'
+      preLoaderRoute: typeof AuthenticatedDashboardTransactionsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/trade': {
+      id: '/_authenticated/dashboard/trade'
+      path: '/trade'
+      fullPath: '/dashboard/trade'
+      preLoaderRoute: typeof AuthenticatedDashboardTradeRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/support': {
+      id: '/_authenticated/dashboard/support'
+      path: '/support'
+      fullPath: '/dashboard/support'
+      preLoaderRoute: typeof AuthenticatedDashboardSupportRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/settings': {
+      id: '/_authenticated/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof AuthenticatedDashboardSettingsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/security': {
+      id: '/_authenticated/dashboard/security'
+      path: '/security'
+      fullPath: '/dashboard/security'
+      preLoaderRoute: typeof AuthenticatedDashboardSecurityRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/referrals': {
+      id: '/_authenticated/dashboard/referrals'
+      path: '/referrals'
+      fullPath: '/dashboard/referrals'
+      preLoaderRoute: typeof AuthenticatedDashboardReferralsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/profile': {
+      id: '/_authenticated/dashboard/profile'
+      path: '/profile'
+      fullPath: '/dashboard/profile'
+      preLoaderRoute: typeof AuthenticatedDashboardProfileRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/my-investments': {
+      id: '/_authenticated/dashboard/my-investments'
+      path: '/my-investments'
+      fullPath: '/dashboard/my-investments'
+      preLoaderRoute: typeof AuthenticatedDashboardMyInvestmentsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/kyc': {
+      id: '/_authenticated/dashboard/kyc'
+      path: '/kyc'
+      fullPath: '/dashboard/kyc'
+      preLoaderRoute: typeof AuthenticatedDashboardKycRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/invest': {
+      id: '/_authenticated/dashboard/invest'
+      path: '/invest'
+      fullPath: '/dashboard/invest'
+      preLoaderRoute: typeof AuthenticatedDashboardInvestRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/deposit': {
+      id: '/_authenticated/dashboard/deposit'
+      path: '/deposit'
+      fullPath: '/dashboard/deposit'
+      preLoaderRoute: typeof AuthenticatedDashboardDepositRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/copytrade': {
+      id: '/_authenticated/dashboard/copytrade'
+      path: '/copytrade'
+      fullPath: '/dashboard/copytrade'
+      preLoaderRoute: typeof AuthenticatedDashboardCopytradeRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
   }
 }
 
 interface AuthenticatedDashboardRouteChildren {
+  AuthenticatedDashboardCopytradeRoute: typeof AuthenticatedDashboardCopytradeRoute
+  AuthenticatedDashboardDepositRoute: typeof AuthenticatedDashboardDepositRoute
+  AuthenticatedDashboardInvestRoute: typeof AuthenticatedDashboardInvestRoute
+  AuthenticatedDashboardKycRoute: typeof AuthenticatedDashboardKycRoute
+  AuthenticatedDashboardMyInvestmentsRoute: typeof AuthenticatedDashboardMyInvestmentsRoute
+  AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
+  AuthenticatedDashboardReferralsRoute: typeof AuthenticatedDashboardReferralsRoute
+  AuthenticatedDashboardSecurityRoute: typeof AuthenticatedDashboardSecurityRoute
+  AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRoute
+  AuthenticatedDashboardSupportRoute: typeof AuthenticatedDashboardSupportRoute
+  AuthenticatedDashboardTradeRoute: typeof AuthenticatedDashboardTradeRoute
+  AuthenticatedDashboardTransactionsRoute: typeof AuthenticatedDashboardTransactionsRoute
+  AuthenticatedDashboardWithdrawRoute: typeof AuthenticatedDashboardWithdrawRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
 const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
   {
+    AuthenticatedDashboardCopytradeRoute: AuthenticatedDashboardCopytradeRoute,
+    AuthenticatedDashboardDepositRoute: AuthenticatedDashboardDepositRoute,
+    AuthenticatedDashboardInvestRoute: AuthenticatedDashboardInvestRoute,
+    AuthenticatedDashboardKycRoute: AuthenticatedDashboardKycRoute,
+    AuthenticatedDashboardMyInvestmentsRoute:
+      AuthenticatedDashboardMyInvestmentsRoute,
+    AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
+    AuthenticatedDashboardReferralsRoute: AuthenticatedDashboardReferralsRoute,
+    AuthenticatedDashboardSecurityRoute: AuthenticatedDashboardSecurityRoute,
+    AuthenticatedDashboardSettingsRoute: AuthenticatedDashboardSettingsRoute,
+    AuthenticatedDashboardSupportRoute: AuthenticatedDashboardSupportRoute,
+    AuthenticatedDashboardTradeRoute: AuthenticatedDashboardTradeRoute,
+    AuthenticatedDashboardTransactionsRoute:
+      AuthenticatedDashboardTransactionsRoute,
+    AuthenticatedDashboardWithdrawRoute: AuthenticatedDashboardWithdrawRoute,
     AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   }
 
