@@ -13,6 +13,7 @@ import { Route as MarketsRouteImport } from './routes/markets'
 import { Route as CopytradingRouteImport } from './routes/copytrading'
 import { Route as CompanyRouteImport } from './routes/company'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MarketsIndexRouteImport } from './routes/markets.index'
 import { Route as MarketsStocksRouteImport } from './routes/markets.stocks'
@@ -25,6 +26,8 @@ import { Route as CompanyLegalRouteImport } from './routes/company.legal'
 import { Route as CompanyContactRouteImport } from './routes/company.contact'
 import { Route as CompanyCareersRouteImport } from './routes/company.careers'
 import { Route as CompanyAboutRouteImport } from './routes/company.about'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 
 const MarketsRoute = MarketsRouteImport.update({
   id: '/markets',
@@ -44,6 +47,10 @@ const CompanyRoute = CompanyRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -106,6 +113,17 @@ const CompanyAboutRoute = CompanyAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => CompanyRoute,
 } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardIndexRoute =
+  AuthenticatedDashboardIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -113,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/company': typeof CompanyRouteWithChildren
   '/copytrading': typeof CopytradingRoute
   '/markets': typeof MarketsRouteWithChildren
+  '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/company/about': typeof CompanyAboutRoute
   '/company/careers': typeof CompanyCareersRoute
   '/company/contact': typeof CompanyContactRoute
@@ -124,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/markets/real-estate': typeof MarketsRealEstateRoute
   '/markets/stocks': typeof MarketsStocksRoute
   '/markets/': typeof MarketsIndexRoute
+  '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -141,14 +161,17 @@ export interface FileRoutesByTo {
   '/markets/real-estate': typeof MarketsRealEstateRoute
   '/markets/stocks': typeof MarketsStocksRoute
   '/markets': typeof MarketsIndexRoute
+  '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/company': typeof CompanyRouteWithChildren
   '/copytrading': typeof CopytradingRoute
   '/markets': typeof MarketsRouteWithChildren
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/company/about': typeof CompanyAboutRoute
   '/company/careers': typeof CompanyCareersRoute
   '/company/contact': typeof CompanyContactRoute
@@ -160,6 +183,7 @@ export interface FileRoutesById {
   '/markets/real-estate': typeof MarketsRealEstateRoute
   '/markets/stocks': typeof MarketsStocksRoute
   '/markets/': typeof MarketsIndexRoute
+  '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -169,6 +193,7 @@ export interface FileRouteTypes {
     | '/company'
     | '/copytrading'
     | '/markets'
+    | '/dashboard'
     | '/company/about'
     | '/company/careers'
     | '/company/contact'
@@ -180,6 +205,7 @@ export interface FileRouteTypes {
     | '/markets/real-estate'
     | '/markets/stocks'
     | '/markets/'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -197,13 +223,16 @@ export interface FileRouteTypes {
     | '/markets/real-estate'
     | '/markets/stocks'
     | '/markets'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/auth'
     | '/company'
     | '/copytrading'
     | '/markets'
+    | '/_authenticated/dashboard'
     | '/company/about'
     | '/company/careers'
     | '/company/contact'
@@ -215,10 +244,12 @@ export interface FileRouteTypes {
     | '/markets/real-estate'
     | '/markets/stocks'
     | '/markets/'
+    | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   CompanyRoute: typeof CompanyRouteWithChildren
   CopytradingRoute: typeof CopytradingRoute
@@ -253,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -339,8 +377,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompanyAboutRouteImport
       parentRoute: typeof CompanyRoute
     }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard/': {
+      id: '/_authenticated/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
   }
 }
+
+interface AuthenticatedDashboardRouteChildren {
+  AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
+}
+
+const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
+  {
+    AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+  }
+
+const AuthenticatedDashboardRouteWithChildren =
+  AuthenticatedDashboardRoute._addFileChildren(
+    AuthenticatedDashboardRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface CompanyRouteChildren {
   CompanyAboutRoute: typeof CompanyAboutRoute
@@ -384,6 +461,7 @@ const MarketsRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CompanyRoute: CompanyRouteWithChildren,
   CopytradingRoute: CopytradingRoute,
