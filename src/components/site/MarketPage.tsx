@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { TradingViewWidget } from "@/components/site/TradingViewWidget";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
