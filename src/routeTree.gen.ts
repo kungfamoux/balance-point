@@ -9,38 +9,459 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MarketsRouteImport } from './routes/markets'
+import { Route as CopytradingRouteImport } from './routes/copytrading'
+import { Route as CompanyRouteImport } from './routes/company'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MarketsIndexRouteImport } from './routes/markets.index'
+import { Route as MarketsStocksRouteImport } from './routes/markets.stocks'
+import { Route as MarketsRealEstateRouteImport } from './routes/markets.real-estate'
+import { Route as MarketsIndicesRouteImport } from './routes/markets.indices'
+import { Route as MarketsForexRouteImport } from './routes/markets.forex'
+import { Route as MarketsCryptoRouteImport } from './routes/markets.crypto'
+import { Route as MarketsCommoditiesRouteImport } from './routes/markets.commodities'
+import { Route as CompanyLegalRouteImport } from './routes/company.legal'
+import { Route as CompanyContactRouteImport } from './routes/company.contact'
+import { Route as CompanyCareersRouteImport } from './routes/company.careers'
+import { Route as CompanyAboutRouteImport } from './routes/company.about'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as AuthenticatedDashboardWithdrawRouteImport } from './routes/_authenticated/dashboard.withdraw'
+import { Route as AuthenticatedDashboardTransactionsRouteImport } from './routes/_authenticated/dashboard.transactions'
+import { Route as AuthenticatedDashboardTradeRouteImport } from './routes/_authenticated/dashboard.trade'
+import { Route as AuthenticatedDashboardSupportRouteImport } from './routes/_authenticated/dashboard.support'
+import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard.settings'
+import { Route as AuthenticatedDashboardSecurityRouteImport } from './routes/_authenticated/dashboard.security'
+import { Route as AuthenticatedDashboardReferralsRouteImport } from './routes/_authenticated/dashboard.referrals'
+import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard.profile'
+import { Route as AuthenticatedDashboardMyInvestmentsRouteImport } from './routes/_authenticated/dashboard.my-investments'
+import { Route as AuthenticatedDashboardKycRouteImport } from './routes/_authenticated/dashboard.kyc'
+import { Route as AuthenticatedDashboardInvestRouteImport } from './routes/_authenticated/dashboard.invest'
+import { Route as AuthenticatedDashboardDepositRouteImport } from './routes/_authenticated/dashboard.deposit'
+import { Route as AuthenticatedDashboardCopytradeRouteImport } from './routes/_authenticated/dashboard.copytrade'
 
+const MarketsRoute = MarketsRouteImport.update({
+  id: '/markets',
+  path: '/markets',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CopytradingRoute = CopytradingRouteImport.update({
+  id: '/copytrading',
+  path: '/copytrading',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompanyRoute = CompanyRouteImport.update({
+  id: '/company',
+  path: '/company',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketsIndexRoute = MarketsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MarketsRoute,
+} as any)
+const MarketsStocksRoute = MarketsStocksRouteImport.update({
+  id: '/stocks',
+  path: '/stocks',
+  getParentRoute: () => MarketsRoute,
+} as any)
+const MarketsRealEstateRoute = MarketsRealEstateRouteImport.update({
+  id: '/real-estate',
+  path: '/real-estate',
+  getParentRoute: () => MarketsRoute,
+} as any)
+const MarketsIndicesRoute = MarketsIndicesRouteImport.update({
+  id: '/indices',
+  path: '/indices',
+  getParentRoute: () => MarketsRoute,
+} as any)
+const MarketsForexRoute = MarketsForexRouteImport.update({
+  id: '/forex',
+  path: '/forex',
+  getParentRoute: () => MarketsRoute,
+} as any)
+const MarketsCryptoRoute = MarketsCryptoRouteImport.update({
+  id: '/crypto',
+  path: '/crypto',
+  getParentRoute: () => MarketsRoute,
+} as any)
+const MarketsCommoditiesRoute = MarketsCommoditiesRouteImport.update({
+  id: '/commodities',
+  path: '/commodities',
+  getParentRoute: () => MarketsRoute,
+} as any)
+const CompanyLegalRoute = CompanyLegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => CompanyRoute,
+} as any)
+const CompanyContactRoute = CompanyContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => CompanyRoute,
+} as any)
+const CompanyCareersRoute = CompanyCareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
+  getParentRoute: () => CompanyRoute,
+} as any)
+const CompanyAboutRoute = CompanyAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => CompanyRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardIndexRoute =
+  AuthenticatedDashboardIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardWithdrawRoute =
+  AuthenticatedDashboardWithdrawRouteImport.update({
+    id: '/withdraw',
+    path: '/withdraw',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardTransactionsRoute =
+  AuthenticatedDashboardTransactionsRouteImport.update({
+    id: '/transactions',
+    path: '/transactions',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardTradeRoute =
+  AuthenticatedDashboardTradeRouteImport.update({
+    id: '/trade',
+    path: '/trade',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardSupportRoute =
+  AuthenticatedDashboardSupportRouteImport.update({
+    id: '/support',
+    path: '/support',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardSettingsRoute =
+  AuthenticatedDashboardSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardSecurityRoute =
+  AuthenticatedDashboardSecurityRouteImport.update({
+    id: '/security',
+    path: '/security',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardReferralsRoute =
+  AuthenticatedDashboardReferralsRouteImport.update({
+    id: '/referrals',
+    path: '/referrals',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardProfileRoute =
+  AuthenticatedDashboardProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardMyInvestmentsRoute =
+  AuthenticatedDashboardMyInvestmentsRouteImport.update({
+    id: '/my-investments',
+    path: '/my-investments',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardKycRoute =
+  AuthenticatedDashboardKycRouteImport.update({
+    id: '/kyc',
+    path: '/kyc',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardInvestRoute =
+  AuthenticatedDashboardInvestRouteImport.update({
+    id: '/invest',
+    path: '/invest',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardDepositRoute =
+  AuthenticatedDashboardDepositRouteImport.update({
+    id: '/deposit',
+    path: '/deposit',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardCopytradeRoute =
+  AuthenticatedDashboardCopytradeRouteImport.update({
+    id: '/copytrade',
+    path: '/copytrade',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/company': typeof CompanyRouteWithChildren
+  '/copytrading': typeof CopytradingRoute
+  '/markets': typeof MarketsRouteWithChildren
+  '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/company/about': typeof CompanyAboutRoute
+  '/company/careers': typeof CompanyCareersRoute
+  '/company/contact': typeof CompanyContactRoute
+  '/company/legal': typeof CompanyLegalRoute
+  '/markets/commodities': typeof MarketsCommoditiesRoute
+  '/markets/crypto': typeof MarketsCryptoRoute
+  '/markets/forex': typeof MarketsForexRoute
+  '/markets/indices': typeof MarketsIndicesRoute
+  '/markets/real-estate': typeof MarketsRealEstateRoute
+  '/markets/stocks': typeof MarketsStocksRoute
+  '/markets/': typeof MarketsIndexRoute
+  '/dashboard/copytrade': typeof AuthenticatedDashboardCopytradeRoute
+  '/dashboard/deposit': typeof AuthenticatedDashboardDepositRoute
+  '/dashboard/invest': typeof AuthenticatedDashboardInvestRoute
+  '/dashboard/kyc': typeof AuthenticatedDashboardKycRoute
+  '/dashboard/my-investments': typeof AuthenticatedDashboardMyInvestmentsRoute
+  '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
+  '/dashboard/security': typeof AuthenticatedDashboardSecurityRoute
+  '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
+  '/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
+  '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
+  '/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
+  '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/company': typeof CompanyRouteWithChildren
+  '/copytrading': typeof CopytradingRoute
+  '/company/about': typeof CompanyAboutRoute
+  '/company/careers': typeof CompanyCareersRoute
+  '/company/contact': typeof CompanyContactRoute
+  '/company/legal': typeof CompanyLegalRoute
+  '/markets/commodities': typeof MarketsCommoditiesRoute
+  '/markets/crypto': typeof MarketsCryptoRoute
+  '/markets/forex': typeof MarketsForexRoute
+  '/markets/indices': typeof MarketsIndicesRoute
+  '/markets/real-estate': typeof MarketsRealEstateRoute
+  '/markets/stocks': typeof MarketsStocksRoute
+  '/markets': typeof MarketsIndexRoute
+  '/dashboard/copytrade': typeof AuthenticatedDashboardCopytradeRoute
+  '/dashboard/deposit': typeof AuthenticatedDashboardDepositRoute
+  '/dashboard/invest': typeof AuthenticatedDashboardInvestRoute
+  '/dashboard/kyc': typeof AuthenticatedDashboardKycRoute
+  '/dashboard/my-investments': typeof AuthenticatedDashboardMyInvestmentsRoute
+  '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
+  '/dashboard/security': typeof AuthenticatedDashboardSecurityRoute
+  '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
+  '/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
+  '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
+  '/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
+  '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/company': typeof CompanyRouteWithChildren
+  '/copytrading': typeof CopytradingRoute
+  '/markets': typeof MarketsRouteWithChildren
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/company/about': typeof CompanyAboutRoute
+  '/company/careers': typeof CompanyCareersRoute
+  '/company/contact': typeof CompanyContactRoute
+  '/company/legal': typeof CompanyLegalRoute
+  '/markets/commodities': typeof MarketsCommoditiesRoute
+  '/markets/crypto': typeof MarketsCryptoRoute
+  '/markets/forex': typeof MarketsForexRoute
+  '/markets/indices': typeof MarketsIndicesRoute
+  '/markets/real-estate': typeof MarketsRealEstateRoute
+  '/markets/stocks': typeof MarketsStocksRoute
+  '/markets/': typeof MarketsIndexRoute
+  '/_authenticated/dashboard/copytrade': typeof AuthenticatedDashboardCopytradeRoute
+  '/_authenticated/dashboard/deposit': typeof AuthenticatedDashboardDepositRoute
+  '/_authenticated/dashboard/invest': typeof AuthenticatedDashboardInvestRoute
+  '/_authenticated/dashboard/kyc': typeof AuthenticatedDashboardKycRoute
+  '/_authenticated/dashboard/my-investments': typeof AuthenticatedDashboardMyInvestmentsRoute
+  '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/_authenticated/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
+  '/_authenticated/dashboard/security': typeof AuthenticatedDashboardSecurityRoute
+  '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/_authenticated/dashboard/support': typeof AuthenticatedDashboardSupportRoute
+  '/_authenticated/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
+  '/_authenticated/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
+  '/_authenticated/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
+  '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/company'
+    | '/copytrading'
+    | '/markets'
+    | '/dashboard'
+    | '/company/about'
+    | '/company/careers'
+    | '/company/contact'
+    | '/company/legal'
+    | '/markets/commodities'
+    | '/markets/crypto'
+    | '/markets/forex'
+    | '/markets/indices'
+    | '/markets/real-estate'
+    | '/markets/stocks'
+    | '/markets/'
+    | '/dashboard/copytrade'
+    | '/dashboard/deposit'
+    | '/dashboard/invest'
+    | '/dashboard/kyc'
+    | '/dashboard/my-investments'
+    | '/dashboard/profile'
+    | '/dashboard/referrals'
+    | '/dashboard/security'
+    | '/dashboard/settings'
+    | '/dashboard/support'
+    | '/dashboard/trade'
+    | '/dashboard/transactions'
+    | '/dashboard/withdraw'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/company'
+    | '/copytrading'
+    | '/company/about'
+    | '/company/careers'
+    | '/company/contact'
+    | '/company/legal'
+    | '/markets/commodities'
+    | '/markets/crypto'
+    | '/markets/forex'
+    | '/markets/indices'
+    | '/markets/real-estate'
+    | '/markets/stocks'
+    | '/markets'
+    | '/dashboard/copytrade'
+    | '/dashboard/deposit'
+    | '/dashboard/invest'
+    | '/dashboard/kyc'
+    | '/dashboard/my-investments'
+    | '/dashboard/profile'
+    | '/dashboard/referrals'
+    | '/dashboard/security'
+    | '/dashboard/settings'
+    | '/dashboard/support'
+    | '/dashboard/trade'
+    | '/dashboard/transactions'
+    | '/dashboard/withdraw'
+    | '/dashboard'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/company'
+    | '/copytrading'
+    | '/markets'
+    | '/_authenticated/dashboard'
+    | '/company/about'
+    | '/company/careers'
+    | '/company/contact'
+    | '/company/legal'
+    | '/markets/commodities'
+    | '/markets/crypto'
+    | '/markets/forex'
+    | '/markets/indices'
+    | '/markets/real-estate'
+    | '/markets/stocks'
+    | '/markets/'
+    | '/_authenticated/dashboard/copytrade'
+    | '/_authenticated/dashboard/deposit'
+    | '/_authenticated/dashboard/invest'
+    | '/_authenticated/dashboard/kyc'
+    | '/_authenticated/dashboard/my-investments'
+    | '/_authenticated/dashboard/profile'
+    | '/_authenticated/dashboard/referrals'
+    | '/_authenticated/dashboard/security'
+    | '/_authenticated/dashboard/settings'
+    | '/_authenticated/dashboard/support'
+    | '/_authenticated/dashboard/trade'
+    | '/_authenticated/dashboard/transactions'
+    | '/_authenticated/dashboard/withdraw'
+    | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  CompanyRoute: typeof CompanyRouteWithChildren
+  CopytradingRoute: typeof CopytradingRoute
+  MarketsRoute: typeof MarketsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/markets': {
+      id: '/markets'
+      path: '/markets'
+      fullPath: '/markets'
+      preLoaderRoute: typeof MarketsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/copytrading': {
+      id: '/copytrading'
+      path: '/copytrading'
+      fullPath: '/copytrading'
+      preLoaderRoute: typeof CopytradingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/company': {
+      id: '/company'
+      path: '/company'
+      fullPath: '/company'
+      preLoaderRoute: typeof CompanyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +469,291 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/markets/': {
+      id: '/markets/'
+      path: '/'
+      fullPath: '/markets/'
+      preLoaderRoute: typeof MarketsIndexRouteImport
+      parentRoute: typeof MarketsRoute
+    }
+    '/markets/stocks': {
+      id: '/markets/stocks'
+      path: '/stocks'
+      fullPath: '/markets/stocks'
+      preLoaderRoute: typeof MarketsStocksRouteImport
+      parentRoute: typeof MarketsRoute
+    }
+    '/markets/real-estate': {
+      id: '/markets/real-estate'
+      path: '/real-estate'
+      fullPath: '/markets/real-estate'
+      preLoaderRoute: typeof MarketsRealEstateRouteImport
+      parentRoute: typeof MarketsRoute
+    }
+    '/markets/indices': {
+      id: '/markets/indices'
+      path: '/indices'
+      fullPath: '/markets/indices'
+      preLoaderRoute: typeof MarketsIndicesRouteImport
+      parentRoute: typeof MarketsRoute
+    }
+    '/markets/forex': {
+      id: '/markets/forex'
+      path: '/forex'
+      fullPath: '/markets/forex'
+      preLoaderRoute: typeof MarketsForexRouteImport
+      parentRoute: typeof MarketsRoute
+    }
+    '/markets/crypto': {
+      id: '/markets/crypto'
+      path: '/crypto'
+      fullPath: '/markets/crypto'
+      preLoaderRoute: typeof MarketsCryptoRouteImport
+      parentRoute: typeof MarketsRoute
+    }
+    '/markets/commodities': {
+      id: '/markets/commodities'
+      path: '/commodities'
+      fullPath: '/markets/commodities'
+      preLoaderRoute: typeof MarketsCommoditiesRouteImport
+      parentRoute: typeof MarketsRoute
+    }
+    '/company/legal': {
+      id: '/company/legal'
+      path: '/legal'
+      fullPath: '/company/legal'
+      preLoaderRoute: typeof CompanyLegalRouteImport
+      parentRoute: typeof CompanyRoute
+    }
+    '/company/contact': {
+      id: '/company/contact'
+      path: '/contact'
+      fullPath: '/company/contact'
+      preLoaderRoute: typeof CompanyContactRouteImport
+      parentRoute: typeof CompanyRoute
+    }
+    '/company/careers': {
+      id: '/company/careers'
+      path: '/careers'
+      fullPath: '/company/careers'
+      preLoaderRoute: typeof CompanyCareersRouteImport
+      parentRoute: typeof CompanyRoute
+    }
+    '/company/about': {
+      id: '/company/about'
+      path: '/about'
+      fullPath: '/company/about'
+      preLoaderRoute: typeof CompanyAboutRouteImport
+      parentRoute: typeof CompanyRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard/': {
+      id: '/_authenticated/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/withdraw': {
+      id: '/_authenticated/dashboard/withdraw'
+      path: '/withdraw'
+      fullPath: '/dashboard/withdraw'
+      preLoaderRoute: typeof AuthenticatedDashboardWithdrawRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/transactions': {
+      id: '/_authenticated/dashboard/transactions'
+      path: '/transactions'
+      fullPath: '/dashboard/transactions'
+      preLoaderRoute: typeof AuthenticatedDashboardTransactionsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/trade': {
+      id: '/_authenticated/dashboard/trade'
+      path: '/trade'
+      fullPath: '/dashboard/trade'
+      preLoaderRoute: typeof AuthenticatedDashboardTradeRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/support': {
+      id: '/_authenticated/dashboard/support'
+      path: '/support'
+      fullPath: '/dashboard/support'
+      preLoaderRoute: typeof AuthenticatedDashboardSupportRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/settings': {
+      id: '/_authenticated/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof AuthenticatedDashboardSettingsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/security': {
+      id: '/_authenticated/dashboard/security'
+      path: '/security'
+      fullPath: '/dashboard/security'
+      preLoaderRoute: typeof AuthenticatedDashboardSecurityRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/referrals': {
+      id: '/_authenticated/dashboard/referrals'
+      path: '/referrals'
+      fullPath: '/dashboard/referrals'
+      preLoaderRoute: typeof AuthenticatedDashboardReferralsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/profile': {
+      id: '/_authenticated/dashboard/profile'
+      path: '/profile'
+      fullPath: '/dashboard/profile'
+      preLoaderRoute: typeof AuthenticatedDashboardProfileRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/my-investments': {
+      id: '/_authenticated/dashboard/my-investments'
+      path: '/my-investments'
+      fullPath: '/dashboard/my-investments'
+      preLoaderRoute: typeof AuthenticatedDashboardMyInvestmentsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/kyc': {
+      id: '/_authenticated/dashboard/kyc'
+      path: '/kyc'
+      fullPath: '/dashboard/kyc'
+      preLoaderRoute: typeof AuthenticatedDashboardKycRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/invest': {
+      id: '/_authenticated/dashboard/invest'
+      path: '/invest'
+      fullPath: '/dashboard/invest'
+      preLoaderRoute: typeof AuthenticatedDashboardInvestRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/deposit': {
+      id: '/_authenticated/dashboard/deposit'
+      path: '/deposit'
+      fullPath: '/dashboard/deposit'
+      preLoaderRoute: typeof AuthenticatedDashboardDepositRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/copytrade': {
+      id: '/_authenticated/dashboard/copytrade'
+      path: '/copytrade'
+      fullPath: '/dashboard/copytrade'
+      preLoaderRoute: typeof AuthenticatedDashboardCopytradeRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
   }
 }
 
+interface AuthenticatedDashboardRouteChildren {
+  AuthenticatedDashboardCopytradeRoute: typeof AuthenticatedDashboardCopytradeRoute
+  AuthenticatedDashboardDepositRoute: typeof AuthenticatedDashboardDepositRoute
+  AuthenticatedDashboardInvestRoute: typeof AuthenticatedDashboardInvestRoute
+  AuthenticatedDashboardKycRoute: typeof AuthenticatedDashboardKycRoute
+  AuthenticatedDashboardMyInvestmentsRoute: typeof AuthenticatedDashboardMyInvestmentsRoute
+  AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
+  AuthenticatedDashboardReferralsRoute: typeof AuthenticatedDashboardReferralsRoute
+  AuthenticatedDashboardSecurityRoute: typeof AuthenticatedDashboardSecurityRoute
+  AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRoute
+  AuthenticatedDashboardSupportRoute: typeof AuthenticatedDashboardSupportRoute
+  AuthenticatedDashboardTradeRoute: typeof AuthenticatedDashboardTradeRoute
+  AuthenticatedDashboardTransactionsRoute: typeof AuthenticatedDashboardTransactionsRoute
+  AuthenticatedDashboardWithdrawRoute: typeof AuthenticatedDashboardWithdrawRoute
+  AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
+}
+
+const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
+  {
+    AuthenticatedDashboardCopytradeRoute: AuthenticatedDashboardCopytradeRoute,
+    AuthenticatedDashboardDepositRoute: AuthenticatedDashboardDepositRoute,
+    AuthenticatedDashboardInvestRoute: AuthenticatedDashboardInvestRoute,
+    AuthenticatedDashboardKycRoute: AuthenticatedDashboardKycRoute,
+    AuthenticatedDashboardMyInvestmentsRoute:
+      AuthenticatedDashboardMyInvestmentsRoute,
+    AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
+    AuthenticatedDashboardReferralsRoute: AuthenticatedDashboardReferralsRoute,
+    AuthenticatedDashboardSecurityRoute: AuthenticatedDashboardSecurityRoute,
+    AuthenticatedDashboardSettingsRoute: AuthenticatedDashboardSettingsRoute,
+    AuthenticatedDashboardSupportRoute: AuthenticatedDashboardSupportRoute,
+    AuthenticatedDashboardTradeRoute: AuthenticatedDashboardTradeRoute,
+    AuthenticatedDashboardTransactionsRoute:
+      AuthenticatedDashboardTransactionsRoute,
+    AuthenticatedDashboardWithdrawRoute: AuthenticatedDashboardWithdrawRoute,
+    AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+  }
+
+const AuthenticatedDashboardRouteWithChildren =
+  AuthenticatedDashboardRoute._addFileChildren(
+    AuthenticatedDashboardRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+interface CompanyRouteChildren {
+  CompanyAboutRoute: typeof CompanyAboutRoute
+  CompanyCareersRoute: typeof CompanyCareersRoute
+  CompanyContactRoute: typeof CompanyContactRoute
+  CompanyLegalRoute: typeof CompanyLegalRoute
+}
+
+const CompanyRouteChildren: CompanyRouteChildren = {
+  CompanyAboutRoute: CompanyAboutRoute,
+  CompanyCareersRoute: CompanyCareersRoute,
+  CompanyContactRoute: CompanyContactRoute,
+  CompanyLegalRoute: CompanyLegalRoute,
+}
+
+const CompanyRouteWithChildren =
+  CompanyRoute._addFileChildren(CompanyRouteChildren)
+
+interface MarketsRouteChildren {
+  MarketsCommoditiesRoute: typeof MarketsCommoditiesRoute
+  MarketsCryptoRoute: typeof MarketsCryptoRoute
+  MarketsForexRoute: typeof MarketsForexRoute
+  MarketsIndicesRoute: typeof MarketsIndicesRoute
+  MarketsRealEstateRoute: typeof MarketsRealEstateRoute
+  MarketsStocksRoute: typeof MarketsStocksRoute
+  MarketsIndexRoute: typeof MarketsIndexRoute
+}
+
+const MarketsRouteChildren: MarketsRouteChildren = {
+  MarketsCommoditiesRoute: MarketsCommoditiesRoute,
+  MarketsCryptoRoute: MarketsCryptoRoute,
+  MarketsForexRoute: MarketsForexRoute,
+  MarketsIndicesRoute: MarketsIndicesRoute,
+  MarketsRealEstateRoute: MarketsRealEstateRoute,
+  MarketsStocksRoute: MarketsStocksRoute,
+  MarketsIndexRoute: MarketsIndexRoute,
+}
+
+const MarketsRouteWithChildren =
+  MarketsRoute._addFileChildren(MarketsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  CompanyRoute: CompanyRouteWithChildren,
+  CopytradingRoute: CopytradingRoute,
+  MarketsRoute: MarketsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
