@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 
 export const Route = createFileRoute("/_authenticated/dashboard/my-investments")({
   component: MyInvestments,
@@ -14,22 +14,14 @@ export const Route = createFileRoute("/_authenticated/dashboard/my-investments")
 function MyInvestments() {
   const { data } = useQuery({
     queryKey: ["my-investments"],
-    queryFn: async () => {
-      const { data: u } = await supabase.auth.getUser();
-      const { data } = await supabase
-        .from("investments")
-        .select("*, plans(name)")
-        .eq("user_id", u.user!.id)
-        .order("created_at", { ascending: false });
-      return data ?? [];
-    },
+    queryFn: () => api.getInvestments() as any,
   });
   return (
     <>
       <PageHeader title="My investments" description="All active and completed investments.">
         <Button asChild><Link to="/dashboard/invest">New investment</Link></Button>
       </PageHeader>
-      {!data?.length ? (
+      {!(data as any[])?.length ? (
         <Card className="border-border">
           <CardContent className="p-10 text-center text-sm text-muted-foreground">
             You don't have any investments yet.
@@ -38,9 +30,9 @@ function MyInvestments() {
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {data.map((inv: any) => {
-            const start = new Date(inv.start_at).getTime();
-            const end = new Date(inv.end_at).getTime();
+          {(data as any[]).map((inv: any) => {
+            const start = new Date(inv.startAt ?? inv.start_at).getTime();
+            const end = new Date(inv.endAt ?? inv.end_at).getTime();
             const pct = Math.max(0, Math.min(100, ((Date.now() - start) / (end - start)) * 100));
             const daysLeft = Math.max(0, Math.ceil((end - Date.now()) / 86400000));
             return (
@@ -48,7 +40,7 @@ function MyInvestments() {
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="text-xs uppercase text-muted-foreground">{inv.plans?.name}</p>
+                      <p className="text-xs uppercase text-muted-foreground">{inv.plan?.name}</p>
                       <p className="mt-1 font-display text-2xl font-bold">${Number(inv.amount).toLocaleString()}</p>
                     </div>
                     <Badge variant={inv.status === "active" ? "default" : "secondary"}>{inv.status}</Badge>
@@ -60,7 +52,7 @@ function MyInvestments() {
                     <Progress value={pct} className="mt-1" />
                   </div>
                   <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
-                    <Box label="ROI" value={`${inv.roi_percent}%`} accent="text-success" />
+                    <Box label="ROI" value={`${inv.roiPercent ?? inv.roi_percent}%`} accent="text-success" />
                     <Box label="Days left" value={String(daysLeft)} />
                     <Box label="Profit" value={`$${Number(inv.profit ?? 0).toLocaleString()}`} accent="text-success" />
                   </div>

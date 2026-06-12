@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Upload, FileText, ShieldCheck } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/dashboard/kyc")({
@@ -17,21 +17,20 @@ export const Route = createFileRoute("/_authenticated/dashboard/kyc")({
 function KYC() {
   const { data: profile, refetch } = useQuery({
     queryKey: ["kyc"],
-    queryFn: async () => {
-      const { data: u } = await supabase.auth.getUser();
-      const { data } = await supabase.from("profiles").select("*").eq("id", u.user!.id).maybeSingle();
-      return data;
-    },
+    queryFn: () => api.getProfile() as any,
   });
 
   async function submit() {
-    const { data: u } = await supabase.auth.getUser();
-    await supabase.from("profiles").update({ kyc_status: "pending" }).eq("id", u.user!.id);
-    refetch();
-    toast.success("KYC submitted. We'll review within 24 hours.");
+    try {
+      await api.updateProfile({ kycStatus: "pending" } as any);
+      refetch();
+      toast.success("KYC submitted. We'll review within 24 hours.");
+    } catch (err: any) {
+      toast.error(err?.message ?? "Failed to submit KYC");
+    }
   }
 
-  const status = profile?.kyc_status ?? "unverified";
+  const status = (profile as any)?.kycStatus ?? (profile as any)?.kyc_status ?? "unverified";
   return (
     <>
       <PageHeader title="Identity verification (KYC)" description="Verify your identity to unlock higher limits.">

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select";
 import { Copy } from "lucide-react";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/dashboard/deposit")({
@@ -35,14 +35,15 @@ function Deposit() {
     const amt = Number(amount);
     if (!amt || amt <= 0) { toast.error("Enter a valid amount"); return; }
     setLoading(true);
-    const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase.from("transactions").insert({
-      user_id: u.user!.id, type: "deposit", gateway, amount: amt, status: "pending",
-    });
-    setLoading(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Deposit submitted. We'll confirm once funds arrive.");
-    setAmount("");
+    try {
+      await api.createDeposit({ amount: amt, gateway });
+      toast.success("Deposit submitted. We'll confirm once funds arrive.");
+      setAmount("");
+    } catch (err: any) {
+      toast.error(err?.message ?? "Failed to submit deposit");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

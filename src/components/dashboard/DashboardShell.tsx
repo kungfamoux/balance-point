@@ -18,7 +18,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { signOut } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 
 const main = [
   { to: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
@@ -116,13 +116,8 @@ function Topbar() {
   const { data: profile } = useQuery({
     queryKey: ["me"],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) return null;
-      const [{ data: p }, { data: w }] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", user.user.id).maybeSingle(),
-        supabase.from("wallets").select("*").eq("user_id", user.user.id).maybeSingle(),
-      ]);
-      return { email: user.user.email, profile: p, wallet: w };
+      const [p, w] = await Promise.all([api.getProfile(), api.getWallet()]) as any[];
+      return { email: p?.email, profile: p, wallet: w };
     },
   });
   const initials = (profile?.profile?.full_name ?? profile?.email ?? "?")

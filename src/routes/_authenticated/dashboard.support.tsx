@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -22,27 +22,20 @@ function Support() {
 
   const { data: tickets } = useQuery({
     queryKey: ["tickets"],
-    queryFn: async () => {
-      const { data: u } = await supabase.auth.getUser();
-      const { data } = await supabase.from("tickets").select("*").eq("user_id", u.user!.id).order("created_at", { ascending: false });
-      return data ?? [];
-    },
+    queryFn: () => api.getTickets() as any,
   });
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!subject.trim() || !body.trim()) return toast.error("Subject and message required");
-    const { data: u } = await supabase.auth.getUser();
-    const { data: ticket, error } = await supabase.from("tickets").insert({
-      user_id: u.user!.id, subject,
-    }).select().single();
-    if (error || !ticket) return toast.error(error?.message ?? "Failed");
-    await supabase.from("ticket_messages").insert({
-      ticket_id: ticket.id, user_id: u.user!.id, body,
-    });
-    setSubject(""); setBody("");
-    toast.success("Ticket opened. Our team will reply soon.");
-    qc.invalidateQueries({ queryKey: ["tickets"] });
+    try {
+      await api.createTicket({ subject, body });
+      setSubject(""); setBody("");
+      toast.success("Ticket opened. Our team will reply soon.");
+      qc.invalidateQueries({ queryKey: ["tickets"] });
+    } catch (err: any) {
+      toast.error(err?.message ?? "Failed to open ticket");
+    }
   }
 
   return (
@@ -69,12 +62,12 @@ function Support() {
           <CardContent className="p-6">
             <h3 className="font-display text-lg font-bold">Your tickets</h3>
             <ul className="mt-4 divide-y divide-border">
-              {(tickets ?? []).length === 0 && <p className="py-10 text-center text-sm text-muted-foreground">No tickets yet.</p>}
-              {tickets?.map((t: any) => (
+              {!(tickets as any[])?.length && <p className="py-10 text-center text-sm text-muted-foreground">No tickets yet.</p>}
+              {(tickets as any[])?.map((t: any) => (
                 <li key={t.id} className="flex items-start justify-between gap-3 py-3">
                   <div>
                     <p className="font-medium">{t.subject}</p>
-                    <p className="text-xs text-muted-foreground">{new Date(t.created_at).toLocaleString()}</p>
+                    <p className="text-xs text-muted-foreground">{new Date(t.createdAt ?? t.created_at).toLocaleString()}</p>
                   </div>
                   <Badge variant={t.status === "open" ? "default" : "secondary"} className="capitalize">{t.status}</Badge>
                 </li>

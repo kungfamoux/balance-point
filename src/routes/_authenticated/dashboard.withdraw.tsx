@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/dashboard/withdraw")({
@@ -24,29 +24,25 @@ function Withdraw() {
 
   const { data: wallet } = useQuery({
     queryKey: ["wallet-balance"],
-    queryFn: async () => {
-      const { data: u } = await supabase.auth.getUser();
-      const { data } = await supabase.from("wallets").select("*").eq("user_id", u.user!.id).maybeSingle();
-      return data;
-    },
+    queryFn: () => api.getWallet() as any,
   });
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const amt = Number(amount);
     if (!amt || amt <= 0) return toast.error("Enter a valid amount");
-    if (amt > Number(wallet?.balance ?? 0)) return toast.error("Insufficient balance");
+    if (amt > Number((wallet as any)?.balance ?? 0)) return toast.error("Insufficient balance");
     if (!destination.trim()) return toast.error("Enter a destination");
     setLoading(true);
-    const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase.from("transactions").insert({
-      user_id: u.user!.id, type: "withdraw", gateway: method, amount: amt, status: "pending",
-      meta: { destination },
-    });
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success("Withdrawal request submitted.");
-    setAmount(""); setDestination("");
+    try {
+      await api.createWithdrawal({ amount: amt, gateway: method, meta: { destination } });
+      toast.success("Withdrawal request submitted.");
+      setAmount(""); setDestination("");
+    } catch (err: any) {
+      toast.error(err?.message ?? "Failed to submit withdrawal");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -58,7 +54,7 @@ function Withdraw() {
             <div className="rounded-lg border border-border bg-brand-soft/40 p-4">
               <p className="text-xs uppercase text-muted-foreground">Available balance</p>
               <p className="font-display text-2xl font-bold text-brand">
-                ${Number(wallet?.balance ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                ${Number((wallet as any)?.balance ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </p>
             </div>
             <div>

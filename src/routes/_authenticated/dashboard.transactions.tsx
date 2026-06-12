@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/dashboard/transactions")({
@@ -17,16 +17,9 @@ function Transactions() {
   const [filter, setFilter] = useState("all");
   const { data } = useQuery({
     queryKey: ["transactions"],
-    queryFn: async () => {
-      const { data: u } = await supabase.auth.getUser();
-      const { data } = await supabase
-        .from("transactions").select("*")
-        .eq("user_id", u.user!.id)
-        .order("created_at", { ascending: false });
-      return data ?? [];
-    },
+    queryFn: () => api.getTransactions() as any,
   });
-  const rows = (data ?? []).filter((t: any) => filter === "all" || t.type === filter);
+  const rows = ((data as any[]) ?? []).filter((t: any) => filter === "all" || t.type === filter);
   return (
     <>
       <PageHeader title="Transactions" description="All movements across your account." />
@@ -62,7 +55,7 @@ function Transactions() {
                         {t.status}
                       </Badge>
                     </td>
-                    <td className="px-5 py-3 text-muted-foreground">{new Date(t.created_at).toLocaleString()}</td>
+                    <td className="px-5 py-3 text-muted-foreground">{new Date(t.createdAt ?? t.created_at).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>

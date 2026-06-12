@@ -9,7 +9,7 @@ import {
   Globe, Wallet, BookOpen, Check, Quote, Award, Bitcoin,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 import heroImg from "@/assets/hero-trading.jpg";
 import cityImg from "@/assets/section-city.jpg";
 
@@ -330,11 +330,7 @@ function Testimonial({ name, role, quote }: { name: string; role: string; quote:
 function Packages() {
   const { data: plans } = useQuery({
     queryKey: ["plans"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("plans").select("*").order("sort_order");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => api.getPlans() as any,
   });
   return (
     <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -342,17 +338,17 @@ function Packages() {
         <Card key={p.id} className={i === 1 ? "border-brand shadow-lg" : "border-border"}>
           <CardContent className="p-6">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Minimum funding ${Number(p.min_deposit).toLocaleString()}
+              Minimum funding ${Number(p.minDeposit ?? p.min_deposit).toLocaleString()}
             </p>
             <h3 className="mt-2 font-display text-xl font-bold">{p.name}</h3>
             <p className="mt-1 text-sm text-muted-foreground">{p.tagline}</p>
-            <p className="mt-5 font-display text-3xl font-bold text-brand">{p.roi_percent}%</p>
+            <p className="mt-5 font-display text-3xl font-bold text-brand">{p.roiPercent ?? p.roi_percent}%</p>
             <p className="text-xs uppercase text-muted-foreground">Return on investment</p>
             <ul className="mt-5 space-y-2 text-sm">
-              <Li>Min deposit: ${Number(p.min_deposit).toLocaleString()}</Li>
-              <Li>Max deposit: ${Number(p.max_deposit).toLocaleString()}</Li>
-              <Li>Referral bonus: {p.referral_percent}%</Li>
-              <Li>Duration: {p.duration_days} days</Li>
+              <Li>Min deposit: ${Number(p.minDeposit ?? p.min_deposit).toLocaleString()}</Li>
+              <Li>Max deposit: ${Number(p.maxDeposit ?? p.max_deposit).toLocaleString()}</Li>
+              <Li>Referral bonus: {p.referralPercent ?? p.referral_percent}%</Li>
+              <Li>Duration: {p.durationDays ?? p.duration_days} days</Li>
             </ul>
             <Button asChild className="mt-6 w-full">
               <Link to="/auth" search={{ tab: "register" }}>Open Account</Link>
@@ -376,11 +372,7 @@ function Li({ children }: { children: React.ReactNode }) {
 function Ledger() {
   const { data } = useQuery({
     queryKey: ["ledger"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("public_ledger").select("*").order("sort_order");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => api.getLedger() as any,
   });
   const deposits = (data ?? []).filter((r) => r.kind === "deposit");
   const withdrawals = (data ?? []).filter((r) => r.kind === "withdraw");

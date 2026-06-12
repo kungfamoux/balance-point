@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
+import { getSession } from "@/lib/auth";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -18,9 +19,9 @@ function Profile() {
   const { data, refetch } = useQuery({
     queryKey: ["profile-page"],
     queryFn: async () => {
-      const { data: u } = await supabase.auth.getUser();
-      const { data: p } = await supabase.from("profiles").select("*").eq("id", u.user!.id).maybeSingle();
-      return { email: u.user!.email, profile: p };
+      const session = getSession();
+      const profile = await api.getProfile() as any;
+      return { email: session?.user?.email, profile };
     },
   });
   const [name, setName] = useState("");
@@ -30,23 +31,24 @@ function Profile() {
 
   useEffect(() => {
     if (data?.profile) {
-      setName(data.profile.full_name ?? "");
-      setCountry(data.profile.country ?? "");
-      setPhone(data.profile.phone ?? "");
+      setName((data.profile as any).fullName ?? (data.profile as any).full_name ?? "");
+      setCountry((data.profile as any).country ?? "");
+      setPhone((data.profile as any).phone ?? "");
     }
   }, [data]);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase.from("profiles").update({
-      full_name: name, country, phone, updated_at: new Date().toISOString(),
-    }).eq("id", u.user!.id);
-    setSaving(false);
-    if (error) return toast.error(error.message);
-    toast.success("Profile saved");
-    refetch();
+    try {
+      await api.updateProfile({ fullName: name, country, phone });
+      toast.success("Profile saved");
+      refetch();
+    } catch (err: any) {
+      toast.error(err?.message ?? "Failed to save profile");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (

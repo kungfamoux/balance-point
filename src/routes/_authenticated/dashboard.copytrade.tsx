@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { Award } from "lucide-react";
 
@@ -25,24 +25,23 @@ function CopyTrade() {
   const qc = useQueryClient();
   const { data: follows } = useQuery({
     queryKey: ["follows"],
-    queryFn: async () => {
-      const { data: u } = await supabase.auth.getUser();
-      const { data } = await supabase.from("copy_follows").select("*").eq("user_id", u.user!.id);
-      return data ?? [];
-    },
+    queryFn: () => api.getCopyFollows() as any,
   });
-  const followed = new Set(follows?.map((f: any) => f.trader_handle));
+  const followed = new Map((follows as any[] ?? []).map((f: any) => [f.traderHandle ?? f.trader_handle, f.id]));
 
   async function toggle(handle: string) {
-    const { data: u } = await supabase.auth.getUser();
-    if (followed.has(handle)) {
-      await supabase.from("copy_follows").delete().eq("user_id", u.user!.id).eq("trader_handle", handle);
-      toast.success("Unfollowed");
-    } else {
-      await supabase.from("copy_follows").insert({ user_id: u.user!.id, trader_handle: handle });
-      toast.success("Following");
+    try {
+      if (followed.has(handle)) {
+        await api.unfollowTrader(followed.get(handle) as string);
+        toast.success("Unfollowed");
+      } else {
+        await api.followTrader(handle);
+        toast.success("Following");
+      }
+      qc.invalidateQueries({ queryKey: ["follows"] });
+    } catch (err: any) {
+      toast.error(err?.message ?? "Failed");
     }
-    qc.invalidateQueries({ queryKey: ["follows"] });
   }
 
   return (

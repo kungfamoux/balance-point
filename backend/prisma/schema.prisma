@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Profile {
+  id           String   @id @db.Uuid
+  fullName     String?  @map("full_name")
+  country      String?
+  phone        String?
+  avatarUrl    String?  @map("avatar_url")
+  referralCode String   @unique @map("referral_code")
+  referredBy   String?  @map("referred_by") @db.Uuid
+  kycStatus    String   @default("unverified") @map("kyc_status")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("profiles")
+}
+
+model Wallet {
+  userId           String   @id @map("user_id") @db.Uuid
+  balance          Decimal  @default(0) @db.Decimal(18, 2)
+  activeInvestment Decimal  @default(0) @map("active_investment") @db.Decimal(18, 2)
+  totalProfit      Decimal  @default(0) @map("total_profit") @db.Decimal(18, 2)
+  referralEarnings Decimal  @default(0) @map("referral_earnings") @db.Decimal(18, 2)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("wallets")
+}
+
+model Plan {
+  id              String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug            String       @unique
+  name            String
+  tagline         String?
+  minDeposit      Decimal      @map("min_deposit") @db.Decimal(18, 2)
+  maxDeposit      Decimal      @map("max_deposit") @db.Decimal(18, 2)
+  roiPercent      Decimal      @map("roi_percent") @db.Decimal(6, 2)
+  referralPercent Decimal      @default(5) @map("referral_percent") @db.Decimal(6, 2)
+  durationDays    Int          @map("duration_days")
+  sortOrder       Int          @default(0) @map("sort_order")
+  investments     Investment[]
+
+  @@map("plans")
+}
+
+model Investment {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  planId     String   @map("plan_id") @db.Uuid
+  amount     Decimal  @db.Decimal(18, 2)
+  roiPercent Decimal  @map("roi_percent") @db.Decimal(6, 2)
+  profit     Decimal  @default(0) @db.Decimal(18, 2)
+  status     String   @default("active")
+  startAt    DateTime @default(now()) @map("start_at") @db.Timestamptz
+  endAt      DateTime @map("end_at") @db.Timestamptz
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  plan Plan @relation(fields: [planId], references: [id])
+
+  @@index([userId])
+  @@map("investments")
+}
+
+model Transaction {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  type      String
+  gateway   String?
+  amount    Decimal  @db.Decimal(18, 2)
+  status    String   @default("pending")
+  meta      Json?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([userId])
+  @@map("transactions")
+}
+
+model Referral {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  referrerId  String   @map("referrer_id") @db.Uuid
+  referredId  String   @map("referred_id") @db.Uuid
+  bonusAmount Decimal  @default(0) @map("bonus_amount") @db.Decimal(18, 2)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([referrerId])
+  @@map("referrals")
+}
+
+model CopyFollow {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  traderHandle  String   @map("trader_handle")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@unique([userId, traderHandle])
+  @@index([userId])
+  @@map("copy_follows")
+}
+
+model Ticket {
+  id        String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String          @map("user_id") @db.Uuid
+  subject   String
+  status    String          @default("open")
+  createdAt DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  messages  TicketMessage[]
+
+  @@index([userId])
+  @@map("tickets")
+}
+
+model TicketMessage {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ticketId  String   @map("ticket_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  body      String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@map("ticket_messages")
+}
+
+model PublicLedger {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind      String
+  gateway   String
+  name      String
+  amount    Decimal  @db.Decimal(18, 2)
+  hoursAgo  Int      @map("hours_ago")
+  sortOrder Int      @default(0) @map("sort_order")
+
+  @@map("public_ledger")
+}

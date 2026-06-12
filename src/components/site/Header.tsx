@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { getSession } from "@/lib/auth";
 
 const markets = [
   { to: "/markets/forex", label: "Forex" },
@@ -26,12 +26,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setAuthed(!!data.user));
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN") setAuthed(true);
-      if (event === "SIGNED_OUT") setAuthed(false);
-    });
-    return () => sub.subscription.unsubscribe();
+    setAuthed(!!getSession());
   }, []);
 
   return (

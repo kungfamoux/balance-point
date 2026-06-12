@@ -7,8 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { getAccessToken } from "@/lib/auth";
 import { toast } from "sonner";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
 export const Route = createFileRoute("/_authenticated/dashboard/security")({
   component: Security,
@@ -23,9 +26,21 @@ function Security() {
     e.preventDefault();
     if (pw.length < 6) return toast.error("Password must be at least 6 characters");
     setSaving(true);
-    const { error } = await supabase.auth.updateUser({ password: pw });
+    const token = getAccessToken();
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ password: pw }),
+    });
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (!res.ok) {
+      const data = await res.json();
+      return toast.error(data?.message ?? "Failed to update password");
+    }
     toast.success("Password updated");
     setPw("");
   }

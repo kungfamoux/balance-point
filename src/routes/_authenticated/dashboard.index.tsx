@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Wallet, TrendingUp, Briefcase, Users, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
@@ -23,14 +23,13 @@ function Overview() {
   const { data } = useQuery({
     queryKey: ["dashboard-overview"],
     queryFn: async () => {
-      const { data: u } = await supabase.auth.getUser();
-      if (!u.user) return null;
-      const [w, tx, inv] = await Promise.all([
-        supabase.from("wallets").select("*").eq("user_id", u.user.id).maybeSingle(),
-        supabase.from("transactions").select("*").eq("user_id", u.user.id).order("created_at", { ascending: false }).limit(5),
-        supabase.from("investments").select("*, plans(name)").eq("user_id", u.user.id).eq("status", "active").order("created_at", { ascending: false }).limit(1),
-      ]);
-      return { wallet: w.data, tx: tx.data ?? [], investment: inv.data?.[0] };
+      const [wallet, tx, investments] = await Promise.all([
+        api.getWallet(),
+        api.getTransactions(5),
+        api.getInvestments(),
+      ]) as any[];
+      const activeInv = (investments ?? []).find((i: any) => i.status === "active");
+      return { wallet, tx: tx ?? [], investment: activeInv ?? null };
     },
   });
   const w = data?.wallet;
