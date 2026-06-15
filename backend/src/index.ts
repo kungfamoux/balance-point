@@ -28,7 +28,10 @@ const swaggerSpec = swaggerJsdoc({
       version: "1.0.0",
       description: "Backend API for the investment platform",
     },
-    servers: [{ url: `http://localhost:${PORT}` }],
+    servers: [
+      { url: "/", description: "Current host" },
+      { url: `http://localhost:${PORT}`, description: "Local dev" },
+    ],
     components: {
       securitySchemes: {
         bearerAuth: {
