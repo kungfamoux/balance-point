@@ -17,7 +17,7 @@ dist-ssr
 .vite
 *.local
 .env
-frontend/.env
+**/.env
 
 # Wrangler / Cloudflare
 .wrangler/
