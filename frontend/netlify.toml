@@ -1,12 +1,17 @@
 [build]
   base = "frontend"
   command = "npm run build"
-  publish = "dist/client"
+  publish = ".output/public"
 
 [build.environment]
   NODE_VERSION = "22"
 
+[functions]
+  directory = ".netlify/functions-internal"
+  node_bundler = "esbuild"
+
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/.netlify/functions/server"
   status = 200
+  force = false
