@@ -64,8 +64,12 @@ app.use(
         /^https?:\/\/10\.\d+\.\d+\.\d+/.test(origin) ||
         /^https?:\/\/172\.(1[6-9]|2\d|3[01])\.\d+\.\d+/.test(origin);
       if (isLocal) return callback(null, true);
-      const allowed = process.env.FRONTEND_URL ?? "";
-      callback(origin === allowed ? null : new Error("Not allowed by CORS"), origin === allowed);
+      const allowedOrigins = [
+        process.env.FRONTEND_URL ?? "",
+        process.env.RENDER_EXTERNAL_URL ?? "",
+      ].filter(Boolean);
+      const ok = allowedOrigins.some((o) => origin === o);
+      callback(ok ? null : new Error("Not allowed by CORS"), ok);
     },
     credentials: true,
   })
