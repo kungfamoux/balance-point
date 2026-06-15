@@ -11,56 +11,78 @@ export const Route = createFileRoute("/_authenticated/dashboard/invest")({
   component: Invest,
 });
 
-// Static plan definitions matching the image
+// Static plan definitions
 const STATIC_PLANS = [
   {
-    id: "bronze",
-    name: "Bronze",
-    price: 1000,
-    period: "Month",
+    id: "regular",
+    name: "Regular",
+    price: 200,
+    returns: 1000,
+    period: "2 Weeks",
     featured: false,
     features: [
       "200+ Pairs",
       "Leverage Up To 1:500",
       "Spreads From 1.2 Pips",
+      "Returns $1,000",
     ],
   },
   {
-    id: "silver",
-    name: "Silver",
-    price: 20000,
-    period: "Month",
+    id: "bronze",
+    name: "Bronze",
+    price: 1000,
+    returns: 10000,
+    period: "1 Month",
     featured: false,
     features: [
       "300+ Pairs",
       "Leverage Up To 1:500",
       "Spreads From 0.8 Pips",
+      "Returns $10,000",
+    ],
+  },
+  {
+    id: "silver",
+    name: "Silver",
+    price: 10000,
+    returns: 50000,
+    period: "2 Months",
+    featured: false,
+    features: [
+      "400+ Pairs",
+      "No Swap Fees",
+      "Leverage Up To 1:500",
+      "Returns $50,000",
     ],
   },
   {
     id: "gold",
     name: "Gold",
     price: 50000,
-    period: "Month",
+    returns: 150000,
+    period: "3 Months",
     featured: true,
     features: [
       "400+ Pairs",
       "No Swap Fees",
       "Leverage Up To 1:500",
-      "Spreads From 1.2 Pips",
+      "Spreads From 0.3 Pips",
+      "Returns $150,000",
     ],
   },
   {
-    id: "premium",
-    name: "Premium",
-    price: 100000,
-    period: "Month",
+    id: "diamond",
+    name: "Diamond",
+    price: 150000,
+    returns: 1000000,
+    period: "6 Months",
     featured: false,
     features: [
       "500+ Pairs",
       "No Swap Fees",
+      "Priority Support",
       "Leverage Up To 1:500",
-      "Spreads From 0.3 Pips",
+      "Returns $1,000,000",
     ],
   },
 ];
@@ -93,7 +115,7 @@ function Invest() {
         title="Pricing"
         description="Choose the plan that matches your trading goals and start growing your portfolio."
       />
-      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
         {plans.map((plan) => (
           <PlanCard key={plan.id} plan={plan} />
         ))}
@@ -102,7 +124,7 @@ function Invest() {
   );
 }
 
-type EnrichedPlan = (typeof STATIC_PLANS)[0] & { roi: number | null; duration: number | null; referral: number | null; backendId: string | null };
+type EnrichedPlan = (typeof STATIC_PLANS)[0] & { returns: number; roi: number | null; duration: number | null; referral: number | null; backendId: string | null };
 
 function PlanCard({ plan }: { plan: EnrichedPlan }) {
   const navigate = useNavigate();
@@ -128,22 +150,26 @@ function PlanCard({ plan }: { plan: EnrichedPlan }) {
         </div>
       )}
       <CardContent className="p-6">
-        {/* Price */}
+        {/* Name */}
+        <h3 className="font-display text-xl font-semibold">{plan.name}</h3>
+
+        {/* Duration */}
+        <p className="text-xs text-muted-foreground mt-0.5">{plan.period}</p>
+
+        <hr className="my-4 border-border" />
+
+        {/* Invest amount */}
         <div className="flex items-baseline gap-1">
           <span className="text-xs font-semibold text-muted-foreground align-top mt-1">$</span>
-          <span className="font-display text-2xl font-bold">
-            {plan.price.toLocaleString()}
-          </span>
-          <span className="text-sm text-muted-foreground">/{plan.period}</span>
+          <span className="font-display text-2xl font-bold">{plan.price.toLocaleString()}</span>
         </div>
+        <p className="text-xs text-muted-foreground">Minimum investment</p>
 
-        {/* Name */}
-        <h3 className="mt-2 font-display text-xl font-semibold">{plan.name}</h3>
-
-        {/* ROI badge if available */}
-        {plan.roi && (
-          <p className="mt-1 text-sm font-semibold text-brand">{plan.roi}% ROI · {plan.duration} days</p>
-        )}
+        {/* Returns */}
+        <div className="mt-3 rounded-lg bg-brand/10 px-3 py-2">
+          <p className="text-xs text-muted-foreground">Returns</p>
+          <p className="font-bold text-brand text-lg">${plan.returns.toLocaleString()}</p>
+        </div>
 
         <hr className="my-4 border-border" />
 
