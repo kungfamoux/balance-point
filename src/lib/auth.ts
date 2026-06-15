@@ -60,6 +60,9 @@ export async function loginOrRegister(email: string, password: string, fullName?
     return data;
   }
 
+  const signInError = await signInRes.json();
+  console.warn("[auth] sign-in failed:", signInRes.status, signInError);
+
   // Try sign up
   const signUpRes = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
     method: "POST",
@@ -72,7 +75,8 @@ export async function loginOrRegister(email: string, password: string, fullName?
   });
 
   const signUpData = await signUpRes.json();
-  if (!signUpRes.ok) throw new Error(signUpData.error_description ?? signUpData.msg ?? "Sign up failed");
+  console.warn("[auth] sign-up response:", signUpRes.status, signUpData);
+  if (!signUpRes.ok) throw new Error(signUpData.error_description ?? signUpData.msg ?? signUpData.message ?? "Sign up failed");
 
   // If session returned immediately (email auto-confirm on), save it
   if (signUpData.access_token) {

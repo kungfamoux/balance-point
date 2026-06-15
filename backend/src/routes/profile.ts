@@ -21,13 +21,22 @@ const router = Router();
  */
 router.get("/", requireAuth, async (req: AuthRequest, res) => {
   try {
-    const profile = await prisma.profile.findUnique({
+    const profile = await prisma.profile.upsert({
       where: { id: req.userId! },
+      update: {},
+      create: {
+        id: req.userId!,
+        referralCode: req.userId!.replace(/-/g, "").slice(0, 8).toUpperCase(),
+      },
     });
-    if (!profile) {
-      res.status(404).json({ error: "Profile not found" });
-      return;
-    }
+
+    // Auto-create wallet if it doesn't exist
+    await prisma.wallet.upsert({
+      where: { userId: req.userId! },
+      update: {},
+      create: { userId: req.userId! },
+    });
+
     res.json(profile);
   } catch {
     res.status(500).json({ error: "Failed to fetch profile" });
@@ -78,9 +87,14 @@ router.patch("/", requireAuth, async (req: AuthRequest, res) => {
   }
 
   try {
-    const profile = await prisma.profile.update({
+    const profile = await prisma.profile.upsert({
       where: { id: req.userId! },
-      data: parsed.data,
+      update: parsed.data,
+      create: {
+        id: req.userId!,
+        referralCode: req.userId!.replace(/-/g, "").slice(0, 8).toUpperCase(),
+        ...parsed.data,
+      },
     });
     res.json(profile);
   } catch {
