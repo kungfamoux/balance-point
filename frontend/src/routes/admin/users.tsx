@@ -1,0 +1,100 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { adminApi } from "@/lib/adminApi";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Search, ChevronRight } from "lucide-react";
+
+export const Route = createFileRoute("/admin/users")({
+  component: AdminUsers,
+});
+
+function AdminUsers() {
+  const { data: users = [], isLoading } = useQuery({
+    queryKey: ["admin", "users"],
+    queryFn: adminApi.getUsers,
+  });
+  const [search, setSearch] = useState("");
+
+  const filtered = users.filter((u: any) =>
+    (u.fullName ?? "").toLowerCase().includes(search.toLowerCase()) ||
+    (u.id ?? "").includes(search)
+  );
+
+  const kycColor: Record<string, string> = {
+    verified: "bg-green-600",
+    unverified: "bg-yellow-600",
+    rejected: "bg-red-600",
+  };
+
+  return (
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Users</h1>
+          <p className="text-gray-400 text-sm mt-1">{users.length} registered users</p>
+        </div>
+        <div className="relative">
+          <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name or ID…"
+            className="pl-9 bg-gray-800 border-gray-700 text-white w-64"
+          />
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="flex justify-center py-20">
+          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : (
+        <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-800 text-gray-400">
+                <th className="text-left px-4 py-3">Name</th>
+                <th className="text-left px-4 py-3">Country</th>
+                <th className="text-left px-4 py-3">KYC</th>
+                <th className="text-left px-4 py-3">Joined</th>
+                <th className="px-4 py-3" />
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((u: any) => (
+                <tr key={u.id} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
+                  <td className="px-4 py-3 text-white font-medium">{u.fullName ?? "—"}</td>
+                  <td className="px-4 py-3 text-gray-400">{u.country ?? "—"}</td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs text-white ${kycColor[u.kycStatus] ?? "bg-gray-600"}`}>
+                      {u.kycStatus}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-gray-400">
+                    {new Date(u.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <Link
+                      to="/admin/users/$id"
+                      params={{ id: u.id }}
+                      className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-xs"
+                    >
+                      View <ChevronRight className="w-3 h-3" />
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="text-center py-12 text-gray-500">No users found</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}

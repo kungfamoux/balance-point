@@ -13,9 +13,11 @@ import { Route as MarketsRouteImport } from './routes/markets'
 import { Route as CopytradingRouteImport } from './routes/copytrading'
 import { Route as CompanyRouteImport } from './routes/company'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MarketsIndexRouteImport } from './routes/markets.index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as MarketsStocksRouteImport } from './routes/markets.stocks'
 import { Route as MarketsRealEstateRouteImport } from './routes/markets.real-estate'
 import { Route as MarketsIndicesRouteImport } from './routes/markets.indices'
@@ -26,8 +28,16 @@ import { Route as CompanyLegalRouteImport } from './routes/company.legal'
 import { Route as CompanyContactRouteImport } from './routes/company.contact'
 import { Route as CompanyCareersRouteImport } from './routes/company.careers'
 import { Route as CompanyAboutRouteImport } from './routes/company.about'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AdminTransactionsRouteImport } from './routes/admin/transactions'
+import { Route as AdminTicketsRouteImport } from './routes/admin/tickets'
+import { Route as AdminPlansRouteImport } from './routes/admin/plans'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminLedgerRouteImport } from './routes/admin/ledger'
+import { Route as AdminInvestmentsRouteImport } from './routes/admin/investments'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as AdminUsersIdRouteImport } from './routes/admin/users.$id'
 import { Route as AuthenticatedDashboardWithdrawRouteImport } from './routes/_authenticated/dashboard.withdraw'
 import { Route as AuthenticatedDashboardTransactionsRouteImport } from './routes/_authenticated/dashboard.transactions'
 import { Route as AuthenticatedDashboardTradeRouteImport } from './routes/_authenticated/dashboard.trade'
@@ -63,6 +73,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -76,6 +91,11 @@ const MarketsIndexRoute = MarketsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => MarketsRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 const MarketsStocksRoute = MarketsStocksRouteImport.update({
   id: '/stocks',
@@ -127,6 +147,41 @@ const CompanyAboutRoute = CompanyAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => CompanyRoute,
 } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
+  id: '/transactions',
+  path: '/transactions',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminTicketsRoute = AdminTicketsRouteImport.update({
+  id: '/tickets',
+  path: '/tickets',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminPlansRoute = AdminPlansRouteImport.update({
+  id: '/plans',
+  path: '/plans',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminLedgerRoute = AdminLedgerRouteImport.update({
+  id: '/ledger',
+  path: '/ledger',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminInvestmentsRoute = AdminInvestmentsRouteImport.update({
+  id: '/investments',
+  path: '/investments',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -138,6 +193,11 @@ const AuthenticatedDashboardIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AdminUsersIdRoute = AdminUsersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminUsersRoute,
+} as any)
 const AuthenticatedDashboardWithdrawRoute =
   AuthenticatedDashboardWithdrawRouteImport.update({
     id: '/withdraw',
@@ -225,11 +285,19 @@ const AuthenticatedDashboardCopytradeRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/company': typeof CompanyRouteWithChildren
   '/copytrading': typeof CopytradingRoute
   '/markets': typeof MarketsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/admin/investments': typeof AdminInvestmentsRoute
+  '/admin/ledger': typeof AdminLedgerRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/plans': typeof AdminPlansRoute
+  '/admin/tickets': typeof AdminTicketsRoute
+  '/admin/transactions': typeof AdminTransactionsRoute
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/company/about': typeof CompanyAboutRoute
   '/company/careers': typeof CompanyCareersRoute
   '/company/contact': typeof CompanyContactRoute
@@ -240,6 +308,7 @@ export interface FileRoutesByFullPath {
   '/markets/indices': typeof MarketsIndicesRoute
   '/markets/real-estate': typeof MarketsRealEstateRoute
   '/markets/stocks': typeof MarketsStocksRoute
+  '/admin/': typeof AdminIndexRoute
   '/markets/': typeof MarketsIndexRoute
   '/dashboard/copytrade': typeof AuthenticatedDashboardCopytradeRoute
   '/dashboard/deposit': typeof AuthenticatedDashboardDepositRoute
@@ -255,6 +324,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
   '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
   '/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
+  '/admin/users/$id': typeof AdminUsersIdRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
@@ -262,6 +332,13 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/company': typeof CompanyRouteWithChildren
   '/copytrading': typeof CopytradingRoute
+  '/admin/investments': typeof AdminInvestmentsRoute
+  '/admin/ledger': typeof AdminLedgerRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/plans': typeof AdminPlansRoute
+  '/admin/tickets': typeof AdminTicketsRoute
+  '/admin/transactions': typeof AdminTransactionsRoute
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/company/about': typeof CompanyAboutRoute
   '/company/careers': typeof CompanyCareersRoute
   '/company/contact': typeof CompanyContactRoute
@@ -272,6 +349,7 @@ export interface FileRoutesByTo {
   '/markets/indices': typeof MarketsIndicesRoute
   '/markets/real-estate': typeof MarketsRealEstateRoute
   '/markets/stocks': typeof MarketsStocksRoute
+  '/admin': typeof AdminIndexRoute
   '/markets': typeof MarketsIndexRoute
   '/dashboard/copytrade': typeof AuthenticatedDashboardCopytradeRoute
   '/dashboard/deposit': typeof AuthenticatedDashboardDepositRoute
@@ -287,17 +365,26 @@ export interface FileRoutesByTo {
   '/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
   '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
   '/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
+  '/admin/users/$id': typeof AdminUsersIdRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/admin': typeof AdminRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/company': typeof CompanyRouteWithChildren
   '/copytrading': typeof CopytradingRoute
   '/markets': typeof MarketsRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/admin/investments': typeof AdminInvestmentsRoute
+  '/admin/ledger': typeof AdminLedgerRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/plans': typeof AdminPlansRoute
+  '/admin/tickets': typeof AdminTicketsRoute
+  '/admin/transactions': typeof AdminTransactionsRoute
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/company/about': typeof CompanyAboutRoute
   '/company/careers': typeof CompanyCareersRoute
   '/company/contact': typeof CompanyContactRoute
@@ -308,6 +395,7 @@ export interface FileRoutesById {
   '/markets/indices': typeof MarketsIndicesRoute
   '/markets/real-estate': typeof MarketsRealEstateRoute
   '/markets/stocks': typeof MarketsStocksRoute
+  '/admin/': typeof AdminIndexRoute
   '/markets/': typeof MarketsIndexRoute
   '/_authenticated/dashboard/copytrade': typeof AuthenticatedDashboardCopytradeRoute
   '/_authenticated/dashboard/deposit': typeof AuthenticatedDashboardDepositRoute
@@ -323,17 +411,26 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
   '/_authenticated/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
   '/_authenticated/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
+  '/admin/users/$id': typeof AdminUsersIdRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/auth'
     | '/company'
     | '/copytrading'
     | '/markets'
     | '/dashboard'
+    | '/admin/investments'
+    | '/admin/ledger'
+    | '/admin/login'
+    | '/admin/plans'
+    | '/admin/tickets'
+    | '/admin/transactions'
+    | '/admin/users'
     | '/company/about'
     | '/company/careers'
     | '/company/contact'
@@ -344,6 +441,7 @@ export interface FileRouteTypes {
     | '/markets/indices'
     | '/markets/real-estate'
     | '/markets/stocks'
+    | '/admin/'
     | '/markets/'
     | '/dashboard/copytrade'
     | '/dashboard/deposit'
@@ -359,6 +457,7 @@ export interface FileRouteTypes {
     | '/dashboard/trade'
     | '/dashboard/transactions'
     | '/dashboard/withdraw'
+    | '/admin/users/$id'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -366,6 +465,13 @@ export interface FileRouteTypes {
     | '/auth'
     | '/company'
     | '/copytrading'
+    | '/admin/investments'
+    | '/admin/ledger'
+    | '/admin/login'
+    | '/admin/plans'
+    | '/admin/tickets'
+    | '/admin/transactions'
+    | '/admin/users'
     | '/company/about'
     | '/company/careers'
     | '/company/contact'
@@ -376,6 +482,7 @@ export interface FileRouteTypes {
     | '/markets/indices'
     | '/markets/real-estate'
     | '/markets/stocks'
+    | '/admin'
     | '/markets'
     | '/dashboard/copytrade'
     | '/dashboard/deposit'
@@ -391,16 +498,25 @@ export interface FileRouteTypes {
     | '/dashboard/trade'
     | '/dashboard/transactions'
     | '/dashboard/withdraw'
+    | '/admin/users/$id'
     | '/dashboard'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/admin'
     | '/auth'
     | '/company'
     | '/copytrading'
     | '/markets'
     | '/_authenticated/dashboard'
+    | '/admin/investments'
+    | '/admin/ledger'
+    | '/admin/login'
+    | '/admin/plans'
+    | '/admin/tickets'
+    | '/admin/transactions'
+    | '/admin/users'
     | '/company/about'
     | '/company/careers'
     | '/company/contact'
@@ -411,6 +527,7 @@ export interface FileRouteTypes {
     | '/markets/indices'
     | '/markets/real-estate'
     | '/markets/stocks'
+    | '/admin/'
     | '/markets/'
     | '/_authenticated/dashboard/copytrade'
     | '/_authenticated/dashboard/deposit'
@@ -426,12 +543,14 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/trade'
     | '/_authenticated/dashboard/transactions'
     | '/_authenticated/dashboard/withdraw'
+    | '/admin/users/$id'
     | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   CompanyRoute: typeof CompanyRouteWithChildren
   CopytradingRoute: typeof CopytradingRoute
@@ -468,6 +587,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -488,6 +614,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/markets/'
       preLoaderRoute: typeof MarketsIndexRouteImport
       parentRoute: typeof MarketsRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
     '/markets/stocks': {
       id: '/markets/stocks'
@@ -559,6 +692,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompanyAboutRouteImport
       parentRoute: typeof CompanyRoute
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/transactions': {
+      id: '/admin/transactions'
+      path: '/transactions'
+      fullPath: '/admin/transactions'
+      preLoaderRoute: typeof AdminTransactionsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/tickets': {
+      id: '/admin/tickets'
+      path: '/tickets'
+      fullPath: '/admin/tickets'
+      preLoaderRoute: typeof AdminTicketsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/plans': {
+      id: '/admin/plans'
+      path: '/plans'
+      fullPath: '/admin/plans'
+      preLoaderRoute: typeof AdminPlansRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/ledger': {
+      id: '/admin/ledger'
+      path: '/ledger'
+      fullPath: '/admin/ledger'
+      preLoaderRoute: typeof AdminLedgerRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/investments': {
+      id: '/admin/investments'
+      path: '/investments'
+      fullPath: '/admin/investments'
+      preLoaderRoute: typeof AdminInvestmentsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -572,6 +754,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/'
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/admin/users/$id': {
+      id: '/admin/users/$id'
+      path: '/$id'
+      fullPath: '/admin/users/$id'
+      preLoaderRoute: typeof AdminUsersIdRouteImport
+      parentRoute: typeof AdminUsersRoute
     }
     '/_authenticated/dashboard/withdraw': {
       id: '/_authenticated/dashboard/withdraw'
@@ -730,6 +919,44 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AdminUsersRouteChildren {
+  AdminUsersIdRoute: typeof AdminUsersIdRoute
+}
+
+const AdminUsersRouteChildren: AdminUsersRouteChildren = {
+  AdminUsersIdRoute: AdminUsersIdRoute,
+}
+
+const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
+  AdminUsersRouteChildren,
+)
+
+interface AdminRouteRouteChildren {
+  AdminInvestmentsRoute: typeof AdminInvestmentsRoute
+  AdminLedgerRoute: typeof AdminLedgerRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminPlansRoute: typeof AdminPlansRoute
+  AdminTicketsRoute: typeof AdminTicketsRoute
+  AdminTransactionsRoute: typeof AdminTransactionsRoute
+  AdminUsersRoute: typeof AdminUsersRouteWithChildren
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminInvestmentsRoute: AdminInvestmentsRoute,
+  AdminLedgerRoute: AdminLedgerRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminPlansRoute: AdminPlansRoute,
+  AdminTicketsRoute: AdminTicketsRoute,
+  AdminTransactionsRoute: AdminTransactionsRoute,
+  AdminUsersRoute: AdminUsersRouteWithChildren,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 interface CompanyRouteChildren {
   CompanyAboutRoute: typeof CompanyAboutRoute
   CompanyCareersRoute: typeof CompanyCareersRoute
@@ -773,6 +1000,7 @@ const MarketsRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CompanyRoute: CompanyRouteWithChildren,
   CopytradingRoute: CopytradingRoute,
