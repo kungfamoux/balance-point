@@ -7,7 +7,7 @@ const router = Router();
 const SUPABASE_URL = process.env.SUPABASE_URL ?? "";
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY ?? "";
 
-async function supabaseAuthFetch(path: string, body: object) {
+async function supabaseAuthFetch(path: string, body: object): Promise<{ status: number; data: Record<string, unknown> }> {
   const res = await fetch(`${SUPABASE_URL}/auth/v1${path}`, {
     method: "POST",
     headers: {
@@ -16,7 +16,7 @@ async function supabaseAuthFetch(path: string, body: object) {
     },
     body: JSON.stringify(body),
   });
-  return { status: res.status, data: await res.json() };
+  return { status: res.status, data: (await res.json()) as Record<string, unknown> };
 }
 
 const loginSchema = z.object({
