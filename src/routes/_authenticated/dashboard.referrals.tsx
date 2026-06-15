@@ -17,8 +17,9 @@ function Referrals() {
     queryKey: ["referrals"],
     queryFn: () => api.getReferrals() as any,
   });
-  const link = typeof window !== "undefined" && (data as any)?.referralCode
-    ? `${window.location.origin}/auth?ref=${(data as any).referralCode}`
+  const appOrigin = import.meta.env.VITE_APP_URL?.replace(/\/$/, "") || window.location.origin;
+  const link = (data as any)?.referralCode
+    ? `${appOrigin}/auth?ref=${(data as any).referralCode}`
     : "";
 
   return (

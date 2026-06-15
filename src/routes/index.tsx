@@ -6,12 +6,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   ArrowRight, BarChart3, Coins, Building2, LineChart, ShieldCheck, Smartphone,
-  Globe, Wallet, BookOpen, Check, Quote, Award, Bitcoin,
+  Globe, Wallet, BookOpen, Check, Quote, Award, Bitcoin, MessageCircle, X, Send,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import heroImg from "@/assets/hero-trading.jpg";
 import cityImg from "@/assets/section-city.jpg";
+import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -26,7 +28,9 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const { t } = useTranslation();
   return (
+    <>
     <SiteLayout>
       {/* Ticker tape */}
       <div className="border-b border-border bg-white">
@@ -45,22 +49,22 @@ function Home() {
         <div className="hero-overlay absolute inset-0" />
         <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:py-40">
           <Badge className="bg-brand/20 text-white ring-1 ring-brand/40 hover:bg-brand/30">
-            Trusted by 450,000+ clients
+            {t("hero.badge")}
           </Badge>
           <h1 className="mt-6 max-w-3xl font-display text-4xl font-bold leading-tight sm:text-6xl">
-            We provide professional market infrastructure.
+            {t("hero.title")}
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-white/80">
-            Access 40,000+ instruments — across asset classes — to trade, hedge and invest from a single account.
+            {t("hero.subtitle")}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">
               <Link to="/auth" search={{ tab: "register" }}>
-                Open an Account <ArrowRight className="ml-1 h-4 w-4" />
+                {t("hero.openAccount")} <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white">
-              <Link to="/markets">Explore Markets</Link>
+              <Link to="/markets">{t("hero.exploreMarkets")}</Link>
             </Button>
           </div>
         </div>
@@ -71,23 +75,20 @@ function Home() {
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:items-center">
           <div>
             <h2 className="font-display text-3xl font-bold sm:text-4xl">
-              Trade with low commissions and tight spreads.
+              {t("intro.title")}
             </h2>
-            <p className="mt-4 text-muted-foreground">
-              Balancepoint Capital provides a transparent price structure with a secure, regulated trading environment.
-              Active traders can qualify for lower fees and additional incentives as their volume grows.
-            </p>
+            <p className="mt-4 text-muted-foreground">{t("intro.desc")}</p>
             <Button asChild className="mt-6">
-              <Link to="/#packages">See our Packages</Link>
+              <Link to="/#packages">{t("intro.cta")}</Link>
             </Button>
           </div>
           <div className="grid grid-cols-3 gap-4">
-            <Stat value="~30ms" label="Execution speed" />
-            <Stat value="24/5" label="Live support" />
-            <Stat value="0.0" label="Pips spread" />
-            <Stat value="40K+" label="Instruments" />
-            <Stat value="450K+" label="Clients" />
-            <Stat value="$95B" label="AUM" />
+            <Stat value="~30ms" label={t("intro.execution")} />
+            <Stat value="24/5" label={t("intro.support")} />
+            <Stat value="0.0" label={t("intro.pips")} />
+            <Stat value="40K+" label={t("intro.instruments")} />
+            <Stat value="450K+" label={t("intro.clients")} />
+            <Stat value="$95B" label={t("intro.aum")} />
           </div>
         </div>
       </section>
@@ -96,16 +97,14 @@ function Home() {
       <section className="bg-secondary/50">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-bold sm:text-4xl">Industry-leading prices</h2>
-            <p className="mt-3 text-muted-foreground">
-              Ultra-competitive spreads and commissions across every asset class. Better rates as your volume increases.
-            </p>
+            <h2 className="font-display text-3xl font-bold sm:text-4xl">{t("assets.title")}</h2>
+            <p className="mt-3 text-muted-foreground">{t("assets.subtitle")}</p>
           </div>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <AssetCard icon={LineChart} title="FX" headline="From 0.2 pip" desc="182 spot pairs and 140 forwards spanning majors, minors, exotics and metals." />
-            <AssetCard icon={Bitcoin} title="Crypto" headline="From 0.4%" desc="Trade top-performing cryptocurrencies with timely signals and tight execution." />
-            <AssetCard icon={BarChart3} title="Stocks" headline="From $3" desc="Access 19,000+ equities on 36 global exchanges, core and emerging markets." />
-            <AssetCard icon={Building2} title="Real Estate" headline="From $100 / slot" desc="Crowdfunded real estate slots make it simple to participate at small ticket sizes." />
+            <AssetCard icon={LineChart} title="FX" headline={t("assets.fx.headline")} desc={t("assets.fx.desc")} />
+            <AssetCard icon={Bitcoin} title="Crypto" headline={t("assets.crypto.headline")} desc={t("assets.crypto.desc")} />
+            <AssetCard icon={BarChart3} title="Stocks" headline={t("assets.stocks.headline")} desc={t("assets.stocks.desc")} />
+            <AssetCard icon={Building2} title="Real Estate" headline={t("assets.realestate.headline")} desc={t("assets.realestate.desc")} />
           </div>
         </div>
       </section>
@@ -114,8 +113,8 @@ function Home() {
       <section id="packages" className="bg-background">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-bold sm:text-4xl">A package for every trader</h2>
-            <p className="mt-3 text-muted-foreground">Explore, learn and grow with portfolio tiers built for every funding size.</p>
+            <h2 className="font-display text-3xl font-bold sm:text-4xl">{t("packages.title")}</h2>
+            <p className="mt-3 text-muted-foreground">{t("packages.subtitle")}</p>
           </div>
           <Packages />
         </div>
@@ -126,18 +125,16 @@ function Home() {
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
             <div>
-              <h2 className="font-display text-3xl font-bold sm:text-4xl">Switch to Balancepoint Capital</h2>
-              <p className="mt-4 text-muted-foreground">
-                We work hard to enhance your trading experience. As a global, five-star rated broker, client satisfaction is at the centre of our focus.
-              </p>
+              <h2 className="font-display text-3xl font-bold sm:text-4xl">{t("switch.title")}</h2>
+              <p className="mt-4 text-muted-foreground">{t("switch.desc")}</p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Feature icon={Wallet} title="0% commissions" desc="Free delivery plan and brokerage-free trading in the delivery segment." />
-              <Feature icon={Smartphone} title="One app for all" desc="Track every global financial market from one mobile app." />
-              <Feature icon={Globe} title="Trade from anywhere" desc="Connect to the world's largest exchanges from any device, anywhere." />
-              <Feature icon={Coins} title="2,100+ instruments" desc="ETFs, commodities, forex and indices across international markets." />
-              <Feature icon={ShieldCheck} title="Safe & Secure" desc="Overseen by world-leading regulators including the FCA." />
-              <Feature icon={BookOpen} title="Comprehensive education" desc="An extensive video library to deepen your knowledge of trading." />
+              <Feature icon={Wallet} title={t("switch.commissions.title")} desc={t("switch.commissions.desc")} />
+              <Feature icon={Smartphone} title={t("switch.app.title")} desc={t("switch.app.desc")} />
+              <Feature icon={Globe} title={t("switch.anywhere.title")} desc={t("switch.anywhere.desc")} />
+              <Feature icon={Coins} title={t("switch.instruments.title")} desc={t("switch.instruments.desc")} />
+              <Feature icon={ShieldCheck} title={t("switch.safe.title")} desc={t("switch.safe.desc")} />
+              <Feature icon={BookOpen} title={t("switch.education.title")} desc={t("switch.education.desc")} />
             </div>
           </div>
         </div>
@@ -150,13 +147,13 @@ function Home() {
         <div className="absolute inset-0 bg-sidebar/85" />
         <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-wider text-brand">How Profit Works</p>
-            <h2 className="mt-2 font-display text-3xl font-bold sm:text-4xl">From signup to profit in three steps</h2>
+            <p className="text-sm font-semibold uppercase tracking-wider text-brand">{t("howItWorks.label")}</p>
+            <h2 className="mt-2 font-display text-3xl font-bold sm:text-4xl">{t("howItWorks.title")}</h2>
           </div>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
-            <Step n="1" title="Create Account" desc="Open an account in minutes — no paperwork, no waiting." />
-            <Step n="2" title="Choose a Plan" desc="Pick a portfolio that matches your funding size and risk appetite." />
-            <Step n="3" title="Get Profit" desc="Watch your investment grow with transparent, real-time tracking." />
+            <Step n="1" title={t("howItWorks.step1.title")} desc={t("howItWorks.step1.desc")} />
+            <Step n="2" title={t("howItWorks.step2.title")} desc={t("howItWorks.step2.desc")} />
+            <Step n="3" title={t("howItWorks.step3.title")} desc={t("howItWorks.step3.desc")} />
           </div>
         </div>
       </section>
@@ -165,8 +162,8 @@ function Home() {
       <section className="bg-background">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-bold sm:text-4xl">Customers love us</h2>
-            <p className="mt-3 text-muted-foreground">Real reviews from traders building portfolios with us.</p>
+            <h2 className="font-display text-3xl font-bold sm:text-4xl">{t("testimonials.title")}</h2>
+            <p className="mt-3 text-muted-foreground">{t("testimonials.subtitle")}</p>
           </div>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             <Testimonial name="Gabrielle Barger" role="Help Desk at Pushbullet"
@@ -182,12 +179,10 @@ function Home() {
       {/* Crypto CTA */}
       <section className="bg-secondary/50">
         <div className="mx-auto max-w-5xl px-4 py-16 text-center sm:px-6">
-          <h2 className="font-display text-3xl font-bold sm:text-4xl">We accept crypto deposits</h2>
-          <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-            Deposit, withdraw and hold your balance in Bitcoin and Ethereum.
-          </p>
+          <h2 className="font-display text-3xl font-bold sm:text-4xl">{t("crypto.title")}</h2>
+          <p className="mx-auto mt-3 max-w-xl text-muted-foreground">{t("crypto.subtitle")}</p>
           <Button asChild size="lg" className="mt-6">
-            <Link to="/auth" search={{ tab: "register" }}>Get Started</Link>
+            <Link to="/auth" search={{ tab: "register" }}>{t("crypto.cta")}</Link>
           </Button>
         </div>
       </section>
@@ -263,6 +258,9 @@ function Home() {
         </div>
       </section>
     </SiteLayout>
+    <ChatWidget />
+    <EarningToast />
+    </>
   );
 }
 
@@ -328,6 +326,7 @@ function Testimonial({ name, role, quote }: { name: string; role: string; quote:
 }
 
 function Packages() {
+  const { t } = useTranslation();
   const { data: plans } = useQuery({
     queryKey: ["plans"],
     queryFn: () => api.getPlans() as any,
@@ -338,20 +337,20 @@ function Packages() {
         <Card key={p.id} className={i === 1 ? "border-brand shadow-lg" : "border-border"}>
           <CardContent className="p-6">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Minimum funding ${Number(p.minDeposit ?? p.min_deposit).toLocaleString()}
+              {t("packages.minFunding")} ${Number(p.minDeposit ?? p.min_deposit).toLocaleString()}
             </p>
             <h3 className="mt-2 font-display text-xl font-bold">{p.name}</h3>
             <p className="mt-1 text-sm text-muted-foreground">{p.tagline}</p>
             <p className="mt-5 font-display text-3xl font-bold text-brand">{p.roiPercent ?? p.roi_percent}%</p>
-            <p className="text-xs uppercase text-muted-foreground">Return on investment</p>
+            <p className="text-xs uppercase text-muted-foreground">{t("packages.roi")}</p>
             <ul className="mt-5 space-y-2 text-sm">
-              <Li>Min deposit: ${Number(p.minDeposit ?? p.min_deposit).toLocaleString()}</Li>
-              <Li>Max deposit: ${Number(p.maxDeposit ?? p.max_deposit).toLocaleString()}</Li>
-              <Li>Referral bonus: {p.referralPercent ?? p.referral_percent}%</Li>
-              <Li>Duration: {p.durationDays ?? p.duration_days} days</Li>
+              <Li>{t("packages.minDeposit")}: ${Number(p.minDeposit ?? p.min_deposit).toLocaleString()}</Li>
+              <Li>{t("packages.maxDeposit")}: ${Number(p.maxDeposit ?? p.max_deposit).toLocaleString()}</Li>
+              <Li>{t("packages.referralBonus")}: {p.referralPercent ?? p.referral_percent}%</Li>
+              <Li>{t("packages.duration").replace("days", "")} {p.durationDays ?? p.duration_days} {t("packages.duration")}</Li>
             </ul>
             <Button asChild className="mt-6 w-full">
-              <Link to="/auth" search={{ tab: "register" }}>Open Account</Link>
+              <Link to="/auth" search={{ tab: "register" }}>{t("packages.openAccount")}</Link>
             </Button>
           </CardContent>
         </Card>
@@ -370,6 +369,7 @@ function Li({ children }: { children: React.ReactNode }) {
 }
 
 function Ledger() {
+  const { t } = useTranslation();
   const { data } = useQuery({
     queryKey: ["ledger"],
     queryFn: () => api.getLedger() as any,
@@ -379,14 +379,157 @@ function Ledger() {
   return (
     <section className="border-t border-border bg-background">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2">
-        <LedgerTable title="Latest Deposits" rows={deposits} accent="text-success" />
-        <LedgerTable title="Latest Withdrawals" rows={withdrawals} accent="text-brand" />
+        <LedgerTable title={t("ledger.deposits")} rows={deposits} accent="text-success" />
+        <LedgerTable title={t("ledger.withdrawals")} rows={withdrawals} accent="text-brand" />
       </div>
     </section>
   );
 }
 
+const EARNING_NOTIFICATIONS = [
+  { name: "James", country: "UNITED STATES", amount: 3850 },
+  { name: "Maria", country: "GERMANY", amount: 2200 },
+  { name: "Carlos", country: "SPAIN", amount: 1750 },
+  { name: "Sophie", country: "FRANCE", amount: 4100 },
+  { name: "Liam", country: "CANADA", amount: 2980 },
+  { name: "Priya", country: "INDIA", amount: 3300 },
+  { name: "Hiroshi", country: "JAPAN", amount: 1620 },
+  { name: "Elena", country: "UKRAINE", amount: 2450 },
+  { name: "Lucas", country: "BRAZIL", amount: 1900 },
+  { name: "Olivia", country: "AUSTRALIA", amount: 5200 },
+  { name: "Andrei", country: "ROMANIA", amount: 1340 },
+  { name: "Wei", country: "SINGAPORE", amount: 3750 },
+];
+
+function EarningToast() {
+  const [visible, setVisible] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const show = () => {
+      setCurrent((c) => (c + 1) % EARNING_NOTIFICATIONS.length);
+      setVisible(true);
+      timerRef.current = setTimeout(() => {
+        setVisible(false);
+        timerRef.current = setTimeout(show, 6000);
+      }, 4000);
+    };
+    timerRef.current = setTimeout(show, 3000);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, []);
+
+  const n = EARNING_NOTIFICATIONS[current];
+  return (
+    <div
+      className={`fixed bottom-24 left-4 z-50 flex items-center gap-3 rounded-xl border border-yellow-500/30 bg-gray-900 px-4 py-3 shadow-2xl transition-all duration-500 ${
+        visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0 pointer-events-none"
+      }`}
+      style={{ minWidth: 260 }}
+    >
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-yellow-500/20">
+        <Bitcoin className="h-5 w-5 text-yellow-400" />
+      </div>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wide text-yellow-400">Earning</p>
+        <p className="text-sm text-white">
+          <span className="font-semibold">{n.name}</span> from{" "}
+          <span className="font-semibold">{n.country}</span> has just Earned{" "}
+          <span className="font-bold text-yellow-400">${n.amount.toLocaleString()}</span>.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function ChatWidget() {
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [sent, setSent] = useState(false);
+
+  const handleSend = () => {
+    if (!message.trim()) return;
+    setSent(true);
+    setMessage("");
+  };
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+      {open && (
+        <div className="mb-2 w-80 overflow-hidden rounded-2xl border border-border bg-white shadow-2xl">
+          <div className="flex items-center justify-between bg-brand px-4 py-3">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+                <MessageCircle className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white">Balancepoint Guy</p>
+                <p className="text-xs text-white/70">Typically replies instantly</p>
+              </div>
+            </div>
+            <button onClick={() => setOpen(false)} className="text-white/70 hover:text-white">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="p-4">
+            {!sent ? (
+              <>
+                <div className="rounded-xl bg-gray-100 p-3 text-sm text-gray-700">
+                  Welcome to our website! 👋 Whether you have a specific question or need
+                  assistance, we&apos;re here for you. 😊 What would you like to know?
+                </div>
+                <div className="mt-4 flex gap-2">
+                  <input
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                    placeholder="Type a message..."
+                    className="flex-1 rounded-full border border-border bg-gray-50 px-4 py-2 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+                  />
+                  <button
+                    onClick={handleSend}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-white hover:bg-brand/90"
+                  >
+                    <Send className="h-4 w-4" />
+                  </button>
+                </div>
+                <Button
+                  className="mt-3 w-full gap-2"
+                  onClick={handleSend}
+                >
+                  <Send className="h-4 w-4" /> Let's chat
+                </Button>
+              </>
+            ) : (
+              <div className="py-4 text-center">
+                <p className="text-sm text-gray-600">
+                  Thanks for reaching out! Our support team will get back to you shortly.
+                </p>
+                <Button variant="outline" className="mt-4" onClick={() => { setSent(false); setOpen(false); }}>
+                  Close
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-brand text-white shadow-lg hover:bg-brand/90 transition-transform hover:scale-105"
+      >
+        {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+        {!open && (
+          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+            1
+          </span>
+        )}
+      </button>
+    </div>
+  );
+}
+
 function LedgerTable({ title, rows, accent }: { title: string; rows: any[]; accent: string }) {
+  const { t } = useTranslation();
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card">
       <div className="border-b border-border p-5">
@@ -396,10 +539,10 @@ function LedgerTable({ title, rows, accent }: { title: string; rows: any[]; acce
         <table className="w-full text-sm">
           <thead className="bg-secondary/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
             <tr>
-              <th className="px-5 py-3">Gateway</th>
-              <th className="px-5 py-3">Name</th>
-              <th className="px-5 py-3">Amount</th>
-              <th className="px-5 py-3">Time</th>
+              <th className="px-5 py-3">{t("ledger.gateway")}</th>
+              <th className="px-5 py-3">{t("ledger.name")}</th>
+              <th className="px-5 py-3">{t("ledger.amount")}</th>
+              <th className="px-5 py-3">{t("ledger.time")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">

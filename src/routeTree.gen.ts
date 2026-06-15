@@ -37,6 +37,7 @@ import { Route as AuthenticatedDashboardSecurityRouteImport } from './routes/_au
 import { Route as AuthenticatedDashboardReferralsRouteImport } from './routes/_authenticated/dashboard.referrals'
 import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard.profile'
 import { Route as AuthenticatedDashboardMyInvestmentsRouteImport } from './routes/_authenticated/dashboard.my-investments'
+import { Route as AuthenticatedDashboardLinkWalletRouteImport } from './routes/_authenticated/dashboard.link-wallet'
 import { Route as AuthenticatedDashboardKycRouteImport } from './routes/_authenticated/dashboard.kyc'
 import { Route as AuthenticatedDashboardInvestRouteImport } from './routes/_authenticated/dashboard.invest'
 import { Route as AuthenticatedDashboardDepositRouteImport } from './routes/_authenticated/dashboard.deposit'
@@ -191,6 +192,12 @@ const AuthenticatedDashboardMyInvestmentsRoute =
     path: '/my-investments',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardLinkWalletRoute =
+  AuthenticatedDashboardLinkWalletRouteImport.update({
+    id: '/link-wallet',
+    path: '/link-wallet',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardKycRoute =
   AuthenticatedDashboardKycRouteImport.update({
     id: '/kyc',
@@ -238,6 +245,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/deposit': typeof AuthenticatedDashboardDepositRoute
   '/dashboard/invest': typeof AuthenticatedDashboardInvestRoute
   '/dashboard/kyc': typeof AuthenticatedDashboardKycRoute
+  '/dashboard/link-wallet': typeof AuthenticatedDashboardLinkWalletRoute
   '/dashboard/my-investments': typeof AuthenticatedDashboardMyInvestmentsRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
@@ -269,6 +277,7 @@ export interface FileRoutesByTo {
   '/dashboard/deposit': typeof AuthenticatedDashboardDepositRoute
   '/dashboard/invest': typeof AuthenticatedDashboardInvestRoute
   '/dashboard/kyc': typeof AuthenticatedDashboardKycRoute
+  '/dashboard/link-wallet': typeof AuthenticatedDashboardLinkWalletRoute
   '/dashboard/my-investments': typeof AuthenticatedDashboardMyInvestmentsRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
@@ -304,6 +313,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/deposit': typeof AuthenticatedDashboardDepositRoute
   '/_authenticated/dashboard/invest': typeof AuthenticatedDashboardInvestRoute
   '/_authenticated/dashboard/kyc': typeof AuthenticatedDashboardKycRoute
+  '/_authenticated/dashboard/link-wallet': typeof AuthenticatedDashboardLinkWalletRoute
   '/_authenticated/dashboard/my-investments': typeof AuthenticatedDashboardMyInvestmentsRoute
   '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/_authenticated/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
@@ -339,6 +349,7 @@ export interface FileRouteTypes {
     | '/dashboard/deposit'
     | '/dashboard/invest'
     | '/dashboard/kyc'
+    | '/dashboard/link-wallet'
     | '/dashboard/my-investments'
     | '/dashboard/profile'
     | '/dashboard/referrals'
@@ -370,6 +381,7 @@ export interface FileRouteTypes {
     | '/dashboard/deposit'
     | '/dashboard/invest'
     | '/dashboard/kyc'
+    | '/dashboard/link-wallet'
     | '/dashboard/my-investments'
     | '/dashboard/profile'
     | '/dashboard/referrals'
@@ -404,6 +416,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/deposit'
     | '/_authenticated/dashboard/invest'
     | '/_authenticated/dashboard/kyc'
+    | '/_authenticated/dashboard/link-wallet'
     | '/_authenticated/dashboard/my-investments'
     | '/_authenticated/dashboard/profile'
     | '/_authenticated/dashboard/referrals'
@@ -623,6 +636,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardMyInvestmentsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/link-wallet': {
+      id: '/_authenticated/dashboard/link-wallet'
+      path: '/link-wallet'
+      fullPath: '/dashboard/link-wallet'
+      preLoaderRoute: typeof AuthenticatedDashboardLinkWalletRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/kyc': {
       id: '/_authenticated/dashboard/kyc'
       path: '/kyc'
@@ -659,6 +679,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardDepositRoute: typeof AuthenticatedDashboardDepositRoute
   AuthenticatedDashboardInvestRoute: typeof AuthenticatedDashboardInvestRoute
   AuthenticatedDashboardKycRoute: typeof AuthenticatedDashboardKycRoute
+  AuthenticatedDashboardLinkWalletRoute: typeof AuthenticatedDashboardLinkWalletRoute
   AuthenticatedDashboardMyInvestmentsRoute: typeof AuthenticatedDashboardMyInvestmentsRoute
   AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
   AuthenticatedDashboardReferralsRoute: typeof AuthenticatedDashboardReferralsRoute
@@ -677,6 +698,8 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardDepositRoute: AuthenticatedDashboardDepositRoute,
     AuthenticatedDashboardInvestRoute: AuthenticatedDashboardInvestRoute,
     AuthenticatedDashboardKycRoute: AuthenticatedDashboardKycRoute,
+    AuthenticatedDashboardLinkWalletRoute:
+      AuthenticatedDashboardLinkWalletRoute,
     AuthenticatedDashboardMyInvestmentsRoute:
       AuthenticatedDashboardMyInvestmentsRoute,
     AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,

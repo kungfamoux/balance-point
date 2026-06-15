@@ -2,8 +2,10 @@ import { Link, useRouterState, useNavigate, Outlet } from "@tanstack/react-route
 import {
   LayoutDashboard, ArrowDownCircle, ArrowUpCircle, PiggyBank, Briefcase,
   Receipt, Users, Copy, CandlestickChart, ShieldCheck, LifeBuoy, UserCircle,
-  Lock, Settings, LogOut, Bell, Wallet,
+  Lock, Settings, LogOut, Bell, Wallet, Link2, Sun, Moon, Languages,
 } from "lucide-react";
+import { useTheme, useLang, LANGUAGES } from "@/lib/theme";
+import { useTranslation } from "react-i18next";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger,
@@ -20,25 +22,26 @@ import { signOut } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 
-const main = [
-  { to: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
-  { to: "/dashboard/deposit", label: "Deposit", icon: ArrowDownCircle },
-  { to: "/dashboard/withdraw", label: "Withdraw", icon: ArrowUpCircle },
-  { to: "/dashboard/invest", label: "Plans", icon: PiggyBank },
-  { to: "/dashboard/my-investments", label: "My Investments", icon: Briefcase },
-  { to: "/dashboard/transactions", label: "Transactions", icon: Receipt },
-  { to: "/dashboard/trade", label: "Trade", icon: CandlestickChart },
+const MAIN_ITEMS = [
+  { to: "/dashboard", key: "dashboard.sidebar.overview", icon: LayoutDashboard, exact: true },
+  { to: "/dashboard/deposit", key: "dashboard.sidebar.deposit", icon: ArrowDownCircle },
+  { to: "/dashboard/link-wallet", key: "dashboard.sidebar.linkWallet", icon: Link2 },
+  { to: "/dashboard/withdraw", key: "dashboard.sidebar.withdraw", icon: ArrowUpCircle },
+  { to: "/dashboard/invest", key: "dashboard.sidebar.plans", icon: PiggyBank },
+  { to: "/dashboard/my-investments", key: "dashboard.sidebar.myInvestments", icon: Briefcase },
+  { to: "/dashboard/transactions", key: "dashboard.sidebar.transactions", icon: Receipt },
+  { to: "/dashboard/trade", key: "dashboard.sidebar.trade", icon: CandlestickChart },
 ];
-const trade = [
-  { to: "/dashboard/copytrade", label: "Copytrade", icon: Copy },
-  { to: "/dashboard/referrals", label: "Referrals", icon: Users },
+const TRADE_ITEMS = [
+  { to: "/dashboard/copytrade", key: "dashboard.sidebar.copytrade", icon: Copy },
+  { to: "/dashboard/referrals", key: "dashboard.sidebar.referrals", icon: Users },
 ];
-const account = [
-  { to: "/dashboard/profile", label: "Profile", icon: UserCircle },
-  { to: "/dashboard/kyc", label: "KYC", icon: ShieldCheck },
-  { to: "/dashboard/security", label: "Security", icon: Lock },
-  { to: "/dashboard/settings", label: "Settings", icon: Settings },
-  { to: "/dashboard/support", label: "Support", icon: LifeBuoy },
+const ACCOUNT_ITEMS = [
+  { to: "/dashboard/profile", key: "dashboard.sidebar.profile", icon: UserCircle },
+  { to: "/dashboard/kyc", key: "dashboard.sidebar.kyc", icon: ShieldCheck },
+  { to: "/dashboard/security", key: "dashboard.sidebar.security", icon: Lock },
+  { to: "/dashboard/settings", key: "dashboard.sidebar.settings", icon: Settings },
+  { to: "/dashboard/support", key: "dashboard.sidebar.support", icon: LifeBuoy },
 ];
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -64,6 +67,7 @@ export function DashboardOutlet() {
 }
 
 function AppSidebar() {
+  const { t } = useTranslation();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
@@ -81,15 +85,16 @@ function AppSidebar() {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <Group label="Main" items={main} isActive={isActive} />
-        <Group label="Trading" items={trade} isActive={isActive} />
-        <Group label="Account" items={account} isActive={isActive} />
+        <Group label={t("dashboard.sidebar.main")} items={MAIN_ITEMS} isActive={isActive} />
+        <Group label={t("dashboard.sidebar.trading")} items={TRADE_ITEMS} isActive={isActive} />
+        <Group label={t("dashboard.sidebar.account")} items={ACCOUNT_ITEMS} isActive={isActive} />
       </SidebarContent>
     </Sidebar>
   );
 }
 
 function Group({ label, items, isActive }: any) {
+  const { t } = useTranslation();
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{label}</SidebarGroupLabel>
@@ -100,7 +105,7 @@ function Group({ label, items, isActive }: any) {
               <SidebarMenuButton asChild isActive={isActive(i.to, i.exact)}>
                 <Link to={i.to} className="flex items-center gap-2">
                   <i.icon className="h-4 w-4" />
-                  <span>{i.label}</span>
+                  <span>{t(i.key)}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -112,7 +117,12 @@ function Group({ label, items, isActive }: any) {
 }
 
 function Topbar() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const { theme, toggle } = useTheme();
+  const { lang, setLang } = useLang();
+  const currentLang = LANGUAGES.find((l) => l.id === lang)!;
+
   const { data: profile } = useQuery({
     queryKey: ["me"],
     queryFn: async () => {
@@ -128,15 +138,61 @@ function Topbar() {
     .join("");
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-border bg-background px-4 sm:px-6">
+    <header className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-border bg-background px-4 sm:px-6">
       <SidebarTrigger />
-      <div className="ml-auto flex items-center gap-3">
+      <div className="ml-auto flex items-center gap-2">
+        {/* Balance */}
         <div className="hidden items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 py-1.5 text-sm sm:flex">
           <Wallet className="h-4 w-4 text-brand" />
           <span className="font-semibold">${Number(profile?.wallet?.balance ?? 0).toLocaleString()}</span>
-          <span className="text-muted-foreground">balance</span>
+          <span className="text-muted-foreground">{t("dashboard.topbar.balance")}</span>
         </div>
-        <Button variant="ghost" size="icon"><Bell className="h-4 w-4" /></Button>
+
+        {/* Dark / Light toggle */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggle}
+          title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          className="rounded-full"
+        >
+          {theme === "dark"
+            ? <Sun className="h-4 w-4 text-yellow-400" />
+            : <Moon className="h-4 w-4" />}
+        </Button>
+
+        {/* Language switcher */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="rounded-full" title="Change language">
+              <span className="text-base leading-none">{currentLang.flag}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuLabel className="flex items-center gap-2 text-xs">
+              <Languages className="h-3.5 w-3.5" /> Language
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {LANGUAGES.map((l) => (
+              <DropdownMenuItem
+                key={l.id}
+                onClick={() => setLang(l.id)}
+                className={`flex items-center gap-2 ${lang === l.id ? "font-semibold text-brand" : ""}`}
+              >
+                <span className="text-base">{l.flag}</span>
+                {l.label}
+                {lang === l.id && <span className="ml-auto text-brand">✓</span>}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Notifications */}
+        <Button variant="ghost" size="icon" className="rounded-full">
+          <Bell className="h-4 w-4" />
+        </Button>
+
+        {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-full p-1 hover:bg-accent">
@@ -160,7 +216,7 @@ function Topbar() {
                 navigate({ to: "/" });
               }}
             >
-              <LogOut className="mr-2 h-4 w-4" /> Sign out
+              <LogOut className="mr-2 h-4 w-4" /> {t("dashboard.topbar.signOut")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
