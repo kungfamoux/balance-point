@@ -76,6 +76,17 @@ export const adminApi = {
   closeTicket: (id: string) =>
     req<any>(`/api/admin/tickets/${id}/close`, { method: "PATCH" }),
 
+  getSessions: () => req<any[]>("/api/admin/sessions"),
+  createSession: (body: object) =>
+    req<any>("/api/admin/sessions", { method: "POST", body: JSON.stringify(body) }),
+  updateSession: (id: string, body: object) =>
+    req<any>(`/api/admin/sessions/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+  deleteSession: (id: string) =>
+    fetch(`${API_URL}/api/admin/sessions/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${getAdminToken()}` },
+    }),
+
   getLedger: () => req<any[]>("/api/admin/ledger"),
   createLedgerEntry: (body: object) =>
     req<any>("/api/admin/ledger", { method: "POST", body: JSON.stringify(body) }),

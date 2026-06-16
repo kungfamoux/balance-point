@@ -15,6 +15,7 @@ import copytradingRouter from "./routes/copytrading";
 import ticketsRouter from "./routes/tickets";
 import ledgerRouter from "./routes/ledger";
 import adminRouter from "./routes/admin";
+import sessionsRouter from "./routes/sessions";
 
 const app = express();
 const PORT = process.env.PORT ?? 4000;
@@ -96,6 +97,7 @@ app.use("/api/referrals", referralsRouter);
 app.use("/api/copytrading", copytradingRouter);
 app.use("/api/tickets", ticketsRouter);
 app.use("/api/ledger", ledgerRouter);
+app.use("/api/sessions", sessionsRouter);
 app.use("/api/admin", adminRouter);
 
 // ── 404 handler ───────────────────────────────────────────────────────────

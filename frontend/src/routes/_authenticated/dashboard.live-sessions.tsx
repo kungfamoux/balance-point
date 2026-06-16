@@ -3,10 +3,12 @@ import { PageHeader } from "@/components/dashboard/DashboardShell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { useState, useEffect } from "react";
 import {
   Radio, Calendar, Clock, Users, Play, Lock,
-  TrendingUp, Globe, Video, Bell, BellOff,
+  Video, Bell, BellOff, X, Loader2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard/live-sessions")({
@@ -15,144 +17,31 @@ export const Route = createFileRoute("/_authenticated/dashboard/live-sessions")(
 
 type SessionStatus = "live" | "upcoming" | "completed";
 
-interface Session {
-  id: number;
-  title: string;
-  host: string;
-  role: string;
-  avatar: string;
-  status: SessionStatus;
-  date: string;
-  time: string;
-  duration: string;
-  viewers?: number;
-  topic: string;
-  tags: string[];
-  premium: boolean;
-}
-
-const SESSIONS: Session[] = [
-  {
-    id: 1,
-    title: "BTC/USD Weekly Market Outlook",
-    host: "James Whitfield",
-    role: "Senior Analyst",
-    avatar: "JW",
-    status: "live",
-    date: "Today",
-    time: "Now",
-    duration: "60 min",
-    viewers: 312,
-    topic: "We break down this week's Bitcoin price action, key support/resistance levels and where BTC is likely headed next.",
-    tags: ["BTC", "Crypto", "Technical Analysis"],
-    premium: false,
-  },
-  {
-    id: 2,
-    title: "Forex Scalping Masterclass",
-    host: "Amara Osei",
-    role: "FX Trader",
-    avatar: "AO",
-    status: "live",
-    date: "Today",
-    time: "Now",
-    duration: "45 min",
-    viewers: 187,
-    topic: "Learn how to scalp EUR/USD and GBP/USD with precision entries using M5 & M15 charts.",
-    tags: ["EUR/USD", "GBP/USD", "Forex", "Scalping"],
-    premium: false,
-  },
-  {
-    id: 3,
-    title: "Institutional Order Flow: Gold & Oil",
-    host: "Victor Mensah",
-    role: "Commodities Lead",
-    avatar: "VM",
-    status: "upcoming",
-    date: "Today",
-    time: "3:00 PM UTC",
-    duration: "75 min",
-    topic: "Deep dive into how institutional players drive commodity prices and how to trade alongside them.",
-    tags: ["GOLD", "OIL", "Order Flow", "Commodities"],
-    premium: false,
-  },
-  {
-    id: 4,
-    title: "Premium: S&P 500 Swing Trade Setup",
-    host: "Sarah Chen",
-    role: "Equity Strategist",
-    avatar: "SC",
-    status: "upcoming",
-    date: "Tomorrow",
-    time: "10:00 AM UTC",
-    duration: "90 min",
-    topic: "Exclusive premium session covering our high-probability swing trade setups for the S&P 500 and NASDAQ.",
-    tags: ["S&P500", "NASDAQ", "Stocks", "Swing Trading"],
-    premium: true,
-  },
-  {
-    id: 5,
-    title: "Risk Management & Position Sizing",
-    host: "James Whitfield",
-    role: "Senior Analyst",
-    avatar: "JW",
-    status: "upcoming",
-    date: "Wed, Jun 18",
-    time: "2:00 PM UTC",
-    duration: "60 min",
-    topic: "Master the art of managing risk, calculating position sizes and protecting your capital during volatile markets.",
-    tags: ["Risk Management", "Education"],
-    premium: false,
-  },
-  {
-    id: 6,
-    title: "Altcoin Season: Top 5 Picks",
-    host: "Amara Osei",
-    role: "FX Trader",
-    avatar: "AO",
-    status: "completed",
-    date: "Yesterday",
-    time: "1:00 PM UTC",
-    duration: "55 min",
-    topic: "A recap of the five altcoins our analysts identified with strong upside potential heading into this cycle.",
-    tags: ["Altcoins", "Crypto", "Analysis"],
-    premium: false,
-  },
-  {
-    id: 7,
-    title: "Psychology of Trading",
-    host: "Victor Mensah",
-    role: "Commodities Lead",
-    avatar: "VM",
-    status: "completed",
-    date: "Jun 14",
-    time: "11:00 AM UTC",
-    duration: "50 min",
-    topic: "Overcoming FOMO, revenge trading and emotional biases that cost traders money.",
-    tags: ["Psychology", "Education"],
-    premium: false,
-  },
-];
-
 const TABS: { label: string; value: SessionStatus | "all" }[] = [
-  { label: "All", value: "all" },
-  { label: "Live Now", value: "live" },
-  { label: "Upcoming", value: "upcoming" },
+  { label: "All",       value: "all" },
+  { label: "Live Now",  value: "live" },
+  { label: "Upcoming",  value: "upcoming" },
   { label: "Completed", value: "completed" },
 ];
 
 function LiveSessions() {
   const [tab, setTab] = useState<SessionStatus | "all">("all");
-  const [reminded, setReminded] = useState<Set<number>>(new Set());
+  const [reminded, setReminded] = useState<Set<string>>(new Set());
+  const [watching, setWatching] = useState<any | null>(null);
 
-  const filtered = tab === "all" ? SESSIONS : SESSIONS.filter((s) => s.status === tab);
-  const liveCount = SESSIONS.filter((s) => s.status === "live").length;
+  const { data: sessions = [], isLoading } = useQuery({
+    queryKey: ["live-sessions"],
+    queryFn: () => api.getSessions() as Promise<any[]>,
+    refetchInterval: 60_000,
+  });
 
-  function toggleReminder(id: number) {
+  const filtered = tab === "all" ? sessions : sessions.filter((s) => s.status === tab);
+  const liveCount = sessions.filter((s) => s.status === "live").length;
+
+  function toggleReminder(id: string) {
     setReminded((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
   }
@@ -164,7 +53,31 @@ function LiveSessions() {
         description="Join live trading sessions and webinars hosted by our expert analysts."
       />
 
-      {/* Live indicator banner */}
+      {/* Embed modal */}
+      {watching && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+          <div className="relative w-full max-w-4xl">
+            <button
+              onClick={() => setWatching(null)}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 flex items-center gap-1 text-sm"
+            >
+              <X className="h-4 w-4" /> Close
+            </button>
+            <div className="rounded-xl overflow-hidden aspect-video w-full bg-black">
+              <iframe
+                src={watching.embedUrl}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+            <p className="text-white text-sm mt-3 font-semibold">{watching.title}</p>
+            <p className="text-gray-400 text-xs mt-0.5">{watching.host} · {watching.role}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Live banner */}
       {liveCount > 0 && (
         <div className="mb-5 flex items-center gap-3 rounded-xl bg-red-500/10 border border-red-500/30 px-4 py-3">
           <span className="relative flex h-3 w-3">
@@ -184,9 +97,7 @@ function LiveSessions() {
             key={t.value}
             onClick={() => setTab(t.value)}
             className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
-              tab === t.value
-                ? "bg-brand text-white"
-                : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+              tab === t.value ? "bg-brand text-white" : "bg-secondary text-muted-foreground hover:bg-secondary/80"
             }`}
           >
             {t.label}
@@ -199,37 +110,55 @@ function LiveSessions() {
         ))}
       </div>
 
-      {/* Sessions */}
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {filtered.map((session) => (
-          <SessionCard
-            key={session.id}
-            session={session}
-            reminded={reminded.has(session.id)}
-            onToggleReminder={() => toggleReminder(session.id)}
-          />
-        ))}
-        {filtered.length === 0 && (
-          <p className="col-span-full text-center py-16 text-muted-foreground">No sessions in this category.</p>
-        )}
-      </div>
+      {/* Content */}
+      {isLoading ? (
+        <div className="flex justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center text-muted-foreground">
+          <Video className="h-10 w-10 mb-3 opacity-30" />
+          <p className="font-medium">No sessions yet</p>
+          <p className="text-sm mt-1">Check back soon for upcoming live sessions.</p>
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((session) => (
+            <SessionCard
+              key={session.id}
+              session={session}
+              reminded={reminded.has(session.id)}
+              onToggleReminder={() => toggleReminder(session.id)}
+              onWatch={() => setWatching(session)}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 }
 
-function SessionCard({ session, reminded, onToggleReminder }: {
-  session: Session; reminded: boolean; onToggleReminder: () => void;
+function SessionCard({ session, reminded, onToggleReminder, onWatch }: {
+  session: any;
+  reminded: boolean;
+  onToggleReminder: () => void;
+  onWatch: () => void;
 }) {
+  const status: SessionStatus = session.status;
+  const scheduledAt = new Date(session.scheduledAt);
+
   const statusConfig = {
-    live: { label: "LIVE", color: "bg-red-600", dot: true },
-    upcoming: { label: "Upcoming", color: "bg-blue-600", dot: false },
+    live:      { label: "LIVE",      color: "bg-red-600",  dot: true },
+    upcoming:  { label: "Upcoming",  color: "bg-blue-600", dot: false },
     completed: { label: "Completed", color: "bg-gray-500", dot: false },
-  }[session.status];
+  }[status];
+
+  const canWatch = (status === "live" || status === "completed") && session.embedUrl;
 
   return (
-    <Card className={`border-border hover:shadow-md transition-shadow ${session.status === "live" ? "ring-1 ring-red-500/30" : ""}`}>
-      <CardContent className="p-5 flex flex-col gap-4">
-        {/* Header */}
+    <Card className={`border-border hover:shadow-md transition-shadow flex flex-col ${status === "live" ? "ring-1 ring-red-500/30" : ""}`}>
+      <CardContent className="p-5 flex flex-col gap-4 flex-1">
+        {/* Status badges */}
         <div className="flex items-start justify-between gap-2">
           <Badge className={`${statusConfig.color} text-white text-xs gap-1.5 shrink-0`}>
             {statusConfig.dot && (
@@ -238,33 +167,35 @@ function SessionCard({ session, reminded, onToggleReminder }: {
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
               </span>
             )}
-            {session.status === "live" ? <Radio className="h-3 w-3" /> : session.status === "upcoming" ? <Calendar className="h-3 w-3" /> : <Video className="h-3 w-3" />}
+            {status === "live" ? <Radio className="h-3 w-3" /> : status === "upcoming" ? <Calendar className="h-3 w-3" /> : <Video className="h-3 w-3" />}
             {statusConfig.label}
           </Badge>
           {session.premium && (
-            <Badge className="bg-yellow-500 text-white text-xs gap-1">
+            <Badge className="bg-yellow-500 text-white text-xs gap-1 shrink-0">
               <Lock className="h-3 w-3" /> Premium
             </Badge>
           )}
         </div>
 
-        {/* Title */}
+        {/* Title & topic */}
         <div>
           <h3 className="font-semibold text-base leading-snug">{session.title}</h3>
           <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{session.topic}</p>
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5">
-          {session.tags.map((tag) => (
-            <span key={tag} className="rounded-full bg-secondary px-2.5 py-0.5 text-xs text-muted-foreground">{tag}</span>
-          ))}
-        </div>
+        {session.tags?.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {session.tags.map((tag: string) => (
+              <span key={tag} className="rounded-full bg-secondary px-2.5 py-0.5 text-xs text-muted-foreground">{tag}</span>
+            ))}
+          </div>
+        )}
 
         {/* Host */}
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand text-white text-xs font-bold shrink-0">
-            {session.avatar}
+            {session.avatarLabel}
           </div>
           <div>
             <p className="text-sm font-medium">{session.host}</p>
@@ -272,43 +203,77 @@ function SessionCard({ session, reminded, onToggleReminder }: {
           </div>
         </div>
 
-        {/* Meta */}
-        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> {session.date}</span>
-          <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {session.time}</span>
-          {session.viewers != null && (
+        {/* Date / time / viewers */}
+        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <Calendar className="h-3.5 w-3.5" />
+            {scheduledAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock className="h-3.5 w-3.5" />
+            {scheduledAt.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })} UTC
+          </span>
+          {status === "live" && (
             <span className="flex items-center gap-1 text-red-500 font-medium">
-              <Users className="h-3.5 w-3.5" /> {session.viewers.toLocaleString()} watching
+              <Users className="h-3.5 w-3.5" /> Live
             </span>
           )}
+          {status === "upcoming" && <Countdown target={scheduledAt} />}
         </div>
 
         {/* CTA */}
         <div className="mt-auto pt-1">
-          {session.status === "live" && (
-            <Button className="w-full gap-2 bg-red-600 hover:bg-red-700 text-white">
-              <Play className="h-4 w-4" /> Join Live Session
+          {status === "live" && (
+            <Button
+              className="w-full gap-2 bg-red-600 hover:bg-red-700 text-white"
+              onClick={canWatch ? onWatch : undefined}
+              disabled={!canWatch}
+            >
+              <Play className="h-4 w-4" />
+              {canWatch ? "Join Live Session" : "Starting Soon…"}
             </Button>
           )}
-          {session.status === "upcoming" && (
+          {status === "upcoming" && (
+            <Button variant="outline" className="w-full gap-2" onClick={onToggleReminder}>
+              {reminded ? <><BellOff className="h-4 w-4" /> Remove Reminder</> : <><Bell className="h-4 w-4" /> Set Reminder</>}
+            </Button>
+          )}
+          {status === "completed" && (
             <Button
               variant="outline"
               className="w-full gap-2"
-              onClick={onToggleReminder}
+              onClick={canWatch ? onWatch : undefined}
+              disabled={!canWatch}
             >
-              {reminded
-                ? <><BellOff className="h-4 w-4" /> Remove Reminder</>
-                : <><Bell className="h-4 w-4" /> Set Reminder</>
-              }
-            </Button>
-          )}
-          {session.status === "completed" && (
-            <Button variant="outline" className="w-full gap-2" disabled>
-              <Video className="h-4 w-4" /> Recording Coming Soon
+              <Video className="h-4 w-4" />
+              {canWatch ? "Watch Recording" : "Recording Coming Soon"}
             </Button>
           )}
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function Countdown({ target }: { target: Date }) {
+  const [diff, setDiff] = useState(() => Math.max(0, target.getTime() - Date.now()));
+
+  useEffect(() => {
+    const id = setInterval(() => setDiff(Math.max(0, target.getTime() - Date.now())), 1000);
+    return () => clearInterval(id);
+  }, [target]);
+
+  if (diff <= 0) return <span className="text-red-500 font-medium">Starting now</span>;
+
+  const d = Math.floor(diff / 86_400_000);
+  const h = Math.floor((diff % 86_400_000) / 3_600_000);
+  const m = Math.floor((diff % 3_600_000) / 60_000);
+  const s = Math.floor((diff % 60_000) / 1_000);
+
+  return (
+    <span className="flex items-center gap-1 text-brand font-medium">
+      <Clock className="h-3.5 w-3.5" />
+      {d > 0 ? `${d}d ` : ""}{String(h).padStart(2, "0")}:{String(m).padStart(2, "0")}:{String(s).padStart(2, "0")}
+    </span>
   );
 }

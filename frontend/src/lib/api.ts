@@ -64,4 +64,7 @@ export const api = {
 
   // Public ledger
   getLedger: () => request("/api/ledger"),
+
+  // Live sessions
+  getSessions: () => request("/api/sessions"),
 };

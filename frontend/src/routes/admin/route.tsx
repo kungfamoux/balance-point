@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, redirect, Link, useRouter } from "@tanstack/re
 import { getAdminToken, clearAdminToken } from "@/lib/adminApi";
 import {
   LayoutDashboard, Users, ArrowLeftRight, TrendingUp, Ticket,
-  BookOpen, BarChart3, LogOut, ChevronRight,
+  BookOpen, BarChart3, LogOut, ChevronRight, Video,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +23,7 @@ const NAV = [
   { to: "/admin/investments", label: "Investments", icon: TrendingUp },
   { to: "/admin/plans", label: "Plans", icon: BarChart3 },
   { to: "/admin/tickets", label: "Tickets", icon: Ticket },
+  { to: "/admin/sessions", label: "Live Sessions", icon: Video },
   { to: "/admin/ledger", label: "Ledger", icon: BookOpen },
 ];
 

@@ -31,6 +31,7 @@ import { Route as CompanyAboutRouteImport } from './routes/company.about'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminTransactionsRouteImport } from './routes/admin/transactions'
 import { Route as AdminTicketsRouteImport } from './routes/admin/tickets'
+import { Route as AdminSessionsRouteImport } from './routes/admin/sessions'
 import { Route as AdminPlansRouteImport } from './routes/admin/plans'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLedgerRouteImport } from './routes/admin/ledger'
@@ -162,6 +163,11 @@ const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
 const AdminTicketsRoute = AdminTicketsRouteImport.update({
   id: '/tickets',
   path: '/tickets',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminSessionsRoute = AdminSessionsRouteImport.update({
+  id: '/sessions',
+  path: '/sessions',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminPlansRoute = AdminPlansRouteImport.update({
@@ -309,6 +315,7 @@ export interface FileRoutesByFullPath {
   '/admin/ledger': typeof AdminLedgerRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/sessions': typeof AdminSessionsRoute
   '/admin/tickets': typeof AdminTicketsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -352,6 +359,7 @@ export interface FileRoutesByTo {
   '/admin/ledger': typeof AdminLedgerRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/sessions': typeof AdminSessionsRoute
   '/admin/tickets': typeof AdminTicketsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -400,6 +408,7 @@ export interface FileRoutesById {
   '/admin/ledger': typeof AdminLedgerRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/sessions': typeof AdminSessionsRoute
   '/admin/tickets': typeof AdminTicketsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -448,6 +457,7 @@ export interface FileRouteTypes {
     | '/admin/ledger'
     | '/admin/login'
     | '/admin/plans'
+    | '/admin/sessions'
     | '/admin/tickets'
     | '/admin/transactions'
     | '/admin/users'
@@ -491,6 +501,7 @@ export interface FileRouteTypes {
     | '/admin/ledger'
     | '/admin/login'
     | '/admin/plans'
+    | '/admin/sessions'
     | '/admin/tickets'
     | '/admin/transactions'
     | '/admin/users'
@@ -538,6 +549,7 @@ export interface FileRouteTypes {
     | '/admin/ledger'
     | '/admin/login'
     | '/admin/plans'
+    | '/admin/sessions'
     | '/admin/tickets'
     | '/admin/transactions'
     | '/admin/users'
@@ -737,6 +749,13 @@ declare module '@tanstack/react-router' {
       path: '/tickets'
       fullPath: '/admin/tickets'
       preLoaderRoute: typeof AdminTicketsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/sessions': {
+      id: '/admin/sessions'
+      path: '/sessions'
+      fullPath: '/admin/sessions'
+      preLoaderRoute: typeof AdminSessionsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/plans': {
@@ -981,6 +1000,7 @@ interface AdminRouteRouteChildren {
   AdminLedgerRoute: typeof AdminLedgerRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminPlansRoute: typeof AdminPlansRoute
+  AdminSessionsRoute: typeof AdminSessionsRoute
   AdminTicketsRoute: typeof AdminTicketsRoute
   AdminTransactionsRoute: typeof AdminTransactionsRoute
   AdminUsersRoute: typeof AdminUsersRouteWithChildren
@@ -992,6 +1012,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminLedgerRoute: AdminLedgerRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminPlansRoute: AdminPlansRoute,
+  AdminSessionsRoute: AdminSessionsRoute,
   AdminTicketsRoute: AdminTicketsRoute,
   AdminTransactionsRoute: AdminTransactionsRoute,
   AdminUsersRoute: AdminUsersRouteWithChildren,

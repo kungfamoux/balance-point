@@ -443,4 +443,79 @@ router.delete("/ledger/:id", async (req: AdminRequest, res: Response) => {
   res.status(204).send();
 });
 
+// ── Live Sessions ─────────────────────────────────────────────────────────────
+/**
+ * @swagger
+ * /api/admin/sessions:
+ *   get:
+ *     summary: List all live sessions
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get("/sessions", async (_req: AdminRequest, res: Response) => {
+  const sessions = await prisma.liveSession.findMany({
+    orderBy: [{ sortOrder: "asc" }, { scheduledAt: "asc" }],
+  });
+  res.json(sessions);
+});
+
+/**
+ * @swagger
+ * /api/admin/sessions:
+ *   post:
+ *     summary: Create a live session
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post("/sessions", async (req: AdminRequest, res: Response) => {
+  const { title, host, role, avatarLabel, topic, status, scheduledAt, duration, embedUrl, tags, premium, sortOrder } = req.body;
+  const session = await prisma.liveSession.create({
+    data: {
+      title, host, role, avatarLabel, topic,
+      status: status ?? "upcoming",
+      scheduledAt: new Date(scheduledAt),
+      duration,
+      embedUrl: embedUrl ?? null,
+      tags: tags ?? [],
+      premium: premium ?? false,
+      sortOrder: sortOrder ?? 0,
+    },
+  });
+  res.status(201).json(session);
+});
+
+/**
+ * @swagger
+ * /api/admin/sessions/{id}:
+ *   patch:
+ *     summary: Update a live session
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch("/sessions/:id", async (req: AdminRequest, res: Response) => {
+  const id = req.params.id as string;
+  const data = { ...req.body };
+  if (data.scheduledAt) data.scheduledAt = new Date(data.scheduledAt);
+  const session = await prisma.liveSession.update({ where: { id }, data });
+  res.json(session);
+});
+
+/**
+ * @swagger
+ * /api/admin/sessions/{id}:
+ *   delete:
+ *     summary: Delete a live session
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete("/sessions/:id", async (req: AdminRequest, res: Response) => {
+  const id = req.params.id as string;
+  await prisma.liveSession.delete({ where: { id } });
+  res.status(204).send();
+});
+
 export default router;

@@ -129,6 +129,25 @@ model TicketMessage {
   @@map("ticket_messages")
 }
 
+model LiveSession {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  host        String
+  role        String
+  avatarLabel String   @map("avatar_label")
+  topic       String
+  status      String   @default("upcoming")
+  scheduledAt DateTime @map("scheduled_at") @db.Timestamptz
+  duration    String
+  embedUrl    String?  @map("embed_url")
+  tags        String[]
+  premium     Boolean  @default(false)
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("live_sessions")
+}
+
 model PublicLedger {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   kind      String
