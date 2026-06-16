@@ -3,6 +3,7 @@ import {
   LayoutDashboard, ArrowDownCircle, ArrowUpCircle, PiggyBank, Briefcase,
   Receipt, Users, Copy, CandlestickChart, ShieldCheck, LifeBuoy, UserCircle,
   Lock, Settings, LogOut, Bell, Wallet, Link2, Sun, Moon, Languages,
+  Zap, Radio,
 } from "lucide-react";
 import { useTheme, useLang, LANGUAGES } from "@/lib/theme";
 import { useTranslation } from "react-i18next";
@@ -34,6 +35,8 @@ const MAIN_ITEMS = [
 ];
 const TRADE_ITEMS = [
   { to: "/dashboard/copytrade", key: "dashboard.sidebar.copytrade", icon: Copy },
+  { to: "/dashboard/signals", key: "dashboard.sidebar.signals", icon: Zap },
+  { to: "/dashboard/live-sessions", key: "dashboard.sidebar.liveSessions", icon: Radio },
   { to: "/dashboard/referrals", key: "dashboard.sidebar.referrals", icon: Users },
 ];
 const ACCOUNT_ITEMS = [

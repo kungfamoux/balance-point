@@ -113,6 +113,8 @@ export default {
       transactions: "Transactions",
       trade: "Trader",
       copytrade: "Copytrade",
+      signals: "Signals",
+      liveSessions: "Live Sessions",
       referrals: "Parrainages",
       profile: "Profil",
       kyc: "KYC",
@@ -182,3 +184,4 @@ export default {
     lightMode: "Mode clair",
   },
 };
+

@@ -42,11 +42,13 @@ import { Route as AuthenticatedDashboardWithdrawRouteImport } from './routes/_au
 import { Route as AuthenticatedDashboardTransactionsRouteImport } from './routes/_authenticated/dashboard.transactions'
 import { Route as AuthenticatedDashboardTradeRouteImport } from './routes/_authenticated/dashboard.trade'
 import { Route as AuthenticatedDashboardSupportRouteImport } from './routes/_authenticated/dashboard.support'
+import { Route as AuthenticatedDashboardSignalsRouteImport } from './routes/_authenticated/dashboard.signals'
 import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard.settings'
 import { Route as AuthenticatedDashboardSecurityRouteImport } from './routes/_authenticated/dashboard.security'
 import { Route as AuthenticatedDashboardReferralsRouteImport } from './routes/_authenticated/dashboard.referrals'
 import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard.profile'
 import { Route as AuthenticatedDashboardMyInvestmentsRouteImport } from './routes/_authenticated/dashboard.my-investments'
+import { Route as AuthenticatedDashboardLiveSessionsRouteImport } from './routes/_authenticated/dashboard.live-sessions'
 import { Route as AuthenticatedDashboardLinkWalletRouteImport } from './routes/_authenticated/dashboard.link-wallet'
 import { Route as AuthenticatedDashboardKycRouteImport } from './routes/_authenticated/dashboard.kyc'
 import { Route as AuthenticatedDashboardInvestRouteImport } from './routes/_authenticated/dashboard.invest'
@@ -222,6 +224,12 @@ const AuthenticatedDashboardSupportRoute =
     path: '/support',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardSignalsRoute =
+  AuthenticatedDashboardSignalsRouteImport.update({
+    id: '/signals',
+    path: '/signals',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardSettingsRoute =
   AuthenticatedDashboardSettingsRouteImport.update({
     id: '/settings',
@@ -250,6 +258,12 @@ const AuthenticatedDashboardMyInvestmentsRoute =
   AuthenticatedDashboardMyInvestmentsRouteImport.update({
     id: '/my-investments',
     path: '/my-investments',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardLiveSessionsRoute =
+  AuthenticatedDashboardLiveSessionsRouteImport.update({
+    id: '/live-sessions',
+    path: '/live-sessions',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
 const AuthenticatedDashboardLinkWalletRoute =
@@ -315,11 +329,13 @@ export interface FileRoutesByFullPath {
   '/dashboard/invest': typeof AuthenticatedDashboardInvestRoute
   '/dashboard/kyc': typeof AuthenticatedDashboardKycRoute
   '/dashboard/link-wallet': typeof AuthenticatedDashboardLinkWalletRoute
+  '/dashboard/live-sessions': typeof AuthenticatedDashboardLiveSessionsRoute
   '/dashboard/my-investments': typeof AuthenticatedDashboardMyInvestmentsRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
   '/dashboard/security': typeof AuthenticatedDashboardSecurityRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/dashboard/signals': typeof AuthenticatedDashboardSignalsRoute
   '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
   '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
@@ -356,11 +372,13 @@ export interface FileRoutesByTo {
   '/dashboard/invest': typeof AuthenticatedDashboardInvestRoute
   '/dashboard/kyc': typeof AuthenticatedDashboardKycRoute
   '/dashboard/link-wallet': typeof AuthenticatedDashboardLinkWalletRoute
+  '/dashboard/live-sessions': typeof AuthenticatedDashboardLiveSessionsRoute
   '/dashboard/my-investments': typeof AuthenticatedDashboardMyInvestmentsRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
   '/dashboard/security': typeof AuthenticatedDashboardSecurityRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/dashboard/signals': typeof AuthenticatedDashboardSignalsRoute
   '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
   '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
@@ -402,11 +420,13 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/invest': typeof AuthenticatedDashboardInvestRoute
   '/_authenticated/dashboard/kyc': typeof AuthenticatedDashboardKycRoute
   '/_authenticated/dashboard/link-wallet': typeof AuthenticatedDashboardLinkWalletRoute
+  '/_authenticated/dashboard/live-sessions': typeof AuthenticatedDashboardLiveSessionsRoute
   '/_authenticated/dashboard/my-investments': typeof AuthenticatedDashboardMyInvestmentsRoute
   '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/_authenticated/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
   '/_authenticated/dashboard/security': typeof AuthenticatedDashboardSecurityRoute
   '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/_authenticated/dashboard/signals': typeof AuthenticatedDashboardSignalsRoute
   '/_authenticated/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/_authenticated/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
   '/_authenticated/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
@@ -448,11 +468,13 @@ export interface FileRouteTypes {
     | '/dashboard/invest'
     | '/dashboard/kyc'
     | '/dashboard/link-wallet'
+    | '/dashboard/live-sessions'
     | '/dashboard/my-investments'
     | '/dashboard/profile'
     | '/dashboard/referrals'
     | '/dashboard/security'
     | '/dashboard/settings'
+    | '/dashboard/signals'
     | '/dashboard/support'
     | '/dashboard/trade'
     | '/dashboard/transactions'
@@ -489,11 +511,13 @@ export interface FileRouteTypes {
     | '/dashboard/invest'
     | '/dashboard/kyc'
     | '/dashboard/link-wallet'
+    | '/dashboard/live-sessions'
     | '/dashboard/my-investments'
     | '/dashboard/profile'
     | '/dashboard/referrals'
     | '/dashboard/security'
     | '/dashboard/settings'
+    | '/dashboard/signals'
     | '/dashboard/support'
     | '/dashboard/trade'
     | '/dashboard/transactions'
@@ -534,11 +558,13 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/invest'
     | '/_authenticated/dashboard/kyc'
     | '/_authenticated/dashboard/link-wallet'
+    | '/_authenticated/dashboard/live-sessions'
     | '/_authenticated/dashboard/my-investments'
     | '/_authenticated/dashboard/profile'
     | '/_authenticated/dashboard/referrals'
     | '/_authenticated/dashboard/security'
     | '/_authenticated/dashboard/settings'
+    | '/_authenticated/dashboard/signals'
     | '/_authenticated/dashboard/support'
     | '/_authenticated/dashboard/trade'
     | '/_authenticated/dashboard/transactions'
@@ -790,6 +816,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardSupportRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/signals': {
+      id: '/_authenticated/dashboard/signals'
+      path: '/signals'
+      fullPath: '/dashboard/signals'
+      preLoaderRoute: typeof AuthenticatedDashboardSignalsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/settings': {
       id: '/_authenticated/dashboard/settings'
       path: '/settings'
@@ -823,6 +856,13 @@ declare module '@tanstack/react-router' {
       path: '/my-investments'
       fullPath: '/dashboard/my-investments'
       preLoaderRoute: typeof AuthenticatedDashboardMyInvestmentsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/live-sessions': {
+      id: '/_authenticated/dashboard/live-sessions'
+      path: '/live-sessions'
+      fullPath: '/dashboard/live-sessions'
+      preLoaderRoute: typeof AuthenticatedDashboardLiveSessionsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
     '/_authenticated/dashboard/link-wallet': {
@@ -869,11 +909,13 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardInvestRoute: typeof AuthenticatedDashboardInvestRoute
   AuthenticatedDashboardKycRoute: typeof AuthenticatedDashboardKycRoute
   AuthenticatedDashboardLinkWalletRoute: typeof AuthenticatedDashboardLinkWalletRoute
+  AuthenticatedDashboardLiveSessionsRoute: typeof AuthenticatedDashboardLiveSessionsRoute
   AuthenticatedDashboardMyInvestmentsRoute: typeof AuthenticatedDashboardMyInvestmentsRoute
   AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
   AuthenticatedDashboardReferralsRoute: typeof AuthenticatedDashboardReferralsRoute
   AuthenticatedDashboardSecurityRoute: typeof AuthenticatedDashboardSecurityRoute
   AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRoute
+  AuthenticatedDashboardSignalsRoute: typeof AuthenticatedDashboardSignalsRoute
   AuthenticatedDashboardSupportRoute: typeof AuthenticatedDashboardSupportRoute
   AuthenticatedDashboardTradeRoute: typeof AuthenticatedDashboardTradeRoute
   AuthenticatedDashboardTransactionsRoute: typeof AuthenticatedDashboardTransactionsRoute
@@ -889,12 +931,15 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardKycRoute: AuthenticatedDashboardKycRoute,
     AuthenticatedDashboardLinkWalletRoute:
       AuthenticatedDashboardLinkWalletRoute,
+    AuthenticatedDashboardLiveSessionsRoute:
+      AuthenticatedDashboardLiveSessionsRoute,
     AuthenticatedDashboardMyInvestmentsRoute:
       AuthenticatedDashboardMyInvestmentsRoute,
     AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
     AuthenticatedDashboardReferralsRoute: AuthenticatedDashboardReferralsRoute,
     AuthenticatedDashboardSecurityRoute: AuthenticatedDashboardSecurityRoute,
     AuthenticatedDashboardSettingsRoute: AuthenticatedDashboardSettingsRoute,
+    AuthenticatedDashboardSignalsRoute: AuthenticatedDashboardSignalsRoute,
     AuthenticatedDashboardSupportRoute: AuthenticatedDashboardSupportRoute,
     AuthenticatedDashboardTradeRoute: AuthenticatedDashboardTradeRoute,
     AuthenticatedDashboardTransactionsRoute:

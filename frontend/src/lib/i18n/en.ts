@@ -113,6 +113,8 @@ export default {
       transactions: "Transactions",
       trade: "Trade",
       copytrade: "Copytrade",
+      signals: "Signals",
+      liveSessions: "Live Sessions",
       referrals: "Referrals",
       profile: "Profile",
       kyc: "KYC",

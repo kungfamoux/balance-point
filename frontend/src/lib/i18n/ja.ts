@@ -113,6 +113,8 @@ export default {
       transactions: "取引履歴",
       trade: "取引",
       copytrade: "コピートレード",
+      signals: "Signals",
+      liveSessions: "Live Sessions",
       referrals: "紹介",
       profile: "プロフィール",
       kyc: "KYC",
@@ -179,3 +181,4 @@ export default {
     lightMode: "ライトモード",
   },
 };
+

@@ -113,6 +113,8 @@ export default {
       transactions: "交易记录",
       trade: "交易",
       copytrade: "跟单交易",
+      signals: "Signals",
+      liveSessions: "Live Sessions",
       referrals: "推荐",
       profile: "个人资料",
       kyc: "KYC认证",
@@ -179,3 +181,4 @@ export default {
     lightMode: "浅色模式",
   },
 };
+
