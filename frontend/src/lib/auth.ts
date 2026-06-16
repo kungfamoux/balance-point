@@ -39,7 +39,7 @@ const authHeaders = {
   apikey: SUPABASE_ANON_KEY,
 };
 
-export async function loginOrRegister(email: string, password: string, fullName?: string) {
+export async function loginOrRegister(email: string, password: string, fullName?: string, phone?: string, country?: string, referralCode?: string) {
   const cleanEmail = email.trim().toLowerCase();
 
   // Try sign in first
@@ -70,7 +70,12 @@ export async function loginOrRegister(email: string, password: string, fullName?
     body: JSON.stringify({
       email: cleanEmail,
       password,
-      data: fullName ? { full_name: fullName } : {},
+      data: {
+        ...(fullName ? { full_name: fullName } : {}),
+        ...(phone ? { phone } : {}),
+        ...(country ? { country } : {}),
+        ...(referralCode ? { referred_by_code: referralCode } : {}),
+      },
     }),
   });
 
