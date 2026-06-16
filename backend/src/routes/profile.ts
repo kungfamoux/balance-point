@@ -21,12 +21,29 @@ const router = Router();
  */
 router.get("/", requireAuth, async (req: AuthRequest, res) => {
   try {
+    const meta = req.userMeta ?? {};
+    const referralCode = req.userId!.replace(/-/g, "").slice(0, 8).toUpperCase();
+
+    // Resolve referrer from code passed at registration
+    let referredBy: string | undefined;
+    if (meta.referred_by_code) {
+      const referrer = await prisma.profile.findUnique({
+        where: { referralCode: meta.referred_by_code.toUpperCase() },
+        select: { id: true },
+      });
+      if (referrer) referredBy = referrer.id;
+    }
+
     const profile = await prisma.profile.upsert({
       where: { id: req.userId! },
       update: {},
       create: {
         id: req.userId!,
-        referralCode: req.userId!.replace(/-/g, "").slice(0, 8).toUpperCase(),
+        referralCode,
+        fullName: meta.full_name ?? null,
+        phone: meta.phone ?? null,
+        country: meta.country ?? null,
+        ...(referredBy ? { referredBy } : {}),
       },
     });
 
@@ -37,8 +54,21 @@ router.get("/", requireAuth, async (req: AuthRequest, res) => {
       create: { userId: req.userId! },
     });
 
+    // Create referral bonus record if this is a new referred user
+    if (referredBy && profile.referredBy === referredBy) {
+      const alreadyRecorded = await prisma.referral.findFirst({
+        where: { referrerId: referredBy, referredId: req.userId! },
+      });
+      if (!alreadyRecorded) {
+        await prisma.referral.create({
+          data: { referrerId: referredBy, referredId: req.userId! },
+        });
+      }
+    }
+
     res.json(profile);
-  } catch {
+  } catch (err) {
+    console.error("[profile GET]", err);
     res.status(500).json({ error: "Failed to fetch profile" });
   }
 });

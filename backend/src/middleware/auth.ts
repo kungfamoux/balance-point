@@ -5,9 +5,17 @@ const JWKS = createRemoteJWKSet(
   new URL(process.env.SUPABASE_JWKS_URL ?? "")
 );
 
+export interface UserMeta {
+  full_name?: string;
+  phone?: string;
+  country?: string;
+  referred_by_code?: string;
+}
+
 export interface AuthRequest extends Request {
   userId?: string;
   userEmail?: string;
+  userMeta?: UserMeta;
 }
 
 export async function requireAuth(
@@ -30,6 +38,7 @@ export async function requireAuth(
 
     req.userId = payload.sub;
     req.userEmail = payload.email as string | undefined;
+    req.userMeta = (payload.user_metadata ?? {}) as UserMeta;
     next();
   } catch {
     res.status(401).json({ error: "Invalid or expired token" });
