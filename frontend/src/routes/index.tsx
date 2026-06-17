@@ -120,6 +120,17 @@ function Home() {
         </div>
       </section>
 
+      {/* Investment Tiers */}
+      <section id="investment-tiers" className="bg-secondary/30">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="font-display text-3xl font-bold sm:text-4xl">Investment Tiers</h2>
+            <p className="mt-3 text-muted-foreground">Choose the perfect investment plan for your goals</p>
+          </div>
+          <InvestmentTiers />
+        </div>
+      </section>
+
       {/* Switch to us */}
       <section className="bg-secondary/50">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
@@ -351,6 +362,93 @@ function Packages() {
             </ul>
             <Button asChild className="mt-6 w-full">
               <Link to="/auth" search={{ tab: "register" }}>{t("packages.openAccount")}</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function InvestmentTiers() {
+  const tiers = [
+    {
+      name: "Regular",
+      duration: "2 Weeks",
+      minInvestment: 200,
+      returns: 1000,
+      features: ["200+ Pairs", "Leverage Up To 1:500", "Spreads From 1.2 Pips"],
+      popular: false,
+    },
+    {
+      name: "Bronze",
+      duration: "1 Month",
+      minInvestment: 1000,
+      returns: 10000,
+      features: ["300+ Pairs", "Leverage Up To 1:500", "Spreads From 0.8 Pips"],
+      popular: false,
+    },
+    {
+      name: "Silver",
+      duration: "2 Months",
+      minInvestment: 10000,
+      returns: 50000,
+      features: ["400+ Pairs", "No Swap Fees", "Leverage Up To 1:500"],
+      popular: false,
+    },
+    {
+      name: "Gold",
+      duration: "3 Months",
+      minInvestment: 50000,
+      returns: 150000,
+      features: ["400+ Pairs", "No Swap Fees", "Leverage Up To 1:500", "Spreads From 0.3 Pips"],
+      popular: true,
+    },
+    {
+      name: "Diamond",
+      duration: "6 Months",
+      minInvestment: 150000,
+      returns: 1000000,
+      features: ["500+ Pairs", "No Swap Fees", "Priority Support", "Leverage Up To 1:500"],
+      popular: false,
+    },
+  ];
+
+  return (
+    <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      {tiers.map((tier) => (
+        <Card key={tier.name} className={`relative ${tier.popular ? "border-brand shadow-xl scale-105" : "border-border"}`}>
+          {tier.popular && (
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+              <Badge className="bg-brand text-white">Popular</Badge>
+            </div>
+          )}
+          <CardContent className="p-6">
+            <div className="text-center mb-4">
+              <h3 className="font-display text-xl font-bold">{tier.name}</h3>
+              <p className="text-sm text-muted-foreground">{tier.duration}</p>
+            </div>
+            
+            <div className="text-center py-4 border-y border-border">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Minimum investment</p>
+              <p className="mt-1 font-display text-2xl font-bold">${tier.minInvestment.toLocaleString()}</p>
+            </div>
+
+            <div className="text-center py-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Returns</p>
+              <p className="mt-1 font-display text-3xl font-bold text-brand">${tier.returns.toLocaleString()}</p>
+            </div>
+
+            <ul className="mt-4 space-y-2 text-sm">
+              {tier.features.map((feature) => (
+                <Li key={feature}>{feature}</Li>
+              ))}
+            </ul>
+
+            <Button asChild className="mt-6 w-full" variant={tier.popular ? "default" : "outline"}>
+              <Link to="/auth" search={{ tab: "register" }}>
+                {tier.popular ? "Get Started" : "Choose Plan"}
+              </Link>
             </Button>
           </CardContent>
         </Card>

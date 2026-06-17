@@ -1,11 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PageHeader } from "@/components/dashboard/DashboardShell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Wallet, TrendingUp, ArrowDownRight, DollarSign, Package, Signal } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Wallet, TrendingUp, ArrowDownRight, DollarSign, Package, Signal, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { TradingViewWidget } from "@/components/site/TradingViewWidget";
+import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({
   component: Overview,
@@ -13,6 +15,9 @@ export const Route = createFileRoute("/_authenticated/dashboard/")({
 
 
 function Overview() {
+  const navigate = useNavigate();
+  const [signalDialogOpen, setSignalDialogOpen] = useState(false);
+  
   const { data } = useQuery({
     queryKey: ["dashboard-overview"],
     queryFn: async () => {
@@ -26,6 +31,20 @@ function Overview() {
     },
   });
   const w = data?.wallet;
+
+  const signalBoostOptions = [
+    { percent: 10, price: 50 },
+    { percent: 25, price: 100 },
+    { percent: 50, price: 200 },
+    { percent: 75, price: 350 },
+    { percent: 100, price: 500 },
+  ];
+
+  const handleSignalBoost = (price: number) => {
+    setSignalDialogOpen(false);
+    navigate({ to: "/dashboard/deposit", search: { amount: price, plan: undefined } });
+  };
+
   return (
     <>
       <PageHeader title="Dashboard" description="Welcome Susan">
@@ -36,8 +55,23 @@ function Overview() {
         <Stat icon={DollarSign} label="Balance" value={`$${num(w?.balance)}`} accent="text-blue-500" iconColor="bg-blue-500" />
         <Stat icon={TrendingUp} label="Profits" value={`$${num(w?.total_profit)}`} accent="text-green-500" iconColor="bg-green-500" />
         <Stat icon={Package} label="Deposits" value={`$${num(w?.total_deposits ?? 0)}`} accent="text-orange-500" iconColor="bg-orange-500" />
-        <Stat icon={Signal} label="Signal Strength" value={`${w?.signal_strength ?? 0}%`} accent="text-teal-500" iconColor="bg-teal-500" />
+        <Stat 
+          icon={Signal} 
+          label="Signal Strength" 
+          value={`${w?.signal_strength ?? 0}%`} 
+          accent="text-teal-500" 
+          iconColor="bg-teal-500" 
+          onClick={() => setSignalDialogOpen(true)}
+          clickable
+        />
       </div>
+
+      <SignalBoostDialog 
+        open={signalDialogOpen} 
+        onOpenChange={setSignalDialogOpen} 
+        options={signalBoostOptions}
+        onSelect={handleSignalBoost}
+      />
 
 
       <div className="mt-6">
@@ -69,9 +103,12 @@ function Overview() {
   );
 }
 
-function Stat({ icon: Icon, label, value, accent, iconColor }: any) {
+function Stat({ icon: Icon, label, value, accent, iconColor, clickable, onClick }: any) {
   return (
-    <Card className="border-border">
+    <Card 
+      className={`border-border ${clickable ? "cursor-pointer hover:shadow-lg transition-shadow" : ""}`}
+      onClick={onClick}
+    >
       <CardContent className="p-5">
         <div className="flex items-center gap-3">
           <div className={`flex h-10 w-10 items-center justify-center rounded-full ${iconColor} text-white`}>
@@ -89,4 +126,42 @@ function Stat({ icon: Icon, label, value, accent, iconColor }: any) {
 
 function num(v: any) {
   return Number(v ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function SignalBoostDialog({ open, onOpenChange, options, onSelect }: any) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Boost Your Signal Strength</DialogTitle>
+          <DialogDescription>
+            Select a signal boost package to improve your trading signals
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-3 mt-4">
+          {options.map((option: any) => (
+            <button
+              key={option.percent}
+              onClick={() => onSelect(option.price)}
+              className="flex items-center justify-between rounded-lg border border-border bg-card p-4 hover:bg-secondary/50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-500 text-white">
+                  <Signal className="h-5 w-5" />
+                </div>
+                <div className="text-left">
+                  <p className="font-semibold">{option.percent}% Signal Boost</p>
+                  <p className="text-sm text-muted-foreground">Enhanced trading accuracy</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="font-display text-xl font-bold text-teal-500">${option.price}</p>
+                <p className="text-xs text-muted-foreground">one-time</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }
