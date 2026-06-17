@@ -24,11 +24,11 @@ export const Route = createFileRoute("/_authenticated/dashboard/deposit")({
 });
 
 const gateways = [
-  { id: "Bitcoin (BTC)",  symbol: "BTC",  coinId: "bitcoin",  address: "bc1qwudxts5a5p6njxjkcujh0pmz7flqznxwddcusx",          icon: "₿",  color: "#F7931A" },
-  { id: "Ethereum (ETH)", symbol: "ETH",  coinId: "ethereum", address: "0x5E0075153409278ecFf5B1ED7a65F472855c84DE",           icon: "Ξ",  color: "#627EEA" },
-  { id: "Solana (SOL)",   symbol: "SOL",  coinId: "solana",   address: "8QdbtaSuFssh2B5fjZQZfNCJqcqDaejrhnYRjvPivKAz",        icon: "◎",  color: "#9945FF" },
-  { id: "USDT (ERC-20)",  symbol: "USDT", coinId: "tether",   address: "0x5E0075153409278ecFf5B1ED7a65F472855c84DE",           icon: "₮",  color: "#26A17B" },
-  { id: "XRP",            symbol: "XRP",  coinId: "ripple",   address: "r59V8nHMmmt6MAsj1L3mnmq4ELJdDkYQD",                   icon: "✕",  color: "#346AA9" },
+  { id: "Bitcoin (BTC)",  symbol: "BTC",  coinId: "bitcoin",  address: "bc1qwudxts5a5p6njxjkcujh0pmz7flqznxwddcusx",          trustWalletLink: "https://link.trustwallet.com/send?address=bc1qwudxts5a5p6njxjkcujh0pmz7flqznxwddcusx&asset=c0", icon: "₿",  color: "#F7931A" },
+  { id: "Ethereum (ETH)", symbol: "ETH",  coinId: "ethereum", address: "0x5E0075153409278ecFf5B1ED7a65F472855c84DE",           trustWalletLink: "https://link.trustwallet.com/send?address=0x5E0075153409278ecFf5B1ED7a65F472855c84DE&asset=c60", icon: "Ξ",  color: "#627EEA" },
+  { id: "Solana (SOL)",   symbol: "SOL",  coinId: "solana",   address: "8QdbtaSuFssh2B5fjZQZfNCJqcqDaejrhnYRjvPivKAz",        trustWalletLink: "https://link.trustwallet.com/send?address=8QdbtaSuFssh2B5fjZQZfNCJqcqDaejrhnYRjvPivKAz&asset=c501", icon: "◎",  color: "#9945FF" },
+  { id: "USDT (ERC-20)",  symbol: "USDT", coinId: "tether",   address: "0x5E0075153409278ecFf5B1ED7a65F472855c84DE",           trustWalletLink: "https://link.trustwallet.com/send?address=0x5E0075153409278ecFf5B1ED7a65F472855c84DE&asset=c60_t0xdAC17F958D2ee523a2206206994597C13D831ec7", icon: "₮",  color: "#26A17B" },
+  { id: "XRP",            symbol: "XRP",  coinId: "ripple",   address: "r59V8nHMmmt6MAsj1L3mnmq4ELJdDkYQD",                   trustWalletLink: "https://link.trustwallet.com/send?address=r59V8nHMmmt6MAsj1L3mnmq4ELJdDkYQD&asset=c144", icon: "✕",  color: "#346AA9" },
 ];
 
 const COIN_IDS = gateways.map((g) => g.coinId).join(",");
@@ -241,18 +241,30 @@ function Deposit() {
             {/* Wallet address */}
             <div className="rounded-lg border border-border bg-secondary/50 p-4">
               <p className="text-xs uppercase text-muted-foreground">{t("dashboard.deposit.sendTo")}</p>
-              <div className="mt-2 flex items-center justify-between gap-3">
-                <code className="break-all text-sm">{selected.address}</code>
+              <div className="mt-2 flex flex-col gap-3">
+                <div className="flex items-center justify-between gap-3">
+                  <code className="break-all text-sm">{selected.address}</code>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      navigator.clipboard.writeText(selected.address);
+                      toast.success(t("common.copied"));
+                    }}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
                 <Button
                   type="button"
-                  variant="ghost"
-                  size="icon"
+                  variant="outline"
+                  className="w-full"
                   onClick={() => {
-                    navigator.clipboard.writeText(selected.address);
-                    toast.success(t("common.copied"));
+                    window.open(selected.trustWalletLink, "_blank");
                   }}
                 >
-                  <Copy className="h-4 w-4" />
+                  Pay via Trust Wallet
                 </Button>
               </div>
             </div>

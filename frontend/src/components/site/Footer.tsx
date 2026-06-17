@@ -52,10 +52,6 @@ export function SiteFooter() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-sidebar-border pt-6 text-xs text-sidebar-foreground/60 md:flex-row">
           <p>© {new Date().getFullYear()} Balancepoint Capital. All rights reserved.</p>
-          <p className="max-w-2xl text-center md:text-right">
-            Trading derivatives carries risk. Past performance is not indicative of future results.
-            This site is a demo and does not provide real financial services.
-          </p>
         </div>
       </div>
     </footer>

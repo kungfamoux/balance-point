@@ -31,6 +31,7 @@ const MAIN_ITEMS = [
   { to: "/dashboard/invest", key: "dashboard.sidebar.plans", icon: PiggyBank },
   { to: "/dashboard/my-investments", key: "dashboard.sidebar.myInvestments", icon: Briefcase },
   { to: "/dashboard/transactions", key: "dashboard.sidebar.transactions", icon: Receipt },
+  { to: "/dashboard/trade-history", key: "dashboard.sidebar.tradeHistory", icon: CandlestickChart },
   { to: "/dashboard/trade", key: "dashboard.sidebar.trade", icon: CandlestickChart },
 ];
 const TRADE_ITEMS = [

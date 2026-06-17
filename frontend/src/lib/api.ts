@@ -41,6 +41,7 @@ export const api = {
 
   // Transactions
   getTransactions: (limit = 50) => request(`/api/transactions?limit=${limit}`),
+  getTradeHistory: (limit = 50) => request(`/api/trade-history?limit=${limit}`),
   createDeposit: (body: { amount: number; gateway: string; meta?: object }) =>
     request("/api/transactions/deposit", { method: "POST", body: JSON.stringify(body) }),
   createWithdrawal: (body: { amount: number; gateway: string; meta?: object }) =>

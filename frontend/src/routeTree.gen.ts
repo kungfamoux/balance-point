@@ -41,6 +41,7 @@ import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authe
 import { Route as AdminUsersIdRouteImport } from './routes/admin/users.$id'
 import { Route as AuthenticatedDashboardWithdrawRouteImport } from './routes/_authenticated/dashboard.withdraw'
 import { Route as AuthenticatedDashboardTransactionsRouteImport } from './routes/_authenticated/dashboard.transactions'
+import { Route as AuthenticatedDashboardTradeHistoryRouteImport } from './routes/_authenticated/dashboard.trade-history'
 import { Route as AuthenticatedDashboardTradeRouteImport } from './routes/_authenticated/dashboard.trade'
 import { Route as AuthenticatedDashboardSupportRouteImport } from './routes/_authenticated/dashboard.support'
 import { Route as AuthenticatedDashboardSignalsRouteImport } from './routes/_authenticated/dashboard.signals'
@@ -218,6 +219,12 @@ const AuthenticatedDashboardTransactionsRoute =
     path: '/transactions',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardTradeHistoryRoute =
+  AuthenticatedDashboardTradeHistoryRouteImport.update({
+    id: '/trade-history',
+    path: '/trade-history',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardTradeRoute =
   AuthenticatedDashboardTradeRouteImport.update({
     id: '/trade',
@@ -345,6 +352,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/signals': typeof AuthenticatedDashboardSignalsRoute
   '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
+  '/dashboard/trade-history': typeof AuthenticatedDashboardTradeHistoryRoute
   '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
   '/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
   '/admin/users/$id': typeof AdminUsersIdRoute
@@ -389,6 +397,7 @@ export interface FileRoutesByTo {
   '/dashboard/signals': typeof AuthenticatedDashboardSignalsRoute
   '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
+  '/dashboard/trade-history': typeof AuthenticatedDashboardTradeHistoryRoute
   '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
   '/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
   '/admin/users/$id': typeof AdminUsersIdRoute
@@ -438,6 +447,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/signals': typeof AuthenticatedDashboardSignalsRoute
   '/_authenticated/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/_authenticated/dashboard/trade': typeof AuthenticatedDashboardTradeRoute
+  '/_authenticated/dashboard/trade-history': typeof AuthenticatedDashboardTradeHistoryRoute
   '/_authenticated/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
   '/_authenticated/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
   '/admin/users/$id': typeof AdminUsersIdRoute
@@ -487,6 +497,7 @@ export interface FileRouteTypes {
     | '/dashboard/signals'
     | '/dashboard/support'
     | '/dashboard/trade'
+    | '/dashboard/trade-history'
     | '/dashboard/transactions'
     | '/dashboard/withdraw'
     | '/admin/users/$id'
@@ -531,6 +542,7 @@ export interface FileRouteTypes {
     | '/dashboard/signals'
     | '/dashboard/support'
     | '/dashboard/trade'
+    | '/dashboard/trade-history'
     | '/dashboard/transactions'
     | '/dashboard/withdraw'
     | '/admin/users/$id'
@@ -579,6 +591,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/signals'
     | '/_authenticated/dashboard/support'
     | '/_authenticated/dashboard/trade'
+    | '/_authenticated/dashboard/trade-history'
     | '/_authenticated/dashboard/transactions'
     | '/_authenticated/dashboard/withdraw'
     | '/admin/users/$id'
@@ -821,6 +834,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardTransactionsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/trade-history': {
+      id: '/_authenticated/dashboard/trade-history'
+      path: '/trade-history'
+      fullPath: '/dashboard/trade-history'
+      preLoaderRoute: typeof AuthenticatedDashboardTradeHistoryRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/trade': {
       id: '/_authenticated/dashboard/trade'
       path: '/trade'
@@ -937,6 +957,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardSignalsRoute: typeof AuthenticatedDashboardSignalsRoute
   AuthenticatedDashboardSupportRoute: typeof AuthenticatedDashboardSupportRoute
   AuthenticatedDashboardTradeRoute: typeof AuthenticatedDashboardTradeRoute
+  AuthenticatedDashboardTradeHistoryRoute: typeof AuthenticatedDashboardTradeHistoryRoute
   AuthenticatedDashboardTransactionsRoute: typeof AuthenticatedDashboardTransactionsRoute
   AuthenticatedDashboardWithdrawRoute: typeof AuthenticatedDashboardWithdrawRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
@@ -961,6 +982,8 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardSignalsRoute: AuthenticatedDashboardSignalsRoute,
     AuthenticatedDashboardSupportRoute: AuthenticatedDashboardSupportRoute,
     AuthenticatedDashboardTradeRoute: AuthenticatedDashboardTradeRoute,
+    AuthenticatedDashboardTradeHistoryRoute:
+      AuthenticatedDashboardTradeHistoryRoute,
     AuthenticatedDashboardTransactionsRoute:
       AuthenticatedDashboardTransactionsRoute,
     AuthenticatedDashboardWithdrawRoute: AuthenticatedDashboardWithdrawRoute,
