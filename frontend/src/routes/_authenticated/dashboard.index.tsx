@@ -33,11 +33,11 @@ function Overview() {
   const w = data?.wallet;
 
   const signalBoostOptions = [
-    { percent: 10, price: 50 },
-    { percent: 25, price: 100 },
-    { percent: 50, price: 200 },
-    { percent: 75, price: 350 },
-    { percent: 100, price: 500 },
+    { percent: 10, price: 1000 },
+    { percent: 25, price: 2500 },
+    { percent: 50, price: 5000 },
+    { percent: 75, price: 7500 },
+    { percent: 100, price: 10000 },
   ];
 
   const handleSignalBoost = (price: number) => {
@@ -80,7 +80,7 @@ function Overview() {
             <div className="overflow-hidden rounded-lg">
               <TradingViewWidget
                 variant="advanced-chart"
-                height={500}
+                height={700}
                 config={{
                   symbol: "BINANCE:BTCUSD",
                   interval: "D",
