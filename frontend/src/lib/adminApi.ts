@@ -12,7 +12,7 @@ export function clearAdminToken() {
   localStorage.removeItem(TOKEN_KEY);
 }
 
-async function req<T>(path: string, init: RequestInit = {}): Promise<T> {
+async function req<T>(path: string, init: RequestInit = {}, opts?: { isLogin?: boolean }): Promise<T> {
   const token = getAdminToken();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -20,22 +20,23 @@ async function req<T>(path: string, init: RequestInit = {}): Promise<T> {
   };
   if (token) headers["Authorization"] = `Bearer ${token}`;
   const res = await fetch(`${API_URL}${path}`, { ...init, headers });
-  if (res.status === 401) {
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 401 && !opts?.isLogin) {
     clearAdminToken();
     window.location.href = "/admin/login";
-    throw new Error("Unauthorized");
+    throw new Error("Session expired — please sign in again");
   }
-  const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error((data as any)?.error ?? "Request failed");
   return data as T;
 }
 
 export const adminApi = {
   login: (email: string, password: string) =>
-    req<{ token: string }>("/api/admin/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    }),
+    req<{ token: string }>(
+      "/api/admin/login",
+      { method: "POST", body: JSON.stringify({ email: email.trim(), password }) },
+      { isLogin: true },
+    ),
 
   getStats: () => req<any>("/api/admin/stats"),
 
@@ -45,6 +46,10 @@ export const adminApi = {
     req<any>(`/api/admin/users/${id}/balance`, { method: "PATCH", body: JSON.stringify({ balance }) }),
   updateKyc: (id: string, kycStatus: string) =>
     req<any>(`/api/admin/users/${id}/kyc`, { method: "PATCH", body: JSON.stringify({ kycStatus }) }),
+
+  getKycDocuments: () => req<any[]>("/api/admin/kyc"),
+  updateKycDocument: (id: string, status: string) =>
+    req<any>(`/api/admin/kyc/${id}`, { method: "PATCH", body: JSON.stringify({ status }) }),
 
   getTransactions: (type?: string, status?: string) => {
     const qs = new URLSearchParams();
@@ -69,12 +74,8 @@ export const adminApi = {
     }),
 
   getInvestments: () => req<any[]>("/api/admin/investments"),
-
-  getTickets: () => req<any[]>("/api/admin/tickets"),
-  replyTicket: (id: string, body: string) =>
-    req<any>(`/api/admin/tickets/${id}/reply`, { method: "POST", body: JSON.stringify({ body }) }),
-  closeTicket: (id: string) =>
-    req<any>(`/api/admin/tickets/${id}/close`, { method: "PATCH" }),
+  updateInvestment: (id: string, body: object) =>
+    req<any>(`/api/admin/investments/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
 
   getSessions: () => req<any[]>("/api/admin/sessions"),
   createSession: (body: object) =>

@@ -77,10 +77,10 @@ function Overview() {
       <div className="mt-6">
         <Card className="border-border">
           <CardContent className="p-2">
-            <div className="overflow-hidden rounded-lg">
+            <div className="overflow-hidden rounded-lg dashboard-chart-container" style={{ minHeight: "800px" }}>
               <TradingViewWidget
                 variant="advanced-chart"
-                height={700}
+                height={800}
                 config={{
                   symbol: "BINANCE:BTCUSD",
                   interval: "D",

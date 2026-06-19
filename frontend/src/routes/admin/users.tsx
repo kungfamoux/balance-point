@@ -11,7 +11,7 @@ export const Route = createFileRoute("/admin/users")({
 });
 
 function AdminUsers() {
-  const { data: users = [], isLoading } = useQuery({
+  const { data: users = [], isLoading, error } = useQuery({
     queryKey: ["admin", "users"],
     queryFn: adminApi.getUsers,
   });
@@ -49,6 +49,10 @@ function AdminUsers() {
       {isLoading ? (
         <div className="flex justify-center py-20">
           <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : error ? (
+        <div className="flex justify-center py-20">
+          <div className="text-red-400">Failed to load users: {(error as any).message}</div>
         </div>
       ) : (
         <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">

@@ -46,6 +46,8 @@ export const api = {
     request("/api/transactions/deposit", { method: "POST", body: JSON.stringify(body) }),
   createWithdrawal: (body: { amount: number; gateway: string; meta?: object }) =>
     request("/api/transactions/withdraw", { method: "POST", body: JSON.stringify(body) }),
+  cancelWithdrawal: (id: string) =>
+    request(`/api/transactions/${id}/cancel`, { method: "PATCH" }),
 
   // Referrals
   getReferrals: () => request("/api/referrals"),

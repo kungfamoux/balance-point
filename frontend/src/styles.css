@@ -137,3 +137,13 @@
 .brand-gradient {
   background: linear-gradient(135deg, oklch(0.52 0.19 258), oklch(0.42 0.18 250));
 }
+
+.dashboard-chart-container .tradingview-widget-container,
+.dashboard-chart-container .tradingview-widget-container iframe,
+.dashboard-chart-container .tradingview-widget-container__widget,
+.dashboard-chart-container .tradingview-widget-container__widget > iframe {
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: none !important;
+}
+

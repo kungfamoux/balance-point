@@ -19,6 +19,7 @@ model Profile {
   kycStatus    String   @default("unverified") @map("kyc_status")
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  kycDocuments KycDocument[]
 
   @@map("profiles")
 }
@@ -102,6 +103,21 @@ model CopyFollow {
   @@unique([userId, traderHandle])
   @@index([userId])
   @@map("copy_follows")
+}
+
+model KycDocument {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  documentType String @map("document_type")
+  documentUrl   String @map("document_url")
+  status    String   @default("pending")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  profile Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("kyc_documents")
 }
 
 model Ticket {

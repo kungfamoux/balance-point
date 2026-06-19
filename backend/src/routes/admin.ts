@@ -66,7 +66,7 @@ router.get("/stats", async (_req: AdminRequest, res: Response) => {
     totalWithdrawn,
     pendingDeposits,
     pendingWithdrawals,
-    openTickets,
+    pendingKyc,
   ] = await Promise.all([
     prisma.profile.count(),
     prisma.investment.count(),
@@ -80,7 +80,7 @@ router.get("/stats", async (_req: AdminRequest, res: Response) => {
     }),
     prisma.transaction.count({ where: { type: "deposit", status: "pending" } }),
     prisma.transaction.count({ where: { type: "withdrawal", status: "pending" } }),
-    prisma.ticket.count({ where: { status: { not: "closed" } } }),
+    prisma.kycDocument.count({ where: { status: "pending" } }),
   ]);
 
   res.json({
@@ -90,7 +90,7 @@ router.get("/stats", async (_req: AdminRequest, res: Response) => {
     totalWithdrawn: totalWithdrawn._sum.amount ?? 0,
     pendingDeposits,
     pendingWithdrawals,
-    openTickets,
+    pendingKyc,
   });
 });
 
@@ -127,14 +127,19 @@ router.get("/users", async (_req: AdminRequest, res: Response) => {
  */
 router.get("/users/:id", async (req: AdminRequest, res: Response) => {
   const id = (req.params.id as string);
-  const [profile, wallet, investments, transactions] = await Promise.all([
-    prisma.profile.findUnique({ where: { id } }),
-    prisma.wallet.findUnique({ where: { userId: id } }),
-    prisma.investment.findMany({ where: { userId: id }, include: { plan: true } }),
-    prisma.transaction.findMany({ where: { userId: id }, orderBy: { createdAt: "desc" } }),
-  ]);
-  if (!profile) { res.status(404).json({ error: "User not found" }); return; }
-  res.json({ profile, wallet, investments, transactions });
+  try {
+    const [profile, wallet, investments, transactions] = await Promise.all([
+      prisma.profile.findUnique({ where: { id } }),
+      prisma.wallet.findUnique({ where: { userId: id } }),
+      prisma.investment.findMany({ where: { userId: id }, include: { plan: true } }),
+      prisma.transaction.findMany({ where: { userId: id }, orderBy: { createdAt: "desc" } }),
+    ]);
+    if (!profile) { res.status(404).json({ error: "User not found" }); return; }
+    res.json({ profile, wallet, investments, transactions });
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    res.status(500).json({ error: "Failed to fetch user details" });
+  }
 });
 
 /**
@@ -171,6 +176,63 @@ router.patch("/users/:id/kyc", async (req: AdminRequest, res: Response) => {
   const { kycStatus } = req.body as { kycStatus: string };
   const profile = await prisma.profile.update({ where: { id }, data: { kycStatus } });
   res.json(profile);
+});
+
+/**
+ * @swagger
+ * /api/admin/kyc:
+ *   get:
+ *     summary: List all pending KYC submissions
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get("/kyc", async (_req: AdminRequest, res: Response) => {
+  const kycDocs = await prisma.kycDocument.findMany({
+    where: { status: "pending" },
+    include: { profile: true },
+    orderBy: { createdAt: "desc" },
+  });
+  res.json(kycDocs);
+});
+
+/**
+ * @swagger
+ * /api/admin/kyc/{id}:
+ *   patch:
+ *     summary: Approve or reject a KYC document
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch("/kyc/:id", async (req: AdminRequest, res: Response) => {
+  const id = (req.params.id as string);
+  const { status } = req.body as { status: string };
+  const kycDoc = await prisma.kycDocument.update({
+    where: { id },
+    data: { status },
+    include: { profile: true },
+  });
+
+  // If approving all documents for a user, update their KYC status
+  if (status === "approved") {
+    const pendingDocs = await prisma.kycDocument.findMany({
+      where: { userId: kycDoc.userId, status: "pending" },
+    });
+    if (pendingDocs.length === 0) {
+      await prisma.profile.update({
+        where: { id: kycDoc.userId },
+        data: { kycStatus: "verified" },
+      });
+    }
+  } else if (status === "rejected") {
+    await prisma.profile.update({
+      where: { id: kycDoc.userId },
+      data: { kycStatus: "rejected" },
+    });
+  }
+
+  res.json(kycDoc);
 });
 
 // ── Transactions ──────────────────────────────────────────────────────────────
@@ -328,57 +390,26 @@ router.get("/investments", async (_req: AdminRequest, res: Response) => {
   res.json(investments);
 });
 
-// ── Tickets ───────────────────────────────────────────────────────────────────
 /**
  * @swagger
- * /api/admin/tickets:
- *   get:
- *     summary: List all support tickets
- *     tags: [Admin]
- *     security:
- *       - bearerAuth: []
- */
-router.get("/tickets", async (_req: AdminRequest, res: Response) => {
-  const tickets = await prisma.ticket.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { messages: { orderBy: { createdAt: "asc" } } },
-  });
-  res.json(tickets);
-});
-
-/**
- * @swagger
- * /api/admin/tickets/{id}/reply:
- *   post:
- *     summary: Reply to a ticket (as admin)
- *     tags: [Admin]
- *     security:
- *       - bearerAuth: []
- */
-router.post("/tickets/:id/reply", async (req: AdminRequest, res: Response) => {
-  const ticketId = (req.params.id as string);
-  const { body } = req.body as { body: string };
-  // Use a sentinel UUID for admin userId
-  const ADMIN_USER_ID = "00000000-0000-0000-0000-000000000000";
-  const msg = await prisma.ticketMessage.create({
-    data: { ticketId, userId: ADMIN_USER_ID, body },
-  });
-  res.status(201).json(msg);
-});
-
-/**
- * @swagger
- * /api/admin/tickets/{id}/close:
+ * /api/admin/investments/{id}:
  *   patch:
- *     summary: Close a ticket
+ *     summary: Update an investment (status, profit, etc.)
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
  */
-router.patch("/tickets/:id/close", async (req: AdminRequest, res: Response) => {
+router.patch("/investments/:id", async (req: AdminRequest, res: Response) => {
   const id = (req.params.id as string);
-  const ticket = await prisma.ticket.update({ where: { id }, data: { status: "closed" } });
-  res.json(ticket);
+  const { status, profit } = req.body as { status?: string; profit?: number };
+  const investment = await prisma.investment.update({
+    where: { id },
+    data: {
+      ...(status ? { status } : {}),
+      ...(profit !== undefined ? { profit } : {}),
+    },
+  });
+  res.json(investment);
 });
 
 // ── Public Ledger ─────────────────────────────────────────────────────────────

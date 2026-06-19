@@ -34,7 +34,7 @@ export function TradingViewWidget({ variant, config, height = 400 }: Props) {
     ref.current.appendChild(script);
   }, [variant, JSON.stringify(config)]);
   return (
-    <div className="tradingview-widget-container" style={{ height, width: "100%" }} ref={ref} />
+    <div className="tradingview-widget-container" style={{ height: typeof height === 'number' ? `${height}px` : height, width: "100%" }} ref={ref} />
   );
 }
 

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/admin/users/$id")({
 function AdminUserDetail() {
   const { id } = useParams({ from: "/admin/users/$id" });
   const qc = useQueryClient();
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["admin", "user", id],
     queryFn: () => adminApi.getUser(id),
   });
@@ -38,6 +38,14 @@ function AdminUserDetail() {
       <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
     </div>
   );
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-red-400">Failed to load user data: {(error as any).message}</div>
+      </div>
+    );
+  }
 
   const { profile, wallet, investments, transactions } = data ?? {};
 

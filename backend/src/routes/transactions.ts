@@ -159,4 +159,40 @@ router.post("/withdraw", requireAuth, async (req: AuthRequest, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/transactions/{id}/cancel:
+ *   patch:
+ *     summary: Cancel a pending withdrawal
+ *     tags: [Transactions]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch("/:id/cancel", requireAuth, async (req: AuthRequest, res) => {
+  const id = req.params.id as string;
+  try {
+    const tx = await prisma.transaction.findUnique({ where: { id } });
+    if (!tx) {
+      res.status(404).json({ error: "Transaction not found" });
+      return;
+    }
+    if (tx.userId !== req.userId) {
+      res.status(403).json({ error: "Not authorized" });
+      return;
+    }
+    if (tx.type !== "withdrawal" || tx.status !== "pending") {
+      res.status(400).json({ error: "Can only cancel pending withdrawals" });
+      return;
+    }
+
+    const updated = await prisma.transaction.update({
+      where: { id },
+      data: { status: "cancelled" },
+    });
+    res.json(updated);
+  } catch {
+    res.status(500).json({ error: "Failed to cancel withdrawal" });
+  }
+});
+
 export default router;

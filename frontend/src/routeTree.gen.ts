@@ -30,11 +30,11 @@ import { Route as CompanyCareersRouteImport } from './routes/company.careers'
 import { Route as CompanyAboutRouteImport } from './routes/company.about'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminTransactionsRouteImport } from './routes/admin/transactions'
-import { Route as AdminTicketsRouteImport } from './routes/admin/tickets'
 import { Route as AdminSessionsRouteImport } from './routes/admin/sessions'
 import { Route as AdminPlansRouteImport } from './routes/admin/plans'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLedgerRouteImport } from './routes/admin/ledger'
+import { Route as AdminKycRouteImport } from './routes/admin/kyc'
 import { Route as AdminInvestmentsRouteImport } from './routes/admin/investments'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
@@ -161,11 +161,6 @@ const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
   path: '/transactions',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminTicketsRoute = AdminTicketsRouteImport.update({
-  id: '/tickets',
-  path: '/tickets',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminSessionsRoute = AdminSessionsRouteImport.update({
   id: '/sessions',
   path: '/sessions',
@@ -184,6 +179,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
 const AdminLedgerRoute = AdminLedgerRouteImport.update({
   id: '/ledger',
   path: '/ledger',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminKycRoute = AdminKycRouteImport.update({
+  id: '/kyc',
+  path: '/kyc',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminInvestmentsRoute = AdminInvestmentsRouteImport.update({
@@ -319,11 +319,11 @@ export interface FileRoutesByFullPath {
   '/markets': typeof MarketsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/admin/investments': typeof AdminInvestmentsRoute
+  '/admin/kyc': typeof AdminKycRoute
   '/admin/ledger': typeof AdminLedgerRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/plans': typeof AdminPlansRoute
   '/admin/sessions': typeof AdminSessionsRoute
-  '/admin/tickets': typeof AdminTicketsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/company/about': typeof CompanyAboutRoute
@@ -364,11 +364,11 @@ export interface FileRoutesByTo {
   '/company': typeof CompanyRouteWithChildren
   '/copytrading': typeof CopytradingRoute
   '/admin/investments': typeof AdminInvestmentsRoute
+  '/admin/kyc': typeof AdminKycRoute
   '/admin/ledger': typeof AdminLedgerRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/plans': typeof AdminPlansRoute
   '/admin/sessions': typeof AdminSessionsRoute
-  '/admin/tickets': typeof AdminTicketsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/company/about': typeof CompanyAboutRoute
@@ -414,11 +414,11 @@ export interface FileRoutesById {
   '/markets': typeof MarketsRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/admin/investments': typeof AdminInvestmentsRoute
+  '/admin/kyc': typeof AdminKycRoute
   '/admin/ledger': typeof AdminLedgerRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/plans': typeof AdminPlansRoute
   '/admin/sessions': typeof AdminSessionsRoute
-  '/admin/tickets': typeof AdminTicketsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/company/about': typeof CompanyAboutRoute
@@ -464,11 +464,11 @@ export interface FileRouteTypes {
     | '/markets'
     | '/dashboard'
     | '/admin/investments'
+    | '/admin/kyc'
     | '/admin/ledger'
     | '/admin/login'
     | '/admin/plans'
     | '/admin/sessions'
-    | '/admin/tickets'
     | '/admin/transactions'
     | '/admin/users'
     | '/company/about'
@@ -509,11 +509,11 @@ export interface FileRouteTypes {
     | '/company'
     | '/copytrading'
     | '/admin/investments'
+    | '/admin/kyc'
     | '/admin/ledger'
     | '/admin/login'
     | '/admin/plans'
     | '/admin/sessions'
-    | '/admin/tickets'
     | '/admin/transactions'
     | '/admin/users'
     | '/company/about'
@@ -558,11 +558,11 @@ export interface FileRouteTypes {
     | '/markets'
     | '/_authenticated/dashboard'
     | '/admin/investments'
+    | '/admin/kyc'
     | '/admin/ledger'
     | '/admin/login'
     | '/admin/plans'
     | '/admin/sessions'
-    | '/admin/tickets'
     | '/admin/transactions'
     | '/admin/users'
     | '/company/about'
@@ -757,13 +757,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTransactionsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/tickets': {
-      id: '/admin/tickets'
-      path: '/tickets'
-      fullPath: '/admin/tickets'
-      preLoaderRoute: typeof AdminTicketsRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/sessions': {
       id: '/admin/sessions'
       path: '/sessions'
@@ -790,6 +783,13 @@ declare module '@tanstack/react-router' {
       path: '/ledger'
       fullPath: '/admin/ledger'
       preLoaderRoute: typeof AdminLedgerRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/kyc': {
+      id: '/admin/kyc'
+      path: '/kyc'
+      fullPath: '/admin/kyc'
+      preLoaderRoute: typeof AdminKycRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/investments': {
@@ -1020,11 +1020,11 @@ const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
 
 interface AdminRouteRouteChildren {
   AdminInvestmentsRoute: typeof AdminInvestmentsRoute
+  AdminKycRoute: typeof AdminKycRoute
   AdminLedgerRoute: typeof AdminLedgerRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminPlansRoute: typeof AdminPlansRoute
   AdminSessionsRoute: typeof AdminSessionsRoute
-  AdminTicketsRoute: typeof AdminTicketsRoute
   AdminTransactionsRoute: typeof AdminTransactionsRoute
   AdminUsersRoute: typeof AdminUsersRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1032,11 +1032,11 @@ interface AdminRouteRouteChildren {
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminInvestmentsRoute: AdminInvestmentsRoute,
+  AdminKycRoute: AdminKycRoute,
   AdminLedgerRoute: AdminLedgerRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminPlansRoute: AdminPlansRoute,
   AdminSessionsRoute: AdminSessionsRoute,
-  AdminTicketsRoute: AdminTicketsRoute,
   AdminTransactionsRoute: AdminTransactionsRoute,
   AdminUsersRoute: AdminUsersRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,

@@ -1,23 +1,26 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminApi } from "@/lib/adminApi";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Check, X } from "lucide-react";
 
 export const Route = createFileRoute("/admin/transactions")({
   component: AdminTransactions,
+  validateSearch: (search: Record<string, unknown>) => ({
+    type: (search.type as string) ?? "",
+    status: (search.status as string) ?? "",
+  }),
 });
 
 function AdminTransactions() {
-  const [typeFilter, setTypeFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("pending");
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
   const qc = useQueryClient();
 
   const { data: txs = [], isLoading } = useQuery({
-    queryKey: ["admin", "transactions", typeFilter, statusFilter],
-    queryFn: () => adminApi.getTransactions(typeFilter || undefined, statusFilter || undefined),
+    queryKey: ["admin", "transactions", search.type, search.status],
+    queryFn: () => adminApi.getTransactions(search.type || undefined, search.status || undefined),
   });
 
   const approveMut = useMutation({
@@ -48,8 +51,8 @@ function AdminTransactions() {
         </div>
         <div className="flex gap-2">
           <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
+            value={search.type}
+            onChange={(e) => navigate({ search: { ...search, type: e.target.value } })}
             className="bg-gray-800 border border-gray-700 text-white rounded-md px-3 py-1.5 text-sm"
           >
             <option value="">All types</option>
@@ -57,8 +60,8 @@ function AdminTransactions() {
             <option value="withdrawal">Withdrawal</option>
           </select>
           <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            value={search.status}
+            onChange={(e) => navigate({ search: { ...search, status: e.target.value } })}
             className="bg-gray-800 border border-gray-700 text-white rounded-md px-3 py-1.5 text-sm"
           >
             <option value="">All statuses</option>
