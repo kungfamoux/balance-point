@@ -47,7 +47,7 @@ function Overview() {
 
   return (
     <>
-      <PageHeader title="Dashboard" description="Welcome Susan">
+      <PageHeader title="Dashboard" description="">
         <Button asChild><Link to="/dashboard/deposit">Deposit</Link></Button>
       </PageHeader>
 

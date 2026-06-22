@@ -44,7 +44,6 @@ function KYC() {
             <UploadField icon={FileText} label="Government-issued ID (front)" />
             <UploadField icon={FileText} label="Government-issued ID (back)" />
             <UploadField icon={FileText} label="Proof of address (utility bill or bank statement)" />
-            <UploadField icon={Upload} label="Selfie holding your ID" />
             <Button onClick={submit} disabled={status === "pending" || status === "verified"} className="w-full">
               {status === "verified" ? "Verified" : status === "pending" ? "Pending review" : "Submit for review"}
             </Button>
