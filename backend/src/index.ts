@@ -18,7 +18,7 @@ import adminRouter from "./routes/admin";
 import sessionsRouter from "./routes/sessions";
 
 const app = express();
-const PORT = process.env.PORT ?? 4000;
+const PORT = Number(process.env.PORT) ?? 4000;
 
 // ── Swagger ────────────────────────────────────────────────────────────────
 const swaggerSpec = swaggerJsdoc({
@@ -115,7 +115,8 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
 
 app.listen(PORT, () => {
   console.log(`\n🚀 Backend running on http://localhost:${PORT}`);
-  console.log(`📖 Swagger docs at  http://localhost:${PORT}/api-docs\n`);
+  console.log(`📖 Swagger docs at  http://localhost:${PORT}/api-docs`);
+  console.log(`❤️  Health check at  http://localhost:${PORT}/health\n`);
 });
 
 export default app;

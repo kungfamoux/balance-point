@@ -48,7 +48,7 @@ function Overview() {
   return (
     <>
       <PageHeader title="Dashboard" description="">
-        <Button asChild><Link to="/dashboard/deposit">Deposit</Link></Button>
+        <Button asChild><Link to="/dashboard/deposit" search={{ amount: undefined, plan: undefined }}>Deposit</Link></Button>
       </PageHeader>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
