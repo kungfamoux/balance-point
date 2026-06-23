@@ -1,6 +1,37 @@
 import { getAccessToken, clearSession } from "./auth";
 
-const API_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:4000";
+const PRIMARY_API_URL = (import.meta.env.VITE_PRIMARY_API_URL as string | undefined) ?? "https://balance-point-kfg3.onrender.com";
+const FALLBACK_API_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:4000";
+
+let currentApiUrl = PRIMARY_API_URL;
+let healthCheckInProgress = false;
+
+async function checkBackendHealth(url: string): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+    const res = await fetch(`${url}/health`, {
+      method: "GET",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function getApiUrl(): Promise<string> {
+  if (!healthCheckInProgress) {
+    healthCheckInProgress = true;
+    const isPrimaryHealthy = await checkBackendHealth(PRIMARY_API_URL);
+    currentApiUrl = isPrimaryHealthy ? PRIMARY_API_URL : FALLBACK_API_URL;
+    healthCheckInProgress = false;
+  }
+  return currentApiUrl;
+}
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const token = getAccessToken();
@@ -10,7 +41,15 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   };
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  const res = await fetch(`${API_URL}${path}`, { ...init, headers });
+  const apiUrl = await getApiUrl();
+  let res = await fetch(`${apiUrl}${path}`, { ...init, headers });
+
+  // If primary backend fails, try fallback
+  if (!res.ok && apiUrl === PRIMARY_API_URL) {
+    console.warn(`Primary backend failed, trying fallback: ${FALLBACK_API_URL}`);
+    currentApiUrl = FALLBACK_API_URL;
+    res = await fetch(`${FALLBACK_API_URL}${path}`, { ...init, headers });
+  }
 
   if (res.status === 401) {
     clearSession();
