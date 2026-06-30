@@ -1,10 +1,11 @@
 import { createFileRoute, Outlet, redirect, Link, useRouter } from "@tanstack/react-router";
-import { getAdminToken, clearAdminToken } from "@/lib/adminApi";
+import { getAdminToken, clearAdminToken, adminApi } from "@/lib/adminApi";
 import {
   LayoutDashboard, Users, ArrowLeftRight, TrendingUp, Ticket,
-  BookOpen, BarChart3, LogOut, ChevronRight, Video,
+  BookOpen, BarChart3, LogOut, ChevronRight, Video, AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -30,6 +31,14 @@ const NAV = [
 function AdminLayout() {
   const router = useRouter();
   const pathname = router.state.location.pathname;
+  const [paymentSuspended, setPaymentSuspended] = useState(false);
+
+  useEffect(() => {
+    if (pathname === "/admin/login") return;
+    adminApi.getPaymentStatus()
+      .then(data => setPaymentSuspended(data.suspended))
+      .catch(() => {});
+  }, [pathname]);
 
   // Render login page without shell
   if (pathname === "/admin/login") return <Outlet />;
@@ -80,6 +89,14 @@ function AdminLayout() {
 
       {/* Main */}
       <main className="flex-1 overflow-y-auto">
+        {paymentSuspended && (
+          <div className="bg-red-900/20 border-b border-red-800 px-6 py-4">
+            <div className="flex items-center gap-3 text-red-400">
+              <AlertTriangle className="w-5 h-5" />
+              <p className="font-medium">Payment Suspended - Please contact developer</p>
+            </div>
+          </div>
+        )}
         <Outlet />
       </main>
     </div>

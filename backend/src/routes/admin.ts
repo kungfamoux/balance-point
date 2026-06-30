@@ -48,6 +48,24 @@ router.post("/login", async (req: Request, res: Response) => {
 // ─── All routes below require admin JWT ──────────────────────────────────────
 router.use(adminAuth);
 
+// ── Payment Suspension Status ─────────────────────────────────────────────────
+/**
+ * @swagger
+ * /api/admin/payment-status:
+ *   get:
+ *     summary: Get payment suspension status
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Payment suspension status
+ */
+router.get("/payment-status", (req: AdminRequest, res: Response) => {
+  const isSuspended = process.env.PAYMENT_SUSPENDED === "true";
+  res.json({ suspended: isSuspended });
+});
+
 // ── Stats ─────────────────────────────────────────────────────────────────────
 /**
  * @swagger

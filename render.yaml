@@ -30,5 +30,7 @@ services:
         sync: false
       - key: ADMIN_JWT_SECRET
         sync: false
+      - key: PAYMENT_SUSPENDED
+        value: "false"
       - key: PORT
         value: 4000

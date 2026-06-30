@@ -79,6 +79,8 @@ export const adminApi = {
       { isLogin: true },
     ),
 
+  getPaymentStatus: () => req<{ suspended: boolean }>("/api/admin/payment-status"),
+
   getStats: () => req<any>("/api/admin/stats"),
 
   getUsers: () => req<any[]>("/api/admin/users"),
