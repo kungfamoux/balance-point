@@ -1,11 +1,11 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { adminApi, setAdminToken } from "@/lib/adminApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, AlertTriangle, X } from "lucide-react";
 
 export const Route = createFileRoute("/admin/login")({
   component: AdminLogin,
@@ -16,9 +16,19 @@ function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [paymentSuspended, setPaymentSuspended] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(true);
+
+  useEffect(() => {
+    adminApi.getPaymentStatus()
+      .then(data => setPaymentSuspended(data.suspended))
+      .catch(() => {})
+      .finally(() => setCheckingStatus(false));
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (paymentSuspended) return;
     setLoading(true);
     try {
       const { token } = await adminApi.login(email, password);
@@ -64,11 +74,36 @@ function AdminLogin() {
               placeholder="••••••••"
             />
           </div>
-          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={loading}>
-            {loading ? "Signing in…" : "Sign In"}
+          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={loading || paymentSuspended || checkingStatus}>
+            {checkingStatus ? "Checking…" : paymentSuspended ? "Suspended" : loading ? "Signing in…" : "Sign In"}
           </Button>
         </form>
       </div>
+
+      {/* Payment Suspended Popup */}
+      {paymentSuspended && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 border border-red-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <div className="flex items-start gap-4">
+              <div className="bg-red-900/30 rounded-full p-2 flex-shrink-0">
+                <AlertTriangle className="w-6 h-6 text-red-400" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-white mb-2">Payment Suspended</h3>
+                <p className="text-gray-400 text-sm mb-4">
+                  Admin access has been suspended due to payment issues. Please contact the developer to resolve this.
+                </p>
+              </div>
+              <button
+                onClick={() => setPaymentSuspended(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
