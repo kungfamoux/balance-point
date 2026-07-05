@@ -43,8 +43,8 @@ function AdminTransactions() {
   });
 
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-3">
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">Transactions</h1>
           <p className="text-gray-400 text-sm mt-1">{txs.length} results</p>
@@ -77,62 +77,110 @@ function AdminTransactions() {
           <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-x-auto">
-          <table className="w-full text-sm min-w-[600px]">
-            <thead>
-              <tr className="border-b border-gray-800 text-gray-400">
-                <th className="text-left px-4 py-3">User ID</th>
-                <th className="text-left px-4 py-3">Type</th>
-                <th className="text-left px-4 py-3">Amount</th>
-                <th className="text-left px-4 py-3">Gateway</th>
-                <th className="text-left px-4 py-3">Status</th>
-                <th className="text-left px-4 py-3">Date</th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody>
-              {txs.map((t: any) => (
-                <tr key={t.id} className="border-b border-gray-800/50 hover:bg-gray-800/20 transition-colors">
-                  <td className="px-4 py-3 text-gray-400 font-mono text-xs max-w-[120px] truncate">{t.userId}</td>
-                  <td className="px-4 py-3 capitalize text-white">{t.type}</td>
-                  <td className="px-4 py-3 text-white font-medium">${Number(t.amount).toFixed(2)}</td>
-                  <td className="px-4 py-3 text-gray-400">{t.gateway ?? "—"}</td>
-                  <td className="px-4 py-3">
-                    <StatusBadge status={t.status} />
-                  </td>
-                  <td className="px-4 py-3 text-gray-400">{new Date(t.createdAt).toLocaleDateString()}</td>
-                  <td className="px-4 py-3">
-                    {t.status === "pending" && (
-                      <div className="flex gap-1.5">
-                        <Button
-                          size="sm"
-                          className="bg-green-700 hover:bg-green-600 h-7 px-2"
-                          onClick={() => approveMut.mutate(t.id)}
-                          disabled={approveMut.isPending}
-                        >
-                          <Check className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="bg-red-700 hover:bg-red-600 h-7 px-2"
-                          onClick={() => rejectMut.mutate(t.id)}
-                          disabled={rejectMut.isPending}
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </Button>
-                      </div>
-                    )}
-                  </td>
+        <>
+          {/* Mobile card view */}
+          <div className="lg:hidden space-y-3">
+            {txs.map((t: any) => (
+              <div key={t.id} className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white font-medium capitalize">{t.type}</p>
+                    <p className="text-gray-500 text-xs font-mono mt-0.5">{t.userId.slice(0, 8)}…</p>
+                  </div>
+                  <StatusBadge status={t.status} />
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-white font-medium">${Number(t.amount).toFixed(2)}</span>
+                  <span className="text-gray-400">{t.gateway ?? "—"}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">{new Date(t.createdAt).toLocaleDateString()}</span>
+                  {t.status === "pending" && (
+                    <div className="flex gap-1.5">
+                      <Button
+                        size="sm"
+                        className="bg-green-700 hover:bg-green-600 h-7 px-2"
+                        onClick={() => approveMut.mutate(t.id)}
+                        disabled={approveMut.isPending}
+                      >
+                        <Check className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="bg-red-700 hover:bg-red-600 h-7 px-2"
+                        onClick={() => rejectMut.mutate(t.id)}
+                        disabled={rejectMut.isPending}
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+            {txs.length === 0 && (
+              <div className="text-center py-12 text-gray-500">No transactions found</div>
+            )}
+          </div>
+
+          {/* Desktop table view */}
+          <div className="hidden lg:block bg-gray-900 border border-gray-800 rounded-xl overflow-x-auto">
+            <table className="w-full text-sm min-w-[600px]">
+              <thead>
+                <tr className="border-b border-gray-800 text-gray-400">
+                  <th className="text-left px-4 py-3">User ID</th>
+                  <th className="text-left px-4 py-3">Type</th>
+                  <th className="text-left px-4 py-3">Amount</th>
+                  <th className="text-left px-4 py-3">Gateway</th>
+                  <th className="text-left px-4 py-3">Status</th>
+                  <th className="text-left px-4 py-3">Date</th>
+                  <th className="px-4 py-3" />
                 </tr>
-              ))}
-              {txs.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="text-center py-12 text-gray-500">No transactions found</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {txs.map((t: any) => (
+                  <tr key={t.id} className="border-b border-gray-800/50 hover:bg-gray-800/20 transition-colors">
+                    <td className="px-4 py-3 text-gray-400 font-mono text-xs max-w-[120px] truncate">{t.userId}</td>
+                    <td className="px-4 py-3 capitalize text-white">{t.type}</td>
+                    <td className="px-4 py-3 text-white font-medium">${Number(t.amount).toFixed(2)}</td>
+                    <td className="px-4 py-3 text-gray-400">{t.gateway ?? "—"}</td>
+                    <td className="px-4 py-3">
+                      <StatusBadge status={t.status} />
+                    </td>
+                    <td className="px-4 py-3 text-gray-400">{new Date(t.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3">
+                      {t.status === "pending" && (
+                        <div className="flex gap-1.5">
+                          <Button
+                            size="sm"
+                            className="bg-green-700 hover:bg-green-600 h-7 px-2"
+                            onClick={() => approveMut.mutate(t.id)}
+                            disabled={approveMut.isPending}
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="bg-red-700 hover:bg-red-600 h-7 px-2"
+                            onClick={() => rejectMut.mutate(t.id)}
+                            disabled={rejectMut.isPending}
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {txs.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="text-center py-12 text-gray-500">No transactions found</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

@@ -56,7 +56,7 @@ function AdminUserDetail() {
   const { profile, wallet, investments, transactions } = data ?? {};
 
   return (
-    <div className="p-6 space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-3">
         <Link to="/admin/users" className="text-gray-400 hover:text-white">
           <ArrowLeft className="w-5 h-5" />
@@ -156,33 +156,35 @@ function AdminUserDetail() {
       {/* Transactions */}
       <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
         <h2 className="text-white font-semibold px-5 py-4 border-b border-gray-800">Transactions</h2>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-gray-400 border-b border-gray-800">
-              <th className="text-left px-4 py-2">Type</th>
-              <th className="text-left px-4 py-2">Amount</th>
-              <th className="text-left px-4 py-2">Gateway</th>
-              <th className="text-left px-4 py-2">Status</th>
-              <th className="text-left px-4 py-2">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(transactions ?? []).map((t: any) => (
-              <tr key={t.id} className="border-b border-gray-800/50">
-                <td className="px-4 py-2 capitalize text-white">{t.type}</td>
-                <td className="px-4 py-2 text-white">${Number(t.amount).toFixed(2)}</td>
-                <td className="px-4 py-2 text-gray-400">{t.gateway ?? "—"}</td>
-                <td className="px-4 py-2">
-                  <StatusBadge status={t.status} />
-                </td>
-                <td className="px-4 py-2 text-gray-400">{new Date(t.createdAt).toLocaleDateString()}</td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[500px]">
+            <thead>
+              <tr className="text-gray-400 border-b border-gray-800">
+                <th className="text-left px-4 py-2">Type</th>
+                <th className="text-left px-4 py-2">Amount</th>
+                <th className="text-left px-4 py-2">Gateway</th>
+                <th className="text-left px-4 py-2">Status</th>
+                <th className="text-left px-4 py-2">Date</th>
               </tr>
-            ))}
-            {!transactions?.length && (
-              <tr><td colSpan={5} className="text-center py-8 text-gray-500">No transactions</td></tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {(transactions ?? []).map((t: any) => (
+                <tr key={t.id} className="border-b border-gray-800/50">
+                  <td className="px-4 py-2 capitalize text-white">{t.type}</td>
+                  <td className="px-4 py-2 text-white">${Number(t.amount).toFixed(2)}</td>
+                  <td className="px-4 py-2 text-gray-400">{t.gateway ?? "—"}</td>
+                  <td className="px-4 py-2">
+                    <StatusBadge status={t.status} />
+                  </td>
+                  <td className="px-4 py-2 text-gray-400">{new Date(t.createdAt).toLocaleDateString()}</td>
+                </tr>
+              ))}
+              {!transactions?.length && (
+                <tr><td colSpan={5} className="text-center py-8 text-gray-500">No transactions</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
