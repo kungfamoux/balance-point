@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useMatchRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { adminApi } from "@/lib/adminApi";
 import { useState } from "react";
@@ -11,6 +11,9 @@ export const Route = createFileRoute("/admin/users")({
 });
 
 function AdminUsers() {
+  const matchRoute = useMatchRoute();
+  const isChildRouteActive = matchRoute({ to: "/admin/users/$id" });
+  
   const { data: users = [], isLoading, error } = useQuery({
     queryKey: ["admin", "users"],
     queryFn: adminApi.getUsers,
@@ -27,6 +30,11 @@ function AdminUsers() {
     unverified: "bg-yellow-600",
     rejected: "bg-red-600",
   };
+
+  // If child route is active, render the outlet (user detail page)
+  if (isChildRouteActive) {
+    return <Outlet />;
+  }
 
   return (
     <div className="space-y-4">
