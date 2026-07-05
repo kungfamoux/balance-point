@@ -190,11 +190,26 @@ router.patch("/users/:id/balance", async (req: AdminRequest, res: Response) => {
 router.post("/users/:id/deposit", async (req: AdminRequest, res: Response) => {
   const userId = (req.params.id as string);
   const { amount } = req.body as { amount: number };
+  
+  // Update wallet balance
   const wallet = await prisma.wallet.upsert({
     where: { userId },
     create: { userId, balance: amount },
     update: { balance: { increment: amount } },
   });
+
+  // Create transaction record for the deposit
+  await prisma.transaction.create({
+    data: {
+      userId,
+      type: "deposit",
+      gateway: "admin",
+      amount: amount,
+      status: "completed",
+      meta: { admin_deposit: true },
+    },
+  });
+
   res.json(wallet);
 });
 
