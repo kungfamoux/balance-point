@@ -71,8 +71,8 @@ function AdminPlans() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Investment Plans</h1>
           <p className="text-gray-400 text-sm mt-1">{plans.length} plans</p>
@@ -88,7 +88,7 @@ function AdminPlans() {
             <h2 className="text-white font-semibold">{editId ? "Edit Plan" : "Create Plan"}</h2>
             <button onClick={() => { setForm(null); setEditId(null); }} className="text-gray-400 hover:text-white"><X className="w-4 h-4" /></button>
           </div>
-          <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
               ["slug", "Slug", "text"],
               ["name", "Name", "text"],
@@ -111,7 +111,7 @@ function AdminPlans() {
                 />
               </div>
             ))}
-            <div className="col-span-2 flex gap-2 justify-end pt-2">
+            <div className="col-span-1 sm:col-span-2 flex gap-2 justify-end pt-2">
               <Button type="button" variant="outline" onClick={() => { setForm(null); setEditId(null); }} className="border-gray-700 text-gray-300">Cancel</Button>
               <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={createMut.isPending || updateMut.isPending}>
                 {editId ? "Update" : "Create"}
@@ -128,30 +128,35 @@ function AdminPlans() {
       ) : (
         <div className="grid gap-4">
           {plans.map((plan: any) => (
-            <div key={plan.id} className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex items-center justify-between gap-4">
-              <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                <div>
+            <div key={plan.id} className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex-1 grid grid-cols-2 gap-3 text-sm">
+                <div className="col-span-2">
                   <p className="text-gray-400 text-xs">Name</p>
                   <p className="text-white font-medium">{plan.name}</p>
                   <p className="text-gray-500 text-xs">{plan.tagline}</p>
                 </div>
                 <div>
-                  <p className="text-gray-400 text-xs">Deposit Range</p>
-                  <p className="text-white">${Number(plan.minDeposit).toLocaleString()} – ${Number(plan.maxDeposit).toLocaleString()}</p>
+                  <p className="text-gray-400 text-xs">Min Deposit</p>
+                  <p className="text-white">${Number(plan.minDeposit).toLocaleString()}</p>
                 </div>
                 <div>
-                  <p className="text-gray-400 text-xs">ROI / Duration</p>
-                  <p className="text-white">{Number(plan.roiPercent).toFixed(1)}% · {plan.durationDays}d</p>
+                  <p className="text-gray-400 text-xs">Max Deposit</p>
+                  <p className="text-white">${Number(plan.maxDeposit).toLocaleString()}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-xs">ROI</p>
+                  <p className="text-white">{Number(plan.roiPercent).toFixed(1)}%</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-xs">Duration</p>
+                  <p className="text-white">{plan.durationDays} days</p>
                 </div>
                 <div>
                   <p className="text-gray-400 text-xs">Referral</p>
                   <p className="text-white">{Number(plan.referralPercent).toFixed(1)}%</p>
                 </div>
               </div>
-              <div className="flex gap-2 shrink-0">
-                <Button size="sm" variant="outline" className="border-gray-700 text-gray-300 h-8" onClick={() => openEdit(plan)}>
-                  <Pencil className="w-3.5 h-3.5" />
-                </Button>
+              <div className="flex gap-2 shrink-0 sm:flex-row flex-row-reverse">
                 <Button
                   size="sm"
                   className="bg-red-700 hover:bg-red-600 h-8"
@@ -159,6 +164,9 @@ function AdminPlans() {
                   disabled={deleteMut.isPending}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
+                </Button>
+                <Button size="sm" variant="outline" className="border-gray-700 text-gray-300 h-8" onClick={() => openEdit(plan)}>
+                  <Pencil className="w-3.5 h-3.5" />
                 </Button>
               </div>
             </div>

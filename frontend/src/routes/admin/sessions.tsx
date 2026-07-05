@@ -72,8 +72,8 @@ function AdminSessions() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Live Sessions</h1>
           <p className="text-gray-400 text-sm mt-1">{sessions.length} sessions</p>
@@ -89,8 +89,8 @@ function AdminSessions() {
             <h2 className="text-white font-semibold">{editId ? "Edit Session" : "Create Session"}</h2>
             <button onClick={() => { setForm(null); setEditId(null); }} className="text-gray-400 hover:text-white"><X className="w-4 h-4" /></button>
           </div>
-          <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="col-span-1 sm:col-span-2">
               <Label className="text-gray-300 text-sm">Title</Label>
               <Input value={form.title} onChange={(e) => setForm((f) => f ? { ...f, title: e.target.value } : f)} className="mt-1 bg-gray-800 border-gray-700 text-white" required />
             </div>
@@ -123,12 +123,12 @@ function AdminSessions() {
               <Label className="text-gray-300 text-sm">Duration</Label>
               <Input value={form.duration} onChange={(e) => setForm((f) => f ? { ...f, duration: e.target.value } : f)} className="mt-1 bg-gray-800 border-gray-700 text-white" placeholder="60 min" />
             </div>
-            <div className="col-span-2">
+            <div className="col-span-1 sm:col-span-2">
               <Label className="text-gray-300 text-sm">Topic / Description</Label>
               <textarea value={form.topic} onChange={(e) => setForm((f) => f ? { ...f, topic: e.target.value } : f)}
                 className="mt-1 w-full bg-gray-800 border border-gray-700 text-white rounded-md px-3 py-2 text-sm min-h-[80px] resize-y" />
             </div>
-            <div className="col-span-2">
+            <div className="col-span-1 sm:col-span-2">
               <Label className="text-gray-300 text-sm">
                 Embed URL
                 <span className="ml-2 text-xs text-gray-500 font-normal">YouTube: https://www.youtube.com/embed/VIDEO_ID — for live use ?autoplay=1</span>
@@ -143,11 +143,11 @@ function AdminSessions() {
               <Label className="text-gray-300 text-sm">Sort Order</Label>
               <Input type="number" value={form.sortOrder} onChange={(e) => setForm((f) => f ? { ...f, sortOrder: e.target.value } : f)} className="mt-1 bg-gray-800 border-gray-700 text-white" />
             </div>
-            <div className="col-span-2 flex items-center gap-3">
+            <div className="col-span-1 sm:col-span-2 flex items-center gap-3">
               <input type="checkbox" id="premium" checked={form.premium} onChange={(e) => setForm((f) => f ? { ...f, premium: e.target.checked } : f)} className="h-4 w-4" />
               <Label htmlFor="premium" className="text-gray-300 text-sm cursor-pointer">Premium session (lock icon shown)</Label>
             </div>
-            <div className="col-span-2 flex gap-2 justify-end pt-2">
+            <div className="col-span-1 sm:col-span-2 flex gap-2 justify-end pt-2">
               <Button type="button" variant="outline" onClick={() => { setForm(null); setEditId(null); }} className="border-gray-700 text-gray-300">Cancel</Button>
               <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={createMut.isPending || updateMut.isPending}>
                 {editId ? "Update" : "Create"}
@@ -164,9 +164,9 @@ function AdminSessions() {
       ) : (
         <div className="space-y-3">
           {sessions.map((s: any) => (
-            <div key={s.id} className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex items-center justify-between gap-4">
+            <div key={s.id} className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs text-white ${statusColor[s.status] ?? "bg-gray-600"}`}>
                     {s.status === "live" && <Radio className="w-3 h-3" />} {s.status}
                   </span>
@@ -180,10 +180,7 @@ function AdminSessions() {
                   <p className="text-gray-500 text-xs mt-0.5">{s.tags.join(", ")}</p>
                 )}
               </div>
-              <div className="flex gap-2 shrink-0">
-                <Button size="sm" variant="outline" className="border-gray-700 text-gray-300 h-8" onClick={() => openEdit(s)}>
-                  <Pencil className="w-3.5 h-3.5" />
-                </Button>
+              <div className="flex gap-2 shrink-0 sm:flex-row flex-row-reverse">
                 <Button
                   size="sm"
                   className="bg-red-700 hover:bg-red-600 h-8"
@@ -191,6 +188,9 @@ function AdminSessions() {
                   disabled={deleteMut.isPending}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
+                </Button>
+                <Button size="sm" variant="outline" className="border-gray-700 text-gray-300 h-8" onClick={() => openEdit(s)}>
+                  <Pencil className="w-3.5 h-3.5" />
                 </Button>
               </div>
             </div>

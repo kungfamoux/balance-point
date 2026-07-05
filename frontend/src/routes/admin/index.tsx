@@ -14,14 +14,14 @@ function StatCard({ icon: Icon, label, value, color, to, search }: {
     <Link
       to={to}
       search={search}
-      className="group bg-gray-900 border border-gray-800 rounded-xl p-5 flex items-center gap-4 hover:border-gray-700 hover:bg-gray-800/50 transition-all duration-200 cursor-pointer"
+      className="group bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-xl p-5 flex items-center gap-4 hover:border-gray-600 hover:shadow-lg hover:shadow-gray-900/20 transition-all duration-200 cursor-pointer"
     >
-      <div className={`p-3 rounded-lg ${color} group-hover:scale-110 transition-transform duration-200`}>
+      <div className={`p-3 rounded-xl ${color} group-hover:scale-110 transition-transform duration-200 shadow-lg`}>
         <Icon className="w-5 h-5 text-white" />
       </div>
       <div className="flex-1">
-        <p className="text-gray-400 text-xs group-hover:text-gray-300 transition-colors">{label}</p>
-        <p className="text-white font-bold text-xl mt-0.5">{value}</p>
+        <p className="text-gray-400 text-xs uppercase tracking-wide group-hover:text-gray-300 transition-colors">{label}</p>
+        <p className="text-white font-bold text-2xl mt-0.5">{value}</p>
       </div>
       <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-gray-400 group-hover:translate-x-1 transition-all duration-200" />
     </Link>
@@ -45,9 +45,9 @@ function AdminDashboard() {
     "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
         <p className="text-gray-400 text-sm mt-1">Platform overview</p>
       </div>
 
@@ -61,7 +61,7 @@ function AdminDashboard() {
       </div>
 
       {(stats?.pendingDeposits > 0 || stats?.pendingWithdrawals > 0) && (
-        <div className="bg-yellow-900/30 border border-yellow-700/40 rounded-xl p-4 text-yellow-300 text-sm">
+        <div className="bg-gradient-to-r from-yellow-900/40 to-orange-900/40 border border-yellow-700/50 rounded-xl p-4 text-yellow-300 text-sm">
           ⚠ You have {stats.pendingDeposits} pending deposit(s) and {stats.pendingWithdrawals} pending withdrawal(s) awaiting approval.
         </div>
       )}

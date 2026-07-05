@@ -53,8 +53,8 @@ function AdminLedger() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Public Ledger</h1>
           <p className="text-gray-400 text-sm mt-1">Manage visible transaction feed on homepage</p>
@@ -70,7 +70,7 @@ function AdminLedger() {
             <h2 className="text-white font-semibold">{editId ? "Edit Entry" : "New Entry"}</h2>
             <button onClick={() => { setForm(null); setEditId(null); }} className="text-gray-400 hover:text-white"><X className="w-4 h-4" /></button>
           </div>
-          <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label className="text-gray-300 text-sm">Kind</Label>
               <select
@@ -103,7 +103,7 @@ function AdminLedger() {
               <Label className="text-gray-300 text-sm">Sort Order</Label>
               <Input type="number" value={form.sortOrder} onChange={(e) => setForm((f) => f ? { ...f, sortOrder: e.target.value } : f)} className="mt-1 bg-gray-800 border-gray-700 text-white" />
             </div>
-            <div className="col-span-2 flex gap-2 justify-end pt-2">
+            <div className="col-span-1 sm:col-span-2 flex gap-2 justify-end pt-2">
               <Button type="button" variant="outline" onClick={() => { setForm(null); setEditId(null); }} className="border-gray-700 text-gray-300">Cancel</Button>
               <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={createMut.isPending || updateMut.isPending}>
                 {editId ? "Update" : "Create"}
@@ -118,49 +118,93 @@ function AdminLedger() {
           <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-x-auto">
-          <table className="w-full text-sm min-w-[500px]">
-            <thead>
-              <tr className="border-b border-gray-800 text-gray-400">
-                <th className="text-left px-4 py-3">Kind</th>
-                <th className="text-left px-4 py-3">Gateway</th>
-                <th className="text-left px-4 py-3">Name</th>
-                <th className="text-left px-4 py-3">Amount</th>
-                <th className="text-left px-4 py-3">Hours Ago</th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody>
-              {entries.map((e: any) => (
-                <tr key={e.id} className="border-b border-gray-800/50 hover:bg-gray-800/20 transition-colors">
-                  <td className="px-4 py-3 capitalize text-white">{e.kind}</td>
-                  <td className="px-4 py-3 text-gray-300">{e.gateway}</td>
-                  <td className="px-4 py-3 text-gray-300">{e.name}</td>
-                  <td className="px-4 py-3 text-white">${Number(e.amount).toFixed(2)}</td>
-                  <td className="px-4 py-3 text-gray-400">{e.hoursAgo}h</td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-1.5 justify-end">
-                      <Button size="sm" variant="outline" className="border-gray-700 text-gray-300 h-7 w-7 p-0" onClick={() => openEdit(e)}>
-                        <Pencil className="w-3.5 h-3.5" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="bg-red-700 hover:bg-red-600 h-7 w-7 p-0"
-                        onClick={() => { if (confirm("Delete entry?")) deleteMut.mutate(e.id); }}
-                        disabled={deleteMut.isPending}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
-                    </div>
-                  </td>
+        <>
+          {/* Mobile card view */}
+          <div className="lg:hidden space-y-3">
+            {entries.map((e: any) => (
+              <div key={e.id} className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white font-medium capitalize">{e.kind}</p>
+                    <p className="text-gray-400 text-xs">{e.gateway}</p>
+                  </div>
+                  <p className="text-white font-medium">${Number(e.amount).toFixed(2)}</p>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <div>
+                    <p className="text-gray-400 text-xs">Name</p>
+                    <p className="text-gray-300">{e.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-xs">Hours Ago</p>
+                    <p className="text-gray-400">{e.hoursAgo}h</p>
+                  </div>
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button size="sm" variant="outline" className="border-gray-700 text-gray-300 h-8 px-3" onClick={() => openEdit(e)}>
+                    <Pencil className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-red-700 hover:bg-red-600 h-8 px-3"
+                    onClick={() => { if (confirm("Delete entry?")) deleteMut.mutate(e.id); }}
+                    disabled={deleteMut.isPending}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+            {entries.length === 0 && (
+              <div className="text-center py-12 text-gray-500">No ledger entries</div>
+            )}
+          </div>
+
+          {/* Desktop table view */}
+          <div className="hidden lg:block bg-gray-900 border border-gray-800 rounded-xl overflow-x-auto">
+            <table className="w-full text-sm min-w-[500px]">
+              <thead>
+                <tr className="border-b border-gray-800 text-gray-400">
+                  <th className="text-left px-4 py-3">Kind</th>
+                  <th className="text-left px-4 py-3">Gateway</th>
+                  <th className="text-left px-4 py-3">Name</th>
+                  <th className="text-left px-4 py-3">Amount</th>
+                  <th className="text-left px-4 py-3">Hours Ago</th>
+                  <th className="px-4 py-3" />
                 </tr>
-              ))}
-              {entries.length === 0 && (
-                <tr><td colSpan={6} className="text-center py-12 text-gray-500">No ledger entries</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {entries.map((e: any) => (
+                  <tr key={e.id} className="border-b border-gray-800/50 hover:bg-gray-800/20 transition-colors">
+                    <td className="px-4 py-3 capitalize text-white">{e.kind}</td>
+                    <td className="px-4 py-3 text-gray-300">{e.gateway}</td>
+                    <td className="px-4 py-3 text-gray-300">{e.name}</td>
+                    <td className="px-4 py-3 text-white">${Number(e.amount).toFixed(2)}</td>
+                    <td className="px-4 py-3 text-gray-400">{e.hoursAgo}h</td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-1.5 justify-end">
+                        <Button size="sm" variant="outline" className="border-gray-700 text-gray-300 h-7 w-7 p-0" onClick={() => openEdit(e)}>
+                          <Pencil className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-red-700 hover:bg-red-600 h-7 w-7 p-0"
+                          onClick={() => { if (confirm("Delete entry?")) deleteMut.mutate(e.id); }}
+                          disabled={deleteMut.isPending}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {entries.length === 0 && (
+                  <tr><td colSpan={6} className="text-center py-12 text-gray-500">No ledger entries</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

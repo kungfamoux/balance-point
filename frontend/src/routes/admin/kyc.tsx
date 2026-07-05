@@ -27,7 +27,7 @@ function AdminKyc() {
   });
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-bold text-white">KYC Approvals</h1>
         <p className="text-gray-400 text-sm mt-1">{kycDocs.length} pending submissions</p>
@@ -46,7 +46,7 @@ function AdminKyc() {
         <div className="space-y-4">
           {kycDocs.map((doc: any) => (
             <div key={doc.id} className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                 <div className="flex-1 space-y-3">
                   <div className="flex items-center gap-3">
                     <User className="w-5 h-5 text-gray-400" />
@@ -79,16 +79,7 @@ function AdminKyc() {
                   </div>
                 </div>
 
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    className="bg-green-700 hover:bg-green-600 h-9 px-4"
-                    onClick={() => approveMut.mutate({ id: doc.id, status: "approved" })}
-                    disabled={approveMut.isPending}
-                  >
-                    <Check className="w-4 h-4 mr-1" />
-                    Approve
-                  </Button>
+                <div className="flex gap-2 sm:flex-row flex-row-reverse">
                   <Button
                     size="sm"
                     className="bg-red-700 hover:bg-red-600 h-9 px-4"
@@ -97,6 +88,15 @@ function AdminKyc() {
                   >
                     <X className="w-4 h-4 mr-1" />
                     Reject
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-green-700 hover:bg-green-600 h-9 px-4"
+                    onClick={() => approveMut.mutate({ id: doc.id, status: "approved" })}
+                    disabled={approveMut.isPending}
+                  >
+                    <Check className="w-4 h-4 mr-1" />
+                    Approve
                   </Button>
                 </div>
               </div>
