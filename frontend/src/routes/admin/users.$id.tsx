@@ -20,11 +20,17 @@ function AdminUserDetail() {
     queryFn: () => adminApi.getUser(id),
   });
   const [balanceInput, setBalanceInput] = useState("");
+  const [depositInput, setDepositInput] = useState("");
   const [kycInput, setKycInput] = useState("");
 
   const balanceMut = useMutation({
     mutationFn: () => adminApi.updateBalance(id, Number(balanceInput)),
     onSuccess: () => { toast.success("Balance updated"); qc.invalidateQueries({ queryKey: ["admin", "user", id] }); },
+    onError: (e: any) => toast.error(e.message),
+  });
+  const depositMut = useMutation({
+    mutationFn: () => adminApi.depositToWallet(id, Number(depositInput)),
+    onSuccess: () => { toast.success("Deposit successful"); setDepositInput(""); qc.invalidateQueries({ queryKey: ["admin", "user", id] }); },
     onError: (e: any) => toast.error(e.message),
   });
   const kycMut = useMutation({
@@ -84,7 +90,7 @@ function AdminUserDetail() {
       </div>
 
       {/* Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
           <h2 className="text-white font-semibold mb-3">Adjust Balance</h2>
           <div className="flex gap-2">
@@ -101,6 +107,25 @@ function AdminUserDetail() {
               className="bg-blue-600 hover:bg-blue-700 shrink-0"
             >
               Set
+            </Button>
+          </div>
+        </div>
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
+          <h2 className="text-white font-semibold mb-3">Deposit to Wallet</h2>
+          <div className="flex gap-2">
+            <Input
+              type="number"
+              value={depositInput}
+              onChange={(e) => setDepositInput(e.target.value)}
+              placeholder="Amount to add"
+              className="bg-gray-800 border-gray-700 text-white"
+            />
+            <Button
+              onClick={() => depositMut.mutate()}
+              disabled={depositMut.isPending || !depositInput}
+              className="bg-green-600 hover:bg-green-700 shrink-0"
+            >
+              Add
             </Button>
           </div>
         </div>

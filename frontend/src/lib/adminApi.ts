@@ -87,6 +87,8 @@ export const adminApi = {
   getUser: (id: string) => req<any>(`/api/admin/users/${id}`),
   updateBalance: (id: string, balance: number) =>
     req<any>(`/api/admin/users/${id}/balance`, { method: "PATCH", body: JSON.stringify({ balance }) }),
+  depositToWallet: (id: string, amount: number) =>
+    req<any>(`/api/admin/users/${id}/deposit`, { method: "POST", body: JSON.stringify({ amount }) }),
   updateKyc: (id: string, kycStatus: string) =>
     req<any>(`/api/admin/users/${id}/kyc`, { method: "PATCH", body: JSON.stringify({ kycStatus }) }),
 

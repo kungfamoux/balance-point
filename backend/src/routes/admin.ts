@@ -180,6 +180,26 @@ router.patch("/users/:id/balance", async (req: AdminRequest, res: Response) => {
 
 /**
  * @swagger
+ * /api/admin/users/{id}/deposit:
+ *   post:
+ *     summary: Add money to user wallet
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post("/users/:id/deposit", async (req: AdminRequest, res: Response) => {
+  const userId = (req.params.id as string);
+  const { amount } = req.body as { amount: number };
+  const wallet = await prisma.wallet.upsert({
+    where: { userId },
+    create: { userId, balance: amount },
+    update: { balance: { increment: amount } },
+  });
+  res.json(wallet);
+});
+
+/**
+ * @swagger
  * /api/admin/users/{id}/kyc:
  *   patch:
  *     summary: Update KYC status (verified | unverified | rejected)
