@@ -1,11 +1,13 @@
 import { createFileRoute, Link, Outlet, useMatchRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminApi } from "@/lib/adminApi";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, ChevronRight, Trash2 } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/users")({
   component: AdminUsers,
@@ -14,12 +16,22 @@ export const Route = createFileRoute("/admin/users")({
 function AdminUsers() {
   const matchRoute = useMatchRoute();
   const isChildRouteActive = matchRoute({ to: "/admin/users/$id" });
+  const qc = useQueryClient();
   
   const { data: users = [], isLoading, error } = useQuery({
     queryKey: ["admin", "users"],
     queryFn: adminApi.getUsers,
   });
   const [search, setSearch] = useState("");
+
+  const deleteMut = useMutation({
+    mutationFn: (id: string) => adminApi.deleteUser(id),
+    onSuccess: () => {
+      toast.success("User deleted successfully");
+      qc.invalidateQueries({ queryKey: ["admin", "users"] });
+    },
+    onError: (e: any) => toast.error(e.message || "Failed to delete user"),
+  });
 
   const filtered = users.filter((u: any) =>
     (u.fullName ?? "").toLowerCase().includes(search.toLowerCase()) ||
@@ -84,13 +96,23 @@ function AdminUsers() {
                   <span className="text-gray-400">{u.country ?? "—"}</span>
                   <span className="text-gray-500">{new Date(u.createdAt).toLocaleDateString()}</span>
                 </div>
-                <Link
-                  to="/admin/users/$id"
-                  params={{ id: u.id }}
-                  className="flex items-center justify-center gap-1 text-blue-400 hover:text-blue-300 text-sm py-2 border border-blue-600/30 rounded-lg"
-                >
-                  View Details <ChevronRight className="w-4 h-4" />
-                </Link>
+                <div className="flex items-center gap-2">
+                  <Link
+                    to="/admin/users/$id"
+                    params={{ id: u.id }}
+                    className="flex-1 items-center justify-center gap-1 text-blue-400 hover:text-blue-300 text-sm py-2 border border-blue-600/30 rounded-lg"
+                  >
+                    View Details <ChevronRight className="w-4 h-4" />
+                  </Link>
+                  <Button
+                    size="sm"
+                    className="bg-red-700 hover:bg-red-600 h-9 px-3"
+                    onClick={() => { if (confirm(`Delete user ${u.fullName || u.id}? This action cannot be undone.`)) deleteMut.mutate(u.id); }}
+                    disabled={deleteMut.isPending}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             ))}
             {filtered.length === 0 && (

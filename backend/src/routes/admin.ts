@@ -231,6 +231,38 @@ router.patch("/users/:id/kyc", async (req: AdminRequest, res: Response) => {
 
 /**
  * @swagger
+ * /api/admin/users/{id}:
+ *   delete:
+ *     summary: Delete user account and all associated data
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete("/users/:id", async (req: AdminRequest, res: Response) => {
+  const id = (req.params.id as string);
+  try {
+    // Delete all associated data in correct order due to foreign key constraints
+    await prisma.$transaction([
+      prisma.ticketMessage.deleteMany({ where: { userId: id } }),
+      prisma.ticket.deleteMany({ where: { userId: id } }),
+      prisma.kycDocument.deleteMany({ where: { userId: id } }),
+      prisma.copyFollow.deleteMany({ where: { userId: id } }),
+      prisma.referral.deleteMany({ where: { referrerId: id } }),
+      prisma.referral.deleteMany({ where: { referredId: id } }),
+      prisma.transaction.deleteMany({ where: { userId: id } }),
+      prisma.investment.deleteMany({ where: { userId: id } }),
+      prisma.wallet.deleteMany({ where: { userId: id } }),
+      prisma.profile.delete({ where: { id } }),
+    ]);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+});
+
+/**
+ * @swagger
  * /api/admin/kyc:
  *   get:
  *     summary: List all pending KYC submissions

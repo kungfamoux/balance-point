@@ -85,6 +85,13 @@ export const adminApi = {
 
   getUsers: () => req<any[]>("/api/admin/users"),
   getUser: (id: string) => req<any>(`/api/admin/users/${id}`),
+  deleteUser: async (id: string) => {
+    const apiUrl = await getApiUrl();
+    return fetch(`${apiUrl}/api/admin/users/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${getAdminToken()}` },
+    });
+  },
   updateBalance: (id: string, balance: number) =>
     req<any>(`/api/admin/users/${id}/balance`, { method: "PATCH", body: JSON.stringify({ balance }) }),
   depositToWallet: (id: string, amount: number) =>
