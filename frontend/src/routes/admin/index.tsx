@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { adminApi } from "@/lib/adminApi";
 import { Users, ArrowDownCircle, ArrowUpCircle, Clock, TrendingUp, ChevronRight, ShieldCheck } from "lucide-react";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
@@ -46,10 +47,7 @@ function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-        <p className="text-gray-400 text-sm mt-1">Platform overview</p>
-      </div>
+      <AdminPageHeader title="Dashboard" description="Platform overview" />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         <StatCard icon={Users} label="Total Users" value={stats?.totalUsers ?? 0} color="bg-blue-600" to="/admin/users" />

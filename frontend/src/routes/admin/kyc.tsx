@@ -4,6 +4,7 @@ import { adminApi } from "@/lib/adminApi";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Check, X, FileText, User, Calendar } from "lucide-react";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export const Route = createFileRoute("/admin/kyc")({
   component: AdminKyc,
@@ -28,10 +29,7 @@ function AdminKyc() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold text-white">KYC Approvals</h1>
-        <p className="text-gray-400 text-sm mt-1">{kycDocs.length} pending submissions</p>
-      </div>
+      <AdminPageHeader title="KYC Approvals" description={`${kycDocs.length} pending submissions`} />
 
       {isLoading ? (
         <div className="flex justify-center py-20">

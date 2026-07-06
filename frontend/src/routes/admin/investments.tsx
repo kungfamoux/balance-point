@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export const Route = createFileRoute("/admin/investments")({
   component: AdminInvestments,
@@ -51,10 +52,7 @@ function AdminInvestments() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Investments</h1>
-        <p className="text-gray-400 text-sm mt-1">{investments.length} total investments</p>
-      </div>
+      <AdminPageHeader title="Investments" description={`${investments.length} total investments`} />
 
       {isLoading ? (
         <div className="flex justify-center py-20">

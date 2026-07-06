@@ -24,6 +24,8 @@ const traders = [
   { handle: "@gold_hunter", name: "Diana Vega", roi: "+134%", followers: 11240, risk: "Medium", strategy: "Commodities" },
   { handle: "@bluechip_tom", name: "Tomás Oliveira", roi: "+78%", followers: 6310, risk: "Low", strategy: "US stocks" },
   { handle: "@scalper_yui", name: "Yui Hayashi", roi: "+312%", followers: 18900, risk: "High", strategy: "FX scalping" },
+  { handle: "@vulturetrades", name: "Vulture trades 🦅", roi: null, followers: 186900, risk: "Medium", strategy: "Options trading - here to share knowledge and show the ups and downs of a full time trader. NO PAID SERVICES EVER!" },
+  { handle: "@StockOptions888", name: "SniperAlert", roi: "+$6,302,393.49", followers: 121300, risk: "High", strategy: "Multi-millionaire day trader sharing the ins & outs of trading along the way to long term success. NO PAID SERVICE! (03/08/2018 - 12/02/2024)" },
 ];
 
 function Copytrading() {
@@ -80,11 +82,11 @@ function Copytrading() {
                       </div>
                     </div>
                     <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
-                      <div className="rounded-md bg-secondary p-2"><p className="text-muted-foreground">ROI</p><p className="font-bold text-success">{t.roi}</p></div>
+                      <div className="rounded-md bg-secondary p-2"><p className="text-muted-foreground">ROI</p><p className="font-bold text-success">{t.roi ?? "—"}</p></div>
                       <div className="rounded-md bg-secondary p-2"><p className="text-muted-foreground">Risk</p><p className="font-bold">{t.risk}</p></div>
                       <div className="rounded-md bg-secondary p-2"><p className="text-muted-foreground">Followers</p><p className="font-bold">{t.followers.toLocaleString()}</p></div>
                     </div>
-                    <p className="mt-3 text-sm text-muted-foreground">Strategy: <span className="font-medium text-foreground">{t.strategy}</span></p>
+                    <p className="mt-3 text-sm text-muted-foreground">Strategy: <span className="font-medium text-foreground">{t.strategy.length > 60 ? t.strategy.slice(0, 60) + "..." : t.strategy}</span></p>
                     <Button asChild className="mt-4 w-full">
                       <Link to="/auth" search={{ tab: "register" }}>Follow trader</Link>
                     </Button>

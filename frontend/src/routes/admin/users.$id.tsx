@@ -72,6 +72,7 @@ function AdminUserDetail() {
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-2">
           <h2 className="text-white font-semibold mb-3">Profile</h2>
           <Row label="Full Name" value={profile?.fullName ?? "—"} />
+          <Row label="Email" value={profile?.email ?? "—"} />
           <Row label="Country" value={profile?.country ?? "—"} />
           <Row label="Phone" value={profile?.phone ?? "—"} />
           <Row label="KYC Status" value={profile?.kycStatus} />

@@ -39,6 +39,7 @@ router.get("/", requireAuth, async (req: AuthRequest, res) => {
       update: {},
       create: {
         id: req.userId!,
+        email: req.userEmail ?? "",
         referralCode,
         fullName: meta.full_name ?? null,
         phone: meta.phone ?? null,

@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { z } from "zod";
 import { requireAuth, AuthRequest } from "../middleware/auth";
+import { prisma } from "../lib/prisma";
 
 const router = Router();
 
@@ -66,16 +67,33 @@ router.post("/login", async (req: Request, res: Response) => {
     { email: parsed.data.email, password: parsed.data.password }
   );
 
-  res.status(status === 200 ? 200 : 401).json(
-    status === 200
-      ? {
-          access_token: data.access_token,
-          refresh_token: data.refresh_token,
-          expires_in: data.expires_in,
-          user: data.user,
-        }
-      : { error: data.error_description ?? "Invalid credentials" }
-  );
+  if (status !== 200) {
+    res.status(401).json({ error: data.error_description ?? "Invalid credentials" });
+    return;
+  }
+
+  // Check if user has a profile in local database
+  const userId = (data.user as any)?.id;
+  if (!userId) {
+    res.status(401).json({ error: "Invalid credentials" });
+    return;
+  }
+
+  const profile = await prisma.profile.findUnique({
+    where: { id: userId },
+  });
+
+  if (!profile) {
+    res.status(401).json({ error: "Please register your account first" });
+    return;
+  }
+
+  res.status(200).json({
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+    expires_in: data.expires_in,
+    user: data.user,
+  });
 });
 
 const registerSchema = z.object({

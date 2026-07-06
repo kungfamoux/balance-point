@@ -10,6 +10,7 @@ datasource db {
 
 model Profile {
   id           String   @id @db.Uuid
+  email        String   @unique
   fullName     String?  @map("full_name")
   country      String?
   phone        String?

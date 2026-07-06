@@ -4,6 +4,7 @@ import { adminApi } from "@/lib/adminApi";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Check, X } from "lucide-react";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export const Route = createFileRoute("/admin/transactions")({
   component: AdminTransactions,
@@ -44,33 +45,33 @@ function AdminTransactions() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Transactions</h1>
-          <p className="text-gray-400 text-sm mt-1">{txs.length} results</p>
-        </div>
-        <div className="flex gap-2">
-          <select
-            value={search.type}
-            onChange={(e) => navigate({ search: { ...search, type: e.target.value } })}
-            className="bg-gray-800 border border-gray-700 text-white rounded-md px-3 py-1.5 text-sm"
-          >
-            <option value="">All types</option>
-            <option value="deposit">Deposit</option>
-            <option value="withdrawal">Withdrawal</option>
-          </select>
-          <select
-            value={search.status}
-            onChange={(e) => navigate({ search: { ...search, status: e.target.value } })}
-            className="bg-gray-800 border border-gray-700 text-white rounded-md px-3 py-1.5 text-sm"
-          >
-            <option value="">All statuses</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-          </select>
-        </div>
-      </div>
+      <AdminPageHeader
+        title="Transactions"
+        description={`${txs.length} results`}
+        actions={
+          <div className="flex gap-2">
+            <select
+              value={search.type}
+              onChange={(e) => navigate({ search: { ...search, type: e.target.value } })}
+              className="bg-gray-800 border border-gray-700 text-white rounded-md px-3 py-1.5 text-sm"
+            >
+              <option value="">All types</option>
+              <option value="deposit">Deposit</option>
+              <option value="withdrawal">Withdrawal</option>
+            </select>
+            <select
+              value={search.status}
+              onChange={(e) => navigate({ search: { ...search, status: e.target.value } })}
+              className="bg-gray-800 border border-gray-700 text-white rounded-md px-3 py-1.5 text-sm"
+            >
+              <option value="">All statuses</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+        }
+      />
 
       {isLoading ? (
         <div className="flex justify-center py-20">

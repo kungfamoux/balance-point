@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, X, Radio } from "lucide-react";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export const Route = createFileRoute("/admin/sessions")({
   component: AdminSessions,
@@ -73,15 +74,15 @@ function AdminSessions() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Live Sessions</h1>
-          <p className="text-gray-400 text-sm mt-1">{sessions.length} sessions</p>
-        </div>
-        <Button onClick={() => { setEditId(null); setForm(EMPTY); }} className="bg-blue-600 hover:bg-blue-700 gap-2">
-          <Plus className="w-4 h-4" /> New Session
-        </Button>
-      </div>
+      <AdminPageHeader
+        title="Live Sessions"
+        description={`${sessions.length} sessions`}
+        actions={
+          <Button onClick={() => { setEditId(null); setForm(EMPTY); }} className="bg-blue-600 hover:bg-blue-700 gap-2">
+            <Plus className="w-4 h-4" /> New Session
+          </Button>
+        }
+      />
 
       {form && (
         <div className="bg-gray-900 border border-gray-700 rounded-xl p-6">

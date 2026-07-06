@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, ChevronRight } from "lucide-react";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export const Route = createFileRoute("/admin/users")({
   component: AdminUsers,
@@ -22,6 +23,7 @@ function AdminUsers() {
 
   const filtered = users.filter((u: any) =>
     (u.fullName ?? "").toLowerCase().includes(search.toLowerCase()) ||
+    (u.email ?? "").toLowerCase().includes(search.toLowerCase()) ||
     (u.id ?? "").includes(search)
   );
 
@@ -38,21 +40,21 @@ function AdminUsers() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Users</h1>
-          <p className="text-gray-400 text-sm mt-1">{users.length} registered users</p>
-        </div>
-        <div className="relative">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name or ID…"
-            className="pl-9 bg-gray-800 border-gray-700 text-white w-full sm:w-64"
-          />
-        </div>
-      </div>
+      <AdminPageHeader
+        title="Users"
+        description={`${users.length} registered users`}
+        actions={
+          <div className="relative">
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by name or ID…"
+              className="pl-9 bg-gray-800 border-gray-700 text-white w-full sm:w-64"
+            />
+          </div>
+        }
+      />
 
       {isLoading ? (
         <div className="flex justify-center py-20">
@@ -71,7 +73,8 @@ function AdminUsers() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-white font-medium">{u.fullName ?? "—"}</p>
-                    <p className="text-gray-500 text-xs font-mono mt-0.5">{u.id.slice(0, 8)}…</p>
+                    <p className="text-gray-500 text-xs font-mono mt-0.5">{u.email ?? "—"}</p>
+                    <p className="text-gray-600 text-xs font-mono mt-0.5">{u.id.slice(0, 8)}…</p>
                   </div>
                   <span className={`inline-block px-2 py-0.5 rounded-full text-xs text-white ${kycColor[u.kycStatus] ?? "bg-gray-600"}`}>
                     {u.kycStatus}
@@ -101,6 +104,7 @@ function AdminUsers() {
               <thead>
                 <tr className="border-b border-gray-800 text-gray-400">
                   <th className="text-left px-4 py-3">Name</th>
+                  <th className="text-left px-4 py-3">Email</th>
                   <th className="text-left px-4 py-3">Country</th>
                   <th className="text-left px-4 py-3">KYC</th>
                   <th className="text-left px-4 py-3">Joined</th>
@@ -111,6 +115,7 @@ function AdminUsers() {
                 {filtered.map((u: any) => (
                   <tr key={u.id} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
                     <td className="px-4 py-3 text-white font-medium">{u.fullName ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-400">{u.email ?? "—"}</td>
                     <td className="px-4 py-3 text-gray-400">{u.country ?? "—"}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-block px-2 py-0.5 rounded-full text-xs text-white ${kycColor[u.kycStatus] ?? "bg-gray-600"}`}>
@@ -133,7 +138,7 @@ function AdminUsers() {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="text-center py-12 text-gray-500">No users found</td>
+                    <td colSpan={6} className="text-center py-12 text-gray-500">No users found</td>
                   </tr>
                 )}
               </tbody>
