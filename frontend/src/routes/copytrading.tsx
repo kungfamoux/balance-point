@@ -18,14 +18,14 @@ export const Route = createFileRoute("/copytrading")({
 });
 
 const traders = [
+  { handle: "@vulturetrades", name: "Vulture trades 🦅", roi: null, followers: 186900, risk: "Medium", strategy: "Options trading - here to share knowledge and show the ups and downs of a full time trader. NO PAID SERVICES EVER!" },
+  { handle: "@StockOptions888", name: "SniperAlert", roi: "+$6,302,393.49", followers: 121300, risk: "High", strategy: "Multi-millionaire day trader sharing the ins & outs of trading along the way to long term success. NO PAID SERVICE! (03/08/2018 - 12/02/2024)" },
   { handle: "@alex_volatility", name: "Alex Reyes", roi: "+182%", followers: 14380, risk: "Medium", strategy: "FX swing" },
   { handle: "@crypto_mira", name: "Mira Kapoor", roi: "+241%", followers: 21750, risk: "High", strategy: "Crypto trend" },
   { handle: "@steady_lin", name: "Linus Park", roi: "+96%", followers: 8120, risk: "Low", strategy: "Index DCA" },
   { handle: "@gold_hunter", name: "Diana Vega", roi: "+134%", followers: 11240, risk: "Medium", strategy: "Commodities" },
   { handle: "@bluechip_tom", name: "Tomás Oliveira", roi: "+78%", followers: 6310, risk: "Low", strategy: "US stocks" },
   { handle: "@scalper_yui", name: "Yui Hayashi", roi: "+312%", followers: 18900, risk: "High", strategy: "FX scalping" },
-  { handle: "@vulturetrades", name: "Vulture trades 🦅", roi: null, followers: 186900, risk: "Medium", strategy: "Options trading - here to share knowledge and show the ups and downs of a full time trader. NO PAID SERVICES EVER!" },
-  { handle: "@StockOptions888", name: "SniperAlert", roi: "+$6,302,393.49", followers: 121300, risk: "High", strategy: "Multi-millionaire day trader sharing the ins & outs of trading along the way to long term success. NO PAID SERVICE! (03/08/2018 - 12/02/2024)" },
 ];
 
 function Copytrading() {
