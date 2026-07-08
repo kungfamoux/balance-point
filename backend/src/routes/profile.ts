@@ -123,6 +123,7 @@ router.patch("/", requireAuth, async (req: AuthRequest, res) => {
       update: parsed.data,
       create: {
         id: req.userId!,
+        email: req.userEmail ?? "",
         referralCode: req.userId!.replace(/-/g, "").slice(0, 8).toUpperCase(),
         ...parsed.data,
       },

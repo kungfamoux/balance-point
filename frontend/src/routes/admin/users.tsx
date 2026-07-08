@@ -148,13 +148,23 @@ function AdminUsers() {
                       {new Date(u.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3">
-                      <Link
-                        to="/admin/users/$id"
-                        params={{ id: u.id }}
-                        className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-xs"
-                      >
-                        View <ChevronRight className="w-3 h-3" />
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to="/admin/users/$id"
+                          params={{ id: u.id }}
+                          className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-xs"
+                        >
+                          View <ChevronRight className="w-3 h-3" />
+                        </Link>
+                        <Button
+                          size="sm"
+                          className="bg-red-700 hover:bg-red-600 h-7 px-2"
+                          onClick={() => { if (confirm(`Delete user ${u.fullName || u.id}? This action cannot be undone.`)) deleteMut.mutate(u.id); }}
+                          disabled={deleteMut.isPending}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}

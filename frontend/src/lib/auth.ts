@@ -1,6 +1,36 @@
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const PRIMARY_API_URL = (import.meta.env.VITE_PRIMARY_API_URL as string | undefined) ?? "https://balance-point-kfg3.onrender.com";
+const FALLBACK_API_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:4000";
 const AUTH_STORAGE_KEY = "sb-session";
+
+let currentApiUrl = PRIMARY_API_URL;
+let healthCheckInProgress = false;
+
+async function checkBackendHealth(url: string): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(`${url}/health`, {
+      method: "GET",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function getApiUrl(): Promise<string> {
+  if (!healthCheckInProgress) {
+    healthCheckInProgress = true;
+    const isPrimaryHealthy = await checkBackendHealth(PRIMARY_API_URL);
+    currentApiUrl = isPrimaryHealthy ? PRIMARY_API_URL : FALLBACK_API_URL;
+    healthCheckInProgress = false;
+  }
+  return currentApiUrl;
+}
 
 export interface Session {
   access_token: string;
@@ -41,75 +71,70 @@ const authHeaders = {
 
 export async function loginOrRegister(email: string, password: string, fullName?: string, phone?: string, country?: string, referralCode?: string) {
   const cleanEmail = email.trim().toLowerCase();
+  const apiUrl = await getApiUrl();
 
-  // Try sign in first
-  const signInRes = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-    method: "POST",
-    headers: authHeaders,
-    body: JSON.stringify({ email: cleanEmail, password }),
-  });
-
-  if (signInRes.ok) {
-    const data = await signInRes.json();
-    saveSession({
-      access_token: data.access_token,
-      refresh_token: data.refresh_token,
-      expires_at: Date.now() + data.expires_in * 1000,
-      user: { id: data.user.id, email: data.user.email },
+  // Try login via backend first
+  try {
+    const loginRes = await fetch(`${apiUrl}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: cleanEmail, password }),
     });
-    return data;
+
+    if (loginRes.ok) {
+      const data = await loginRes.json();
+      saveSession({
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+        expires_at: Date.now() + data.expires_in * 1000,
+        user: { id: data.user.id, email: data.user.email },
+      });
+      return data;
+    }
+
+    const loginError = await loginRes.json();
+    console.warn("[auth] login failed:", loginRes.status, loginError);
+    
+    // Only proceed to registration if the error indicates user doesn't exist
+    if (loginRes.status === 401 && loginError.error === "Please register your account first") {
+      // Continue to registration
+    } else {
+      throw new Error(loginError.error ?? "Invalid email or password");
+    }
+  } catch (error: any) {
+    if (error.message) throw error;
+    throw new Error("Unable to connect to the server. Please check your internet connection.");
   }
 
-  const signInError = await signInRes.json();
-  console.warn("[auth] sign-in failed:", signInRes.status, signInError);
-
-  // Try sign up
-  const signUpRes = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
-    method: "POST",
-    headers: authHeaders,
-    body: JSON.stringify({
-      email: cleanEmail,
-      password,
-      data: {
-        ...(fullName ? { full_name: fullName } : {}),
-        ...(phone ? { phone } : {}),
-        ...(country ? { country } : {}),
-        ...(referralCode ? { referred_by_code: referralCode } : {}),
-      },
-    }),
-  });
-
-  const signUpData = await signUpRes.json();
-  console.warn("[auth] sign-up response:", signUpRes.status, signUpData);
-  if (!signUpRes.ok) throw new Error(signUpData.error_description ?? signUpData.msg ?? signUpData.message ?? "Sign up failed");
-
-  // If session returned immediately (email auto-confirm on), save it
-  if (signUpData.access_token) {
-    saveSession({
-      access_token: signUpData.access_token,
-      refresh_token: signUpData.refresh_token,
-      expires_at: Date.now() + signUpData.expires_in * 1000,
-      user: { id: signUpData.user.id, email: signUpData.user.email },
+  // If login failed, try registration via backend
+  try {
+    const registerRes = await fetch(`${apiUrl}/api/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: cleanEmail,
+        password,
+        fullName,
+        referralCode,
+      }),
     });
-    return signUpData;
+
+    const registerData = await registerRes.json();
+    if (!registerRes.ok) {
+      throw new Error(registerData.error ?? registerData.error_description ?? "Registration failed");
+    }
+
+    saveSession({
+      access_token: registerData.access_token,
+      refresh_token: registerData.refresh_token,
+      expires_at: Date.now() + registerData.expires_in * 1000,
+      user: { id: registerData.user.id, email: registerData.user.email },
+    });
+    return registerData;
+  } catch (error: any) {
+    if (error.message) throw error;
+    throw new Error("Unable to connect to the server. Please check your internet connection.");
   }
-
-  // Retry sign in after sign up
-  const retryRes = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-    method: "POST",
-    headers: authHeaders,
-    body: JSON.stringify({ email: cleanEmail, password }),
-  });
-  const retryData = await retryRes.json();
-  if (!retryRes.ok) throw new Error(retryData.error_description ?? "Could not sign in after sign up");
-
-  saveSession({
-    access_token: retryData.access_token,
-    refresh_token: retryData.refresh_token,
-    expires_at: Date.now() + retryData.expires_in * 1000,
-    user: { id: retryData.user.id, email: retryData.user.email },
-  });
-  return retryData;
 }
 
 export async function signOut() {

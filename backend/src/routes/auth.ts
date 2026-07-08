@@ -56,44 +56,50 @@ const loginSchema = z.object({
  *         description: Invalid credentials
  */
 router.post("/login", async (req: Request, res: Response) => {
-  const parsed = loginSchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.flatten() });
-    return;
+  try {
+    const parsed = loginSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid email or password format" });
+      return;
+    }
+
+    const { status, data } = await supabaseAuthFetch(
+      "/token?grant_type=password",
+      { email: parsed.data.email, password: parsed.data.password }
+    );
+
+    if (status !== 200) {
+      const errorMessage = data.error_description ?? "Invalid email or password";
+      res.status(401).json({ error: errorMessage });
+      return;
+    }
+
+    // Check if user has a profile in local database
+    const userId = (data.user as any)?.id;
+    if (!userId) {
+      res.status(401).json({ error: "Invalid credentials" });
+      return;
+    }
+
+    const profile = await prisma.profile.findUnique({
+      where: { id: userId },
+    });
+
+    if (!profile) {
+      res.status(401).json({ error: "Please register your account first" });
+      return;
+    }
+
+    res.status(200).json({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_in: data.expires_in,
+      user: data.user,
+    });
+  } catch (error) {
+    console.error("[login error]", error);
+    res.status(500).json({ error: "An error occurred during login. Please try again." });
   }
-
-  const { status, data } = await supabaseAuthFetch(
-    "/token?grant_type=password",
-    { email: parsed.data.email, password: parsed.data.password }
-  );
-
-  if (status !== 200) {
-    res.status(401).json({ error: data.error_description ?? "Invalid credentials" });
-    return;
-  }
-
-  // Check if user has a profile in local database
-  const userId = (data.user as any)?.id;
-  if (!userId) {
-    res.status(401).json({ error: "Invalid credentials" });
-    return;
-  }
-
-  const profile = await prisma.profile.findUnique({
-    where: { id: userId },
-  });
-
-  if (!profile) {
-    res.status(401).json({ error: "Please register your account first" });
-    return;
-  }
-
-  res.status(200).json({
-    access_token: data.access_token,
-    refresh_token: data.refresh_token,
-    expires_in: data.expires_in,
-    user: data.user,
-  });
 });
 
 const registerSchema = z.object({
@@ -138,32 +144,98 @@ const registerSchema = z.object({
  *         description: Validation error or email already in use
  */
 router.post("/register", async (req: Request, res: Response) => {
-  const parsed = registerSchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.flatten() });
-    return;
+  try {
+    const parsed = registerSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid input. Email and password (min 6 characters) are required." });
+      return;
+    }
+
+    const { status, data } = await supabaseAuthFetch("/signup", {
+      email: parsed.data.email,
+      password: parsed.data.password,
+      data: {
+        full_name: parsed.data.fullName,
+        referral_code: parsed.data.referralCode,
+      },
+    });
+
+    if (status !== 200) {
+      const errorMessage = data.msg ?? data.error_description ?? "Registration failed";
+      res.status(400).json({ error: errorMessage });
+      return;
+    }
+
+    const userId = (data.user as any)?.id;
+    if (!userId) {
+      res.status(400).json({ error: "Registration failed: unable to create user account" });
+      return;
+    }
+
+    // Create profile in local database
+    const referralCode = userId.replace(/-/g, "").slice(0, 8).toUpperCase();
+    let referredBy: string | undefined;
+
+    // Resolve referrer from referral code
+    if (parsed.data.referralCode) {
+      const referrer = await prisma.profile.findUnique({
+        where: { referralCode: parsed.data.referralCode.toUpperCase() },
+        select: { id: true },
+      });
+      if (referrer) referredBy = referrer.id;
+    }
+
+    try {
+      await prisma.profile.create({
+        data: {
+          id: userId,
+          email: parsed.data.email,
+          referralCode,
+          fullName: parsed.data.fullName ?? null,
+          ...(referredBy ? { referredBy } : {}),
+        },
+      });
+    } catch (profileError: any) {
+      // Handle unique constraint violation (profile already exists)
+      if (profileError.code === 'P2002') {
+        res.status(400).json({ error: "An account with this email already exists" });
+        return;
+      }
+      throw profileError;
+    }
+
+    // Auto-create wallet
+    try {
+      await prisma.wallet.create({
+        data: { userId },
+      });
+    } catch (walletError: any) {
+      // If wallet creation fails, log but don't fail the registration
+      console.error("[register] wallet creation failed:", walletError);
+    }
+
+    // Create referral record if applicable
+    if (referredBy) {
+      try {
+        await prisma.referral.create({
+          data: { referrerId: referredBy, referredId: userId },
+        });
+      } catch (referralError: any) {
+        // If referral creation fails, log but don't fail the registration
+        console.error("[register] referral creation failed:", referralError);
+      }
+    }
+
+    res.status(201).json({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_in: data.expires_in,
+      user: data.user,
+    });
+  } catch (error) {
+    console.error("[register error]", error);
+    res.status(500).json({ error: "An error occurred during registration. Please try again." });
   }
-
-  const { status, data } = await supabaseAuthFetch("/signup", {
-    email: parsed.data.email,
-    password: parsed.data.password,
-    data: {
-      full_name: parsed.data.fullName,
-      referral_code: parsed.data.referralCode,
-    },
-  });
-
-  if (status !== 200) {
-    res.status(400).json({ error: data.msg ?? data.error_description ?? "Registration failed" });
-    return;
-  }
-
-  res.status(201).json({
-    access_token: data.access_token,
-    refresh_token: data.refresh_token,
-    expires_in: data.expires_in,
-    user: data.user,
-  });
 });
 
 const refreshSchema = z.object({
@@ -194,26 +266,32 @@ const refreshSchema = z.object({
  *         description: Invalid or expired refresh token
  */
 router.post("/refresh", async (req: Request, res: Response) => {
-  const parsed = refreshSchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.flatten() });
-    return;
+  try {
+    const parsed = refreshSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Refresh token is required" });
+      return;
+    }
+
+    const { status, data } = await supabaseAuthFetch(
+      "/token?grant_type=refresh_token",
+      { refresh_token: parsed.data.refresh_token }
+    );
+
+    if (status === 200) {
+      res.status(200).json({
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+        expires_in: data.expires_in,
+      });
+    } else {
+      const errorMessage = data.error_description ?? "Invalid or expired refresh token";
+      res.status(401).json({ error: errorMessage });
+    }
+  } catch (error) {
+    console.error("[refresh error]", error);
+    res.status(500).json({ error: "An error occurred while refreshing your session. Please try again." });
   }
-
-  const { status, data } = await supabaseAuthFetch(
-    "/token?grant_type=refresh_token",
-    { refresh_token: parsed.data.refresh_token }
-  );
-
-  res.status(status === 200 ? 200 : 401).json(
-    status === 200
-      ? {
-          access_token: data.access_token,
-          refresh_token: data.refresh_token,
-          expires_in: data.expires_in,
-        }
-      : { error: data.error_description ?? "Token refresh failed" }
-  );
 });
 
 /**
