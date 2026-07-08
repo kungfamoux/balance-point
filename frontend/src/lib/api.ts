@@ -1,4 +1,4 @@
-import { getAccessToken, clearSession } from "./auth";
+import { getValidAccessToken, clearSession } from "./auth";
 
 const PRIMARY_API_URL = (import.meta.env.VITE_PRIMARY_API_URL as string | undefined) ?? "https://balance-point-kfg3.onrender.com";
 const FALLBACK_API_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:4000";
@@ -34,7 +34,7 @@ async function getApiUrl(): Promise<string> {
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const token = getAccessToken();
+  const token = await getValidAccessToken();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(init.headers as Record<string, string>),

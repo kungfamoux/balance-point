@@ -106,6 +106,8 @@ const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   fullName: z.string().min(1).optional(),
+  phone: z.string().min(1).optional(),
+  country: z.string().min(1).optional(),
   referralCode: z.string().optional(),
 });
 
@@ -156,6 +158,8 @@ router.post("/register", async (req: Request, res: Response) => {
       password: parsed.data.password,
       data: {
         full_name: parsed.data.fullName,
+        phone: parsed.data.phone,
+        country: parsed.data.country,
         referral_code: parsed.data.referralCode,
       },
     });
@@ -192,6 +196,8 @@ router.post("/register", async (req: Request, res: Response) => {
           email: parsed.data.email,
           referralCode,
           fullName: parsed.data.fullName ?? null,
+          phone: parsed.data.phone ?? null,
+          country: parsed.data.country ?? null,
           ...(referredBy ? { referredBy } : {}),
         },
       });

@@ -13,6 +13,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { AppSettingsProvider } from "@/lib/theme";
+import { MaintenancePage } from "@/components/MaintenancePage";
+import { isMaintenanceActive } from "@/lib/maintenance";
 import "@/lib/i18n";
 
 function NotFoundComponent() {
@@ -130,7 +132,7 @@ function RootComponent() {
   return (
     <AppSettingsProvider>
       <QueryClientProvider client={queryClient}>
-        <Outlet />
+        {isMaintenanceActive() ? <MaintenancePage /> : <Outlet />}
         <Toaster richColors closeButton position="top-right" />
       </QueryClientProvider>
     </AppSettingsProvider>

@@ -43,6 +43,7 @@ export interface Session {
 }
 
 function saveSession(session: Session) {
+  if (typeof localStorage === "undefined") return;
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
 }
 
@@ -61,6 +62,7 @@ export function getAccessToken(): string | null {
 }
 
 export function clearSession() {
+  if (typeof localStorage === "undefined") return;
   localStorage.removeItem(AUTH_STORAGE_KEY);
 }
 
@@ -69,72 +71,51 @@ const authHeaders = {
   apikey: SUPABASE_ANON_KEY,
 };
 
-export async function loginOrRegister(email: string, password: string, fullName?: string, phone?: string, country?: string, referralCode?: string) {
-  const cleanEmail = email.trim().toLowerCase();
+function saveAuthResponse(data: any) {
+  saveSession({
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+    expires_at: Date.now() + data.expires_in * 1000,
+    user: { id: data.user.id, email: data.user.email },
+  });
+}
+
+async function authRequest(path: "/api/auth/login" | "/api/auth/register", body: object) {
   const apiUrl = await getApiUrl();
-
-  // Try login via backend first
   try {
-    const loginRes = await fetch(`${apiUrl}/api/auth/login`, {
+    const res = await fetch(`${apiUrl}${path}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: cleanEmail, password }),
+      body: JSON.stringify(body),
     });
 
-    if (loginRes.ok) {
-      const data = await loginRes.json();
-      saveSession({
-        access_token: data.access_token,
-        refresh_token: data.refresh_token,
-        expires_at: Date.now() + data.expires_in * 1000,
-        user: { id: data.user.id, email: data.user.email },
-      });
-      return data;
-    }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error ?? data.error_description ?? "Authentication failed");
 
-    const loginError = await loginRes.json();
-    console.warn("[auth] login failed:", loginRes.status, loginError);
-    
-    // Only proceed to registration if the error indicates user doesn't exist
-    if (loginRes.status === 401 && loginError.error === "Please register your account first") {
-      // Continue to registration
-    } else {
-      throw new Error(loginError.error ?? "Invalid email or password");
-    }
+    saveAuthResponse(data);
+    return data;
   } catch (error: any) {
     if (error.message) throw error;
     throw new Error("Unable to connect to the server. Please check your internet connection.");
   }
+}
 
-  // If login failed, try registration via backend
-  try {
-    const registerRes = await fetch(`${apiUrl}/api/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: cleanEmail,
-        password,
-        fullName,
-        referralCode,
-      }),
-    });
+export function login(email: string, password: string) {
+  return authRequest("/api/auth/login", {
+    email: email.trim().toLowerCase(),
+    password,
+  });
+}
 
-    const registerData = await registerRes.json();
-    if (!registerRes.ok) {
-      throw new Error(registerData.error ?? registerData.error_description ?? "Registration failed");
-    }
-
-    saveSession({
-      access_token: registerData.access_token,
-      refresh_token: registerData.refresh_token,
-      expires_at: Date.now() + registerData.expires_in * 1000,
-      user: { id: registerData.user.id, email: registerData.user.email },
-    });
-    return registerData;
-  } catch (error: any) {
-    if (error.message) throw error;
-    throw new Error("Unable to connect to the server. Please check your internet connection.");
-  }
+export function register(email: string, password: string, fullName: string, phone: string, country: string, referralCode?: string) {
+  return authRequest("/api/auth/register", {
+    email: email.trim().toLowerCase(),
+    password,
+    fullName,
+    phone,
+    country,
+    referralCode,
+  });
 }
 
 export async function signOut() {
@@ -148,6 +129,49 @@ export async function signOut() {
   clearSession();
 }
 
+export async function refreshSession(): Promise<Session | null> {
+  const session = getSession();
+  if (!session?.refresh_token) return null;
+
+  const apiUrl = await getApiUrl();
+  const res = await fetch(`${apiUrl}/api/auth/refresh`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refresh_token: session.refresh_token }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    clearSession();
+    return null;
+  }
+
+  const refreshed: Session = {
+    ...session,
+    access_token: data.access_token,
+    refresh_token: data.refresh_token ?? session.refresh_token,
+    expires_at: Date.now() + data.expires_in * 1000,
+  };
+  saveSession(refreshed);
+  return refreshed;
+}
+
+export async function getValidSession(): Promise<Session | null> {
+  const session = getSession();
+  if (!session) return null;
+
+  const refreshBufferMs = 60_000;
+  if (session.expires_at && session.expires_at > Date.now() + refreshBufferMs) {
+    return session;
+  }
+
+  return refreshSession();
+}
+
+export async function getValidAccessToken(): Promise<string | null> {
+  return (await getValidSession())?.access_token ?? null;
+}
+
 export async function getUser() {
-  return getSession()?.user ?? null;
+  return (await getValidSession())?.user ?? null;
 }

@@ -1,9 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
-const JWKS = createRemoteJWKSet(
-  new URL(process.env.SUPABASE_JWKS_URL ?? "")
-);
+function getRequiredEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} is not configured`);
+  return value;
+}
+
+const supabaseUrl = getRequiredEnv("SUPABASE_URL").replace(/\/$/, "");
+const jwksUrl = process.env.SUPABASE_JWKS_URL ?? `${supabaseUrl}/auth/v1/.well-known/jwks.json`;
+const jwtIssuer = process.env.SUPABASE_JWT_ISSUER ?? `${supabaseUrl}/auth/v1`;
+const JWKS = createRemoteJWKSet(new URL(jwksUrl));
 
 export interface UserMeta {
   full_name?: string;
@@ -33,7 +40,7 @@ export async function requireAuth(
 
   try {
     const { payload } = await jwtVerify(token, JWKS, {
-      issuer: process.env.SUPABASE_JWT_ISSUER,
+      issuer: jwtIssuer,
     });
 
     req.userId = payload.sub;

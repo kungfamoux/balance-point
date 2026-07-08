@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { loginOrRegister } from "@/lib/auth";
+import { login, register } from "@/lib/auth";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 
@@ -280,7 +280,7 @@ function LoginForm() {
     if (!email || !password) return;
     setLoading(true);
     try {
-      await loginOrRegister(email, password);
+      await login(email, password);
       toast.success("Welcome back!");
       navigate({ to: "/dashboard" });
     } catch (err: any) {
@@ -351,7 +351,7 @@ function RegisterForm({ defaultRef }: { defaultRef?: string }) {
     setLoading(true);
     try {
       const fullPhone = `${dialCode}${phone.replace(/^0/, "")}`;
-      await loginOrRegister(email, password, fullName, fullPhone, country, referralCode || undefined);
+      await register(email, password, fullName, fullPhone, country, referralCode || undefined);
       toast.success("Account created successfully!");
       navigate({ to: "/dashboard" });
     } catch (err: any) {
