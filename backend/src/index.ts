@@ -69,6 +69,7 @@ app.use(
         process.env.FRONTEND_URL ?? "",
         process.env.RENDER_EXTERNAL_URL ?? "",
         "https://balancepointcap.com",
+        "https://www.balancepointcap.com",
       ].filter(Boolean);
       const ok = allowedOrigins.some((o) => origin === o);
       callback(ok ? null : new Error("Not allowed by CORS"), ok);
