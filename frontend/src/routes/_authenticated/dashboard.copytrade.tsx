@@ -13,6 +13,24 @@ export const Route = createFileRoute("/_authenticated/dashboard/copytrade")({
 });
 
 const traders = [
+  {
+    handle: "@vulturetrades",
+    name: "Vulture trades 🦅",
+    roi: null,
+    followers: 186900,
+    risk: "Medium",
+    strategy:
+      "Options trader, here to share my knowledge and show the ups and the downs of a full time trader. NO PAID SERVICES EVER! Nothing posted here is financial advice.",
+  },
+  {
+    handle: "@StockOptions888",
+    name: "SniperAlert",
+    roi: "+$6,302,393.49",
+    followers: 121300,
+    risk: "High",
+    strategy:
+      "Multi-millionaire day trader sharing the ins & outs of trading along the way to long term success. NO PAID SERVICE! Nothing Posted on here is financial advice. Tracking period: 03/08/2018 - 12/02/2024.",
+  },
   { handle: "@alex_volatility", name: "Alex Reyes", roi: "+182%", risk: "Medium", strategy: "FX swing" },
   { handle: "@crypto_mira", name: "Mira Kapoor", roi: "+241%", risk: "High", strategy: "Crypto trend" },
   { handle: "@steady_lin", name: "Linus Park", roi: "+96%", risk: "Low", strategy: "Index DCA" },
@@ -64,10 +82,14 @@ function CopyTrade() {
                 </div>
               </div>
               <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
-                <div className="rounded-md bg-secondary p-2"><p className="text-muted-foreground">ROI</p><p className="font-bold text-success">{t.roi}</p></div>
+                <div className="rounded-md bg-secondary p-2"><p className="text-muted-foreground">ROI</p><p className="font-bold text-success">{t.roi ?? "-"}</p></div>
                 <div className="rounded-md bg-secondary p-2"><p className="text-muted-foreground">Risk</p><p className="font-bold">{t.risk}</p></div>
-                <div className="rounded-md bg-secondary p-2"><p className="text-muted-foreground">Style</p><p className="truncate font-bold">{t.strategy}</p></div>
+                <div className="rounded-md bg-secondary p-2">
+                  <p className="text-muted-foreground">{t.followers ? "Followers" : "Style"}</p>
+                  <p className="truncate font-bold">{t.followers ? t.followers.toLocaleString() : t.strategy}</p>
+                </div>
               </div>
+              <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{t.strategy}</p>
               <Button
                 className="mt-4 w-full" variant={followed.has(t.handle) ? "outline" : "default"}
                 onClick={() => toggle(t.handle)}
