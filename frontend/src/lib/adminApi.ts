@@ -156,4 +156,25 @@ export const adminApi = {
       headers: { Authorization: `Bearer ${getAdminToken()}` },
     });
   },
+
+  // Support Tickets
+  getTickets: () => req<any[]>("/api/admin/tickets"),
+  getTicket: (id: string) => req<any>(`/api/admin/tickets/${id}`),
+  replyToTicket: (id: string, body: string) =>
+    req<any>(`/api/admin/tickets/${id}/reply`, { method: "POST", body: JSON.stringify({ body }) }),
+  updateTicketStatus: (id: string, status: string) =>
+    req<any>(`/api/admin/tickets/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) }),
+  deleteTicket: async (id: string) => {
+    const apiUrl = await getApiUrl();
+    return fetch(`${apiUrl}/api/admin/tickets/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${getAdminToken()}` },
+    });
+  },
+
+  // Referrals
+  getReferrals: () => req<any[]>("/api/admin/referrals"),
+  getReferralTree: (userId: string) => req<any>(`/api/admin/referrals/tree/${userId}`),
+  updateReferralEarnings: (id: string, bonusAmount: number) =>
+    req<any>(`/api/admin/referrals/${id}/earnings`, { method: "PATCH", body: JSON.stringify({ bonusAmount }) }),
 };

@@ -632,4 +632,225 @@ router.delete("/sessions/:id", async (req: AdminRequest, res: Response) => {
   res.status(204).send();
 });
 
+// ── Support Tickets ─────────────────────────────────────────────────────────────
+/**
+ * @swagger
+ * /api/admin/tickets:
+ *   get:
+ *     summary: List all support tickets
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get("/tickets", async (_req: AdminRequest, res: Response) => {
+  const tickets = await prisma.ticket.findMany({
+    include: {
+      messages: {
+        orderBy: { createdAt: "asc" },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  res.json(tickets);
+});
+
+/**
+ * @swagger
+ * /api/admin/tickets/{id}:
+ *   get:
+ *     summary: Get ticket details
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get("/tickets/:id", async (req: AdminRequest, res: Response) => {
+  const id = req.params.id as string;
+  const ticket = await prisma.ticket.findUnique({
+    where: { id },
+    include: {
+      messages: {
+        orderBy: { createdAt: "asc" },
+      },
+    },
+  });
+  if (!ticket) {
+    res.status(404).json({ error: "Ticket not found" });
+    return;
+  }
+  res.json(ticket);
+});
+
+/**
+ * @swagger
+ * /api/admin/tickets/{id}/reply:
+ *   post:
+ *     summary: Reply to a support ticket as admin
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post("/tickets/:id/reply", async (req: AdminRequest, res: Response) => {
+  const id = req.params.id as string;
+  const { body } = req.body as { body: string };
+  
+  const ticket = await prisma.ticket.findUnique({ where: { id } });
+  if (!ticket) {
+    res.status(404).json({ error: "Ticket not found" });
+    return;
+  }
+
+  const message = await prisma.ticketMessage.create({
+    data: {
+      ticketId: id,
+      userId: ticket.userId,
+      body,
+      isAdmin: true,
+    },
+  });
+
+  // Update ticket status if it was closed
+  if (ticket.status === "closed") {
+    await prisma.ticket.update({
+      where: { id },
+      data: { status: "open" },
+    });
+  }
+
+  res.status(201).json(message);
+});
+
+/**
+ * @swagger
+ * /api/admin/tickets/{id}/status:
+ *   patch:
+ *     summary: Update ticket status
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch("/tickets/:id/status", async (req: AdminRequest, res: Response) => {
+  const id = req.params.id as string;
+  const { status } = req.body as { status: string };
+  
+  const ticket = await prisma.ticket.update({
+    where: { id },
+    data: { status },
+  });
+  res.json(ticket);
+});
+
+/**
+ * @swagger
+ * /api/admin/tickets/{id}:
+ *   delete:
+ *     summary: Delete a ticket
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete("/tickets/:id", async (req: AdminRequest, res: Response) => {
+  const id = req.params.id as string;
+  await prisma.ticketMessage.deleteMany({ where: { ticketId: id } });
+  await prisma.ticket.delete({ where: { id } });
+  res.status(204).send();
+});
+
+// ── Referrals ───────────────────────────────────────────────────────────────────
+/**
+ * @swagger
+ * /api/admin/referrals:
+ *   get:
+ *     summary: List all referrals
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get("/referrals", async (_req: AdminRequest, res: Response) => {
+  const referrals = await prisma.referral.findMany({
+    include: {
+      referrer: {
+        select: { id: true, email: true, fullName: true },
+      },
+      referred: {
+        select: { id: true, email: true, fullName: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  res.json(referrals);
+});
+
+/**
+ * @swagger
+ * /api/admin/referrals/tree/{userId}:
+ *   get:
+ *     summary: Get referral tree for a user
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get("/referrals/tree/:userId", async (req: AdminRequest, res: Response) => {
+  const userId = req.params.userId as string;
+  
+  // Get all referrals where this user is the referrer
+  const directReferrals = await prisma.referral.findMany({
+    where: { referrerId: userId },
+    include: {
+      referred: {
+        select: { id: true, email: true, fullName: true, createdAt: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  // Get total referral earnings for this user
+  const totalEarnings = await prisma.referral.aggregate({
+    where: { referrerId: userId },
+    _sum: { bonusAmount: true },
+  });
+
+  res.json({
+    userId,
+    directReferrals,
+    totalEarnings: totalEarnings._sum.bonusAmount ?? 0,
+    referralCount: directReferrals.length,
+  });
+});
+
+/**
+ * @swagger
+ * /api/admin/referrals/{id}/earnings:
+ *   patch:
+ *     summary: Adjust referral earnings
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch("/referrals/:id/earnings", async (req: AdminRequest, res: Response) => {
+  const id = req.params.id as string;
+  const { bonusAmount } = req.body as { bonusAmount: number };
+  
+  const referral = await prisma.referral.update({
+    where: { id },
+    data: { bonusAmount },
+    include: {
+      referrer: {
+        select: { id: true, email: true },
+      },
+      referred: {
+        select: { id: true, email: true },
+      },
+    },
+  });
+
+  // Update wallet referral earnings
+  await prisma.wallet.upsert({
+    where: { userId: referral.referrerId },
+    create: { userId: referral.referrerId, referralEarnings: bonusAmount },
+    update: { referralEarnings: bonusAmount },
+  });
+
+  res.json(referral);
+});
+
 export default router;

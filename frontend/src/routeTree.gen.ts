@@ -30,7 +30,9 @@ import { Route as CompanyCareersRouteImport } from './routes/company.careers'
 import { Route as CompanyAboutRouteImport } from './routes/company.about'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminTransactionsRouteImport } from './routes/admin/transactions'
+import { Route as AdminTicketsRouteImport } from './routes/admin/tickets'
 import { Route as AdminSessionsRouteImport } from './routes/admin/sessions'
+import { Route as AdminReferralsRouteImport } from './routes/admin/referrals'
 import { Route as AdminPlansRouteImport } from './routes/admin/plans'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLedgerRouteImport } from './routes/admin/ledger'
@@ -39,6 +41,7 @@ import { Route as AdminInvestmentsRouteImport } from './routes/admin/investments
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as AdminUsersIdRouteImport } from './routes/admin/users.$id'
+import { Route as AdminTicketsIdRouteImport } from './routes/admin/tickets.$id'
 import { Route as AuthenticatedDashboardWithdrawRouteImport } from './routes/_authenticated/dashboard.withdraw'
 import { Route as AuthenticatedDashboardTransactionsRouteImport } from './routes/_authenticated/dashboard.transactions'
 import { Route as AuthenticatedDashboardTradeHistoryRouteImport } from './routes/_authenticated/dashboard.trade-history'
@@ -161,9 +164,19 @@ const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
   path: '/transactions',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminTicketsRoute = AdminTicketsRouteImport.update({
+  id: '/tickets',
+  path: '/tickets',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminSessionsRoute = AdminSessionsRouteImport.update({
   id: '/sessions',
   path: '/sessions',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminReferralsRoute = AdminReferralsRouteImport.update({
+  id: '/referrals',
+  path: '/referrals',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminPlansRoute = AdminPlansRouteImport.update({
@@ -206,6 +219,11 @@ const AdminUsersIdRoute = AdminUsersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => AdminUsersRoute,
+} as any)
+const AdminTicketsIdRoute = AdminTicketsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminTicketsRoute,
 } as any)
 const AuthenticatedDashboardWithdrawRoute =
   AuthenticatedDashboardWithdrawRouteImport.update({
@@ -323,7 +341,9 @@ export interface FileRoutesByFullPath {
   '/admin/ledger': typeof AdminLedgerRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/referrals': typeof AdminReferralsRoute
   '/admin/sessions': typeof AdminSessionsRoute
+  '/admin/tickets': typeof AdminTicketsRouteWithChildren
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/company/about': typeof CompanyAboutRoute
@@ -355,6 +375,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/trade-history': typeof AuthenticatedDashboardTradeHistoryRoute
   '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
   '/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
+  '/admin/tickets/$id': typeof AdminTicketsIdRoute
   '/admin/users/$id': typeof AdminUsersIdRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
@@ -368,7 +389,9 @@ export interface FileRoutesByTo {
   '/admin/ledger': typeof AdminLedgerRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/referrals': typeof AdminReferralsRoute
   '/admin/sessions': typeof AdminSessionsRoute
+  '/admin/tickets': typeof AdminTicketsRouteWithChildren
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/company/about': typeof CompanyAboutRoute
@@ -400,6 +423,7 @@ export interface FileRoutesByTo {
   '/dashboard/trade-history': typeof AuthenticatedDashboardTradeHistoryRoute
   '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
   '/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
+  '/admin/tickets/$id': typeof AdminTicketsIdRoute
   '/admin/users/$id': typeof AdminUsersIdRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
@@ -418,7 +442,9 @@ export interface FileRoutesById {
   '/admin/ledger': typeof AdminLedgerRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/referrals': typeof AdminReferralsRoute
   '/admin/sessions': typeof AdminSessionsRoute
+  '/admin/tickets': typeof AdminTicketsRouteWithChildren
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/company/about': typeof CompanyAboutRoute
@@ -450,6 +476,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/trade-history': typeof AuthenticatedDashboardTradeHistoryRoute
   '/_authenticated/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
   '/_authenticated/dashboard/withdraw': typeof AuthenticatedDashboardWithdrawRoute
+  '/admin/tickets/$id': typeof AdminTicketsIdRoute
   '/admin/users/$id': typeof AdminUsersIdRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
@@ -468,7 +495,9 @@ export interface FileRouteTypes {
     | '/admin/ledger'
     | '/admin/login'
     | '/admin/plans'
+    | '/admin/referrals'
     | '/admin/sessions'
+    | '/admin/tickets'
     | '/admin/transactions'
     | '/admin/users'
     | '/company/about'
@@ -500,6 +529,7 @@ export interface FileRouteTypes {
     | '/dashboard/trade-history'
     | '/dashboard/transactions'
     | '/dashboard/withdraw'
+    | '/admin/tickets/$id'
     | '/admin/users/$id'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
@@ -513,7 +543,9 @@ export interface FileRouteTypes {
     | '/admin/ledger'
     | '/admin/login'
     | '/admin/plans'
+    | '/admin/referrals'
     | '/admin/sessions'
+    | '/admin/tickets'
     | '/admin/transactions'
     | '/admin/users'
     | '/company/about'
@@ -545,6 +577,7 @@ export interface FileRouteTypes {
     | '/dashboard/trade-history'
     | '/dashboard/transactions'
     | '/dashboard/withdraw'
+    | '/admin/tickets/$id'
     | '/admin/users/$id'
     | '/dashboard'
   id:
@@ -562,7 +595,9 @@ export interface FileRouteTypes {
     | '/admin/ledger'
     | '/admin/login'
     | '/admin/plans'
+    | '/admin/referrals'
     | '/admin/sessions'
+    | '/admin/tickets'
     | '/admin/transactions'
     | '/admin/users'
     | '/company/about'
@@ -594,6 +629,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/trade-history'
     | '/_authenticated/dashboard/transactions'
     | '/_authenticated/dashboard/withdraw'
+    | '/admin/tickets/$id'
     | '/admin/users/$id'
     | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
@@ -757,11 +793,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTransactionsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/tickets': {
+      id: '/admin/tickets'
+      path: '/tickets'
+      fullPath: '/admin/tickets'
+      preLoaderRoute: typeof AdminTicketsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/sessions': {
       id: '/admin/sessions'
       path: '/sessions'
       fullPath: '/admin/sessions'
       preLoaderRoute: typeof AdminSessionsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/referrals': {
+      id: '/admin/referrals'
+      path: '/referrals'
+      fullPath: '/admin/referrals'
+      preLoaderRoute: typeof AdminReferralsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/plans': {
@@ -819,6 +869,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/users/$id'
       preLoaderRoute: typeof AdminUsersIdRouteImport
       parentRoute: typeof AdminUsersRoute
+    }
+    '/admin/tickets/$id': {
+      id: '/admin/tickets/$id'
+      path: '/$id'
+      fullPath: '/admin/tickets/$id'
+      preLoaderRoute: typeof AdminTicketsIdRouteImport
+      parentRoute: typeof AdminTicketsRoute
     }
     '/_authenticated/dashboard/withdraw': {
       id: '/_authenticated/dashboard/withdraw'
@@ -1006,6 +1063,18 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AdminTicketsRouteChildren {
+  AdminTicketsIdRoute: typeof AdminTicketsIdRoute
+}
+
+const AdminTicketsRouteChildren: AdminTicketsRouteChildren = {
+  AdminTicketsIdRoute: AdminTicketsIdRoute,
+}
+
+const AdminTicketsRouteWithChildren = AdminTicketsRoute._addFileChildren(
+  AdminTicketsRouteChildren,
+)
+
 interface AdminUsersRouteChildren {
   AdminUsersIdRoute: typeof AdminUsersIdRoute
 }
@@ -1024,7 +1093,9 @@ interface AdminRouteRouteChildren {
   AdminLedgerRoute: typeof AdminLedgerRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminPlansRoute: typeof AdminPlansRoute
+  AdminReferralsRoute: typeof AdminReferralsRoute
   AdminSessionsRoute: typeof AdminSessionsRoute
+  AdminTicketsRoute: typeof AdminTicketsRouteWithChildren
   AdminTransactionsRoute: typeof AdminTransactionsRoute
   AdminUsersRoute: typeof AdminUsersRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1036,7 +1107,9 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminLedgerRoute: AdminLedgerRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminPlansRoute: AdminPlansRoute,
+  AdminReferralsRoute: AdminReferralsRoute,
   AdminSessionsRoute: AdminSessionsRoute,
+  AdminTicketsRoute: AdminTicketsRouteWithChildren,
   AdminTransactionsRoute: AdminTransactionsRoute,
   AdminUsersRoute: AdminUsersRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,

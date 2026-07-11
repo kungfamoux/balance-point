@@ -138,6 +138,7 @@ model TicketMessage {
   ticketId  String   @map("ticket_id") @db.Uuid
   userId    String   @map("user_id") @db.Uuid
   body      String
+  isAdmin   Boolean  @default(false) @map("is_admin")
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 
   ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
