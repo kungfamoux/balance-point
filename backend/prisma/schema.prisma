@@ -48,7 +48,7 @@ model Plan {
   durationDays    Int          @map("duration_days")
   sortOrder       Int          @default(0) @map("sort_order")
   investments     Investment[]
-  planAssignments PlanAssignment[]
+  planAssignments PlanAssignment[] @relation("PlanAssignments")
 
   @@map("plans")
 }
@@ -191,7 +191,7 @@ model PlanAssignment {
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  plan Plan @relation(fields: [planId], references: [id])
+  plan Plan @relation("PlanAssignments", fields: [planId], references: [id])
 
   @@index([userId])
   @@index([planId])
