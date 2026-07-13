@@ -35,11 +35,18 @@ router.get("/", requireAuth, async (req: AuthRequest, res) => {
         userId: req.userId!,
         status: "active"
       },
-      include: { plan: true },
       orderBy: { createdAt: "desc" },
     });
 
-    res.json({ ...wallet, activePlan: activeAssignment?.plan || null });
+    // Fetch plan separately if assignment exists
+    let activePlan = null;
+    if (activeAssignment) {
+      activePlan = await prisma.plan.findUnique({
+        where: { id: activeAssignment.planId },
+      });
+    }
+
+    res.json({ ...wallet, activePlan });
   } catch {
     res.status(500).json({ error: "Failed to fetch wallet" });
   }
