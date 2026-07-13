@@ -215,6 +215,26 @@ router.post("/users/:id/deposit", async (req: AdminRequest, res: Response) => {
 
 /**
  * @swagger
+ * /api/admin/users/{id}/profit:
+ *   patch:
+ *     summary: Adjust user wallet total profit
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch("/users/:id/profit", async (req: AdminRequest, res: Response) => {
+  const userId = (req.params.id as string);
+  const { totalProfit } = req.body as { totalProfit: number };
+  const wallet = await prisma.wallet.upsert({
+    where: { userId },
+    create: { userId, totalProfit },
+    update: { totalProfit },
+  });
+  res.json(wallet);
+});
+
+/**
+ * @swagger
  * /api/admin/users/{id}/kyc:
  *   patch:
  *     summary: Update KYC status (verified | unverified | rejected)
@@ -227,6 +247,121 @@ router.patch("/users/:id/kyc", async (req: AdminRequest, res: Response) => {
   const { kycStatus } = req.body as { kycStatus: string };
   const profile = await prisma.profile.update({ where: { id }, data: { kycStatus } });
   res.json(profile);
+});
+
+/**
+ * @swagger
+ * /api/admin/users/{id}/plan-assignments:
+ *   get:
+ *     summary: Get user's plan assignments
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get("/users/:id/plan-assignments", async (req: AdminRequest, res: Response) => {
+  const userId = (req.params.id as string);
+  const assignments = await prisma.planAssignment.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+  });
+  
+  // Fetch plans separately
+  const planIds = assignments.map(a => a.planId);
+  const plans = await prisma.plan.findMany({
+    where: { id: { in: planIds } },
+  });
+  
+  const planMap = new Map(plans.map(p => [p.id, p]));
+  
+  const enrichedAssignments = assignments.map(a => ({
+    ...a,
+    plan: planMap.get(a.planId),
+  }));
+  
+  res.json(enrichedAssignments);
+});
+
+/**
+ * @swagger
+ * /api/admin/users/{id}/plan-assignments:
+ *   post:
+ *     summary: Assign user to a plan
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post("/users/:id/plan-assignments", async (req: AdminRequest, res: Response) => {
+  const userId = (req.params.id as string);
+  const { planId, amount } = req.body as { planId: string; amount: number };
+  
+  const plan = await prisma.plan.findUnique({ where: { id: planId } });
+  if (!plan) {
+    res.status(404).json({ error: "Plan not found" });
+    return;
+  }
+
+  const endAt = new Date();
+  endAt.setDate(endAt.getDate() + plan.durationDays);
+
+  const [assignment] = await prisma.$transaction([
+    prisma.planAssignment.create({
+      data: {
+        userId,
+        planId,
+        amount,
+        roiPercent: plan.roiPercent,
+        endAt,
+      },
+    }),
+    prisma.transaction.create({
+      data: {
+        userId,
+        type: "plan_assignment",
+        gateway: "admin",
+        amount,
+        status: "completed",
+        meta: { planId, planName: plan.name },
+      },
+    }),
+  ]);
+
+  res.status(201).json(assignment);
+});
+
+/**
+ * @swagger
+ * /api/admin/plan-assignments/{id}:
+ *   patch:
+ *     summary: Update plan assignment status
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch("/plan-assignments/:id", async (req: AdminRequest, res: Response) => {
+  const id = (req.params.id as string);
+  const { status } = req.body as { status: string };
+  
+  const assignment = await prisma.planAssignment.update({
+    where: { id },
+    data: { status },
+  });
+  
+  res.json(assignment);
+});
+
+/**
+ * @swagger
+ * /api/admin/plan-assignments/{id}:
+ *   delete:
+ *     summary: Delete plan assignment
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete("/plan-assignments/:id", async (req: AdminRequest, res: Response) => {
+  const id = (req.params.id as string);
+  await prisma.planAssignment.delete({ where: { id } });
+  res.status(204).send();
 });
 
 /**
@@ -484,13 +619,15 @@ router.get("/investments", async (_req: AdminRequest, res: Response) => {
  */
 router.patch("/investments/:id", async (req: AdminRequest, res: Response) => {
   const id = (req.params.id as string);
-  const { status, profit } = req.body as { status?: string; profit?: number };
+  const { status, profit, amount } = req.body as { status?: string; profit?: number; amount?: number };
   const investment = await prisma.investment.update({
     where: { id },
     data: {
       ...(status ? { status } : {}),
       ...(profit !== undefined ? { profit } : {}),
+      ...(amount !== undefined ? { amount } : {}),
     },
+    include: { plan: true },
   });
   res.json(investment);
 });
@@ -767,17 +904,25 @@ router.delete("/tickets/:id", async (req: AdminRequest, res: Response) => {
  */
 router.get("/referrals", async (_req: AdminRequest, res: Response) => {
   const referrals = await prisma.referral.findMany({
-    include: {
-      referrer: {
-        select: { id: true, email: true, fullName: true },
-      },
-      referred: {
-        select: { id: true, email: true, fullName: true },
-      },
-    },
     orderBy: { createdAt: "desc" },
   });
-  res.json(referrals);
+  
+  // Fetch profiles separately
+  const userIds = [...new Set([...referrals.map(r => r.referrerId), ...referrals.map(r => r.referredId)])];
+  const profiles = await prisma.profile.findMany({
+    where: { id: { in: userIds } },
+    select: { id: true, email: true, fullName: true },
+  });
+  
+  const profileMap = new Map(profiles.map(p => [p.id, p]));
+  
+  const enrichedReferrals = referrals.map(r => ({
+    ...r,
+    referrer: profileMap.get(r.referrerId),
+    referred: profileMap.get(r.referredId),
+  }));
+  
+  res.json(enrichedReferrals);
 });
 
 /**
@@ -795,13 +940,22 @@ router.get("/referrals/tree/:userId", async (req: AdminRequest, res: Response) =
   // Get all referrals where this user is the referrer
   const directReferrals = await prisma.referral.findMany({
     where: { referrerId: userId },
-    include: {
-      referred: {
-        select: { id: true, email: true, fullName: true, createdAt: true },
-      },
-    },
     orderBy: { createdAt: "desc" },
   });
+
+  // Fetch referred profiles separately
+  const referredIds = directReferrals.map(r => r.referredId);
+  const profiles = await prisma.profile.findMany({
+    where: { id: { in: referredIds } },
+    select: { id: true, email: true, fullName: true, createdAt: true },
+  });
+  
+  const profileMap = new Map(profiles.map(p => [p.id, p]));
+  
+  const enrichedReferrals = directReferrals.map(r => ({
+    ...r,
+    referred: profileMap.get(r.referredId),
+  }));
 
   // Get total referral earnings for this user
   const totalEarnings = await prisma.referral.aggregate({
@@ -811,7 +965,7 @@ router.get("/referrals/tree/:userId", async (req: AdminRequest, res: Response) =
 
   res.json({
     userId,
-    directReferrals,
+    directReferrals: enrichedReferrals,
     totalEarnings: totalEarnings._sum.bonusAmount ?? 0,
     referralCount: directReferrals.length,
   });
@@ -833,15 +987,19 @@ router.patch("/referrals/:id/earnings", async (req: AdminRequest, res: Response)
   const referral = await prisma.referral.update({
     where: { id },
     data: { bonusAmount },
-    include: {
-      referrer: {
-        select: { id: true, email: true },
-      },
-      referred: {
-        select: { id: true, email: true },
-      },
-    },
   });
+
+  // Fetch profiles separately
+  const [referrer, referred] = await Promise.all([
+    prisma.profile.findUnique({
+      where: { id: referral.referrerId },
+      select: { id: true, email: true },
+    }),
+    prisma.profile.findUnique({
+      where: { id: referral.referredId },
+      select: { id: true, email: true },
+    }),
+  ]);
 
   // Update wallet referral earnings
   await prisma.wallet.upsert({
@@ -850,7 +1008,11 @@ router.patch("/referrals/:id/earnings", async (req: AdminRequest, res: Response)
     update: { referralEarnings: bonusAmount },
   });
 
-  res.json(referral);
+  res.json({
+    ...referral,
+    referrer,
+    referred,
+  });
 });
 
 export default router;

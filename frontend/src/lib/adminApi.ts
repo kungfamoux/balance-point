@@ -96,6 +96,8 @@ export const adminApi = {
     req<any>(`/api/admin/users/${id}/balance`, { method: "PATCH", body: JSON.stringify({ balance }) }),
   depositToWallet: (id: string, amount: number) =>
     req<any>(`/api/admin/users/${id}/deposit`, { method: "POST", body: JSON.stringify({ amount }) }),
+  updateProfit: (id: string, totalProfit: number) =>
+    req<any>(`/api/admin/users/${id}/profit`, { method: "PATCH", body: JSON.stringify({ totalProfit }) }),
   updateKyc: (id: string, kycStatus: string) =>
     req<any>(`/api/admin/users/${id}/kyc`, { method: "PATCH", body: JSON.stringify({ kycStatus }) }),
 
@@ -177,4 +179,18 @@ export const adminApi = {
   getReferralTree: (userId: string) => req<any>(`/api/admin/referrals/tree/${userId}`),
   updateReferralEarnings: (id: string, bonusAmount: number) =>
     req<any>(`/api/admin/referrals/${id}/earnings`, { method: "PATCH", body: JSON.stringify({ bonusAmount }) }),
+
+  // Plan Assignments
+  getUserPlanAssignments: (userId: string) => req<any[]>(`/api/admin/users/${userId}/plan-assignments`),
+  assignUserToPlan: (userId: string, body: { planId: string; amount: number }) =>
+    req<any>(`/api/admin/users/${userId}/plan-assignments`, { method: "POST", body: JSON.stringify(body) }),
+  updatePlanAssignment: (id: string, status: string) =>
+    req<any>(`/api/admin/plan-assignments/${id}`, { method: "PATCH", body: JSON.stringify({ status }) }),
+  deletePlanAssignment: async (id: string) => {
+    const apiUrl = await getApiUrl();
+    return fetch(`${apiUrl}/api/admin/plan-assignments/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${getAdminToken()}` },
+    });
+  },
 };

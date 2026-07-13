@@ -177,3 +177,20 @@ model PublicLedger {
 
   @@map("public_ledger")
 }
+
+model PlanAssignment {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  planId      String   @map("plan_id") @db.Uuid
+  amount      Decimal  @db.Decimal(18, 2)
+  roiPercent  Decimal  @map("roi_percent") @db.Decimal(6, 2)
+  status      String   @default("active") // "active", "completed", "cancelled"
+  startAt     DateTime @default(now()) @map("start_at") @db.Timestamptz
+  endAt       DateTime @map("end_at") @db.Timestamptz
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@index([userId])
+  @@index([planId])
+  @@map("plan_assignments")
+}
