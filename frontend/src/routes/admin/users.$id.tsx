@@ -236,7 +236,36 @@ function AdminUserDetail() {
       {/* Transactions */}
       <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
         <h2 className="text-white font-semibold px-5 py-4 border-b border-gray-800">Transactions</h2>
-        <div className="overflow-x-auto">
+        {/* Mobile card view */}
+        <div className="lg:hidden space-y-3 p-4">
+          {(transactions ?? []).map((t: any) => (
+            <div key={t.id} className="bg-gray-800 border border-gray-700 rounded-lg p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-white font-medium capitalize">{t.type}</span>
+                <StatusBadge status={t.status} />
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  <p className="text-gray-400 text-xs">Amount</p>
+                  <p className="text-white">${Number(t.amount).toFixed(2)}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-xs">Gateway</p>
+                  <p className="text-gray-300">{t.gateway ?? "—"}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-gray-400 text-xs">Date</p>
+                  <p className="text-gray-300">{new Date(t.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+          {!transactions?.length && (
+            <div className="text-center py-8 text-gray-500">No transactions</div>
+          )}
+        </div>
+        {/* Desktop table view */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full text-sm min-w-[500px]">
             <thead>
               <tr className="text-gray-400 border-b border-gray-800">
@@ -270,7 +299,51 @@ function AdminUserDetail() {
       {/* Investments */}
       <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
         <h2 className="text-white font-semibold px-5 py-4 border-b border-gray-800">Investments</h2>
-        <div className="overflow-x-auto">
+        {/* Mobile card view */}
+        <div className="lg:hidden space-y-3 p-4">
+          {(investments ?? []).map((inv: any) => (
+            <div key={inv.id} className="bg-gray-800 border border-gray-700 rounded-lg p-3 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-white font-medium">{inv.plan?.name || "—"}</span>
+                <StatusBadge status={inv.status} />
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  <p className="text-gray-400 text-xs">Amount</p>
+                  <p className="text-white">${Number(inv.amount).toFixed(2)}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-xs">ROI</p>
+                  <p className="text-white">{inv.roiPercent}%</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-xs">Profit</p>
+                  <p className="text-white">${Number(inv.profit).toFixed(2)}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-xs">End Date</p>
+                  <p className="text-gray-300">{new Date(inv.endAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => {
+                  setEditingInvestment(inv.id);
+                  setInvProfitInput(inv.profit.toString());
+                  setInvAmountInput(inv.amount.toString());
+                }}
+                className="w-full"
+              >
+                Edit
+              </Button>
+            </div>
+          ))}
+          {!investments?.length && (
+            <div className="text-center py-8 text-gray-500">No investments</div>
+          )}
+        </div>
+        {/* Desktop table view */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full text-sm min-w-[600px]">
             <thead>
               <tr className="text-gray-400 border-b border-gray-800">
@@ -386,7 +459,7 @@ function AdminUserDetail() {
               <option value="">Select plan</option>
               {(plans ?? []).map((plan: any) => (
                 <option key={plan.id} value={plan.id}>
-                  {plan.name} (${Number(plan.minDeposit)} - ${Number(plan.maxDeposit)})
+                  {plan.name} ${Number(plan.minDeposit)}
                 </option>
               ))}
             </select>

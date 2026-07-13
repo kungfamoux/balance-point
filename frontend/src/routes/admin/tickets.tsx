@@ -60,27 +60,25 @@ function AdminTickets() {
         {tickets && tickets.length > 0 ? (
           tickets.map((ticket: any) => (
             <Card key={ticket.id} className="hover:border-gray-600 transition-colors">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 flex-1">
-                    <div className="p-3 bg-blue-600/20 rounded-lg">
-                      <MessageSquare className="w-5 h-5 text-blue-400" />
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                  <div className="p-3 bg-blue-600/20 rounded-lg shrink-0">
+                    <MessageSquare className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                      <h3 className="font-semibold text-white">{ticket.subject}</h3>
+                      {getStatusBadge(ticket.status)}
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-1">
-                        <h3 className="font-semibold text-white">{ticket.subject}</h3>
-                        {getStatusBadge(ticket.status)}
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-400">
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          {new Date(ticket.createdAt).toLocaleDateString()}
-                        </span>
-                        <span>{ticket.messages?.length || 0} messages</span>
-                      </div>
+                    <div className="flex items-center gap-4 text-sm text-gray-400">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        {new Date(ticket.createdAt).toLocaleDateString()}
+                      </span>
+                      <span>{ticket.messages?.length || 0} messages</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 sm:flex-row flex-row-reverse shrink-0">
                     <Link to="/admin/tickets/$id" params={{ id: ticket.id }}>
                       <Button variant="outline" size="sm">
                         View

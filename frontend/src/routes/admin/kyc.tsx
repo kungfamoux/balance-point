@@ -43,20 +43,20 @@ function AdminKyc() {
       ) : (
         <div className="space-y-4">
           {kycDocs.map((doc: any) => (
-            <div key={doc.id} className="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <div key={doc.id} className="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-5">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                 <div className="flex-1 space-y-3">
                   <div className="flex items-center gap-3">
-                    <User className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-white font-medium">{doc.profile?.fullName || "Unknown User"}</p>
-                      <p className="text-gray-400 text-xs font-mono">{doc.userId}</p>
+                    <User className="w-5 h-5 text-gray-400 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-white font-medium truncate">{doc.profile?.fullName || "Unknown User"}</p>
+                      <p className="text-gray-400 text-xs font-mono truncate">{doc.userId}</p>
                     </div>
                   </div>
                   
                   <div className="flex items-center gap-3">
-                    <FileText className="w-5 h-5 text-gray-400" />
-                    <div>
+                    <FileText className="w-5 h-5 text-gray-400 shrink-0" />
+                    <div className="min-w-0">
                       <p className="text-white capitalize">{doc.documentType.replace(/_/g, " ")}</p>
                       <a 
                         href={doc.documentUrl} 
@@ -70,14 +70,14 @@ function AdminKyc() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <Calendar className="w-5 h-5 text-gray-400" />
+                    <Calendar className="w-5 h-5 text-gray-400 shrink-0" />
                     <p className="text-gray-400 text-sm">
                       Submitted {new Date(doc.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex gap-2 sm:flex-row flex-row-reverse">
+                <div className="flex gap-2 sm:flex-row flex-row-reverse shrink-0">
                   <Button
                     size="sm"
                     className="bg-red-700 hover:bg-red-600 h-9 px-4"

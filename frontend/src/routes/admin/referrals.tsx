@@ -94,18 +94,18 @@ function AdminReferrals() {
                     key={referral.id}
                     className="p-4 bg-gray-900 border border-gray-700 rounded-lg hover:border-gray-600 transition-colors"
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex-1">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 text-sm">
-                          <span className="text-gray-400">Referrer:</span>
-                          <span className="font-medium">{referral.referrer?.email || "N/A"}</span>
+                          <span className="text-gray-400 shrink-0">Referrer:</span>
+                          <span className="font-medium truncate">{referral.referrer?.email || "N/A"}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm mt-1">
-                          <span className="text-gray-400">Referred:</span>
-                          <span className="font-medium">{referral.referred?.email || "N/A"}</span>
+                          <span className="text-gray-400 shrink-0">Referred:</span>
+                          <span className="font-medium truncate">{referral.referred?.email || "N/A"}</span>
                         </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right shrink-0">
                         <div className="text-sm font-medium text-green-400">
                           {formatCurrency(Number(referral.bonusAmount))}
                         </div>
@@ -114,11 +114,12 @@ function AdminReferrals() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 mt-3">
+                    <div className="flex flex-col sm:flex-row gap-2 mt-3">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleViewTree(referral.referrerId)}
+                        className="w-full sm:w-auto"
                       >
                         <TreeDeciduous className="w-4 h-4 mr-1" />
                         View Tree
@@ -127,6 +128,7 @@ function AdminReferrals() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleUpdateEarnings(referral.id, Number(referral.bonusAmount))}
+                        className="w-full sm:w-auto"
                       >
                         <DollarSign className="w-4 h-4 mr-1" />
                         Adjust Earnings
