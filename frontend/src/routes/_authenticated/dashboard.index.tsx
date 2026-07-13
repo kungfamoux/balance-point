@@ -21,16 +21,15 @@ function Overview() {
   const { data } = useQuery({
     queryKey: ["dashboard-overview"],
     queryFn: async () => {
-      const [wallet, tx, investments] = await Promise.all([
+      const [wallet, tx] = await Promise.all([
         api.getWallet(),
         api.getTransactions(5),
-        api.getInvestments(),
       ]) as any[];
-      const activeInv = (investments ?? []).find((i: any) => i.status === "active");
-      return { wallet, tx: tx ?? [], investment: activeInv ?? null };
+      return { wallet, tx: tx ?? [] };
     },
   });
   const w = data?.wallet;
+  const activePlan = w?.activePlan;
 
   const signalBoostOptions = [
     { percent: 10, price: 1000 },
@@ -53,8 +52,8 @@ function Overview() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat icon={DollarSign} label="Balance" value={`$${num(w?.balance)}`} accent="text-blue-500" iconColor="bg-blue-500" />
-        <Stat icon={TrendingUp} label="Profits" value={`$${num(w?.total_profit)}`} accent="text-green-500" iconColor="bg-green-500" />
-        <Stat icon={Package} label="Deposits" value={`$${num(w?.total_deposits ?? 0)}`} accent="text-orange-500" iconColor="bg-orange-500" />
+        <Stat icon={TrendingUp} label="Profits" value={`$${num(w?.totalProfit)}`} accent="text-green-500" iconColor="bg-green-500" />
+        <Stat icon={Package} label="Active Plan" value={activePlan?.name || "None"} accent="text-orange-500" iconColor="bg-orange-500" />
         <Stat 
           icon={Signal} 
           label="Signal Strength" 
