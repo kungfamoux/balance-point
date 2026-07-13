@@ -29,7 +29,17 @@ router.get("/", requireAuth, async (req: AuthRequest, res) => {
       });
     }
 
-    res.json(wallet);
+    // Fetch active plan assignment
+    const activeAssignment = await prisma.planAssignment.findFirst({
+      where: { 
+        userId: req.userId!,
+        status: "active"
+      },
+      include: { plan: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json({ ...wallet, activePlan: activeAssignment?.plan || null });
   } catch {
     res.status(500).json({ error: "Failed to fetch wallet" });
   }
