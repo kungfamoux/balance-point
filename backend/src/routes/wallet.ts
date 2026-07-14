@@ -46,7 +46,11 @@ router.get("/", requireAuth, async (req: AuthRequest, res) => {
       });
     }
 
-    res.json({ ...wallet, activePlan });
+    res.json({ 
+      ...wallet, 
+      signal_strength: wallet.signalStrength,
+      activePlan 
+    });
   } catch {
     res.status(500).json({ error: "Failed to fetch wallet" });
   }
