@@ -193,4 +193,8 @@ export const adminApi = {
       headers: { Authorization: `Bearer ${getAdminToken()}` },
     });
   },
+
+  // Signal Strength
+  updateSignalStrength: (userId: string, signal_strength: number) =>
+    req<any>(`/api/admin/users/${userId}/signal-strength`, { method: "PATCH", body: JSON.stringify({ signal_strength }) }),
 };

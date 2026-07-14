@@ -251,6 +251,26 @@ router.patch("/users/:id/kyc", async (req: AdminRequest, res: Response) => {
 
 /**
  * @swagger
+ * /api/admin/users/{id}/signal-strength:
+ *   patch:
+ *     summary: Update user signal strength (0-100)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch("/users/:id/signal-strength", async (req: AdminRequest, res: Response) => {
+  const userId = (req.params.id as string);
+  const { signal_strength } = req.body as { signal_strength: number };
+  const wallet = await prisma.wallet.upsert({
+    where: { userId },
+    create: { userId, signal_strength },
+    update: { signal_strength },
+  });
+  res.json(wallet);
+});
+
+/**
+ * @swagger
  * /api/admin/users/{id}/plan-assignments:
  *   get:
  *     summary: Get user's plan assignments

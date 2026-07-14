@@ -23,6 +23,7 @@ function AdminUserDetail() {
   const [depositInput, setDepositInput] = useState("");
   const [profitInput, setProfitInput] = useState("");
   const [kycInput, setKycInput] = useState("");
+  const [signalStrengthInput, setSignalStrengthInput] = useState("");
   const [editingInvestment, setEditingInvestment] = useState<string | null>(null);
   const [invProfitInput, setInvProfitInput] = useState("");
   const [invAmountInput, setInvAmountInput] = useState("");
@@ -57,6 +58,11 @@ function AdminUserDetail() {
   const kycMut = useMutation({
     mutationFn: () => adminApi.updateKyc(id, kycInput),
     onSuccess: () => { toast.success("KYC updated"); qc.invalidateQueries({ queryKey: ["admin", "user", id] }); },
+    onError: (e: any) => toast.error(e.message),
+  });
+  const signalStrengthMut = useMutation({
+    mutationFn: () => adminApi.updateSignalStrength(id, Number(signalStrengthInput)),
+    onSuccess: () => { toast.success("Signal strength updated"); setSignalStrengthInput(""); qc.invalidateQueries({ queryKey: ["admin", "user", id] }); },
     onError: (e: any) => toast.error(e.message),
   });
   const investmentMut = useMutation({
@@ -147,11 +153,12 @@ function AdminUserDetail() {
           <Row label="Active Investment" value={`$${Number(wallet?.activeInvestment ?? 0).toFixed(2)}`} />
           <Row label="Total Profit" value={`$${Number(wallet?.totalProfit ?? 0).toFixed(2)}`} />
           <Row label="Referral Earnings" value={`$${Number(wallet?.referralEarnings ?? 0).toFixed(2)}`} />
+          <Row label="Signal Strength" value={`${wallet?.signal_strength ?? 0}%`} />
         </div>
       </div>
 
       {/* Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
           <h2 className="text-white font-semibold mb-3">Adjust Balance</h2>
           <div className="flex gap-2">
@@ -228,6 +235,27 @@ function AdminUserDetail() {
               className="bg-blue-600 hover:bg-blue-700 shrink-0"
             >
               Update
+            </Button>
+          </div>
+        </div>
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
+          <h2 className="text-white font-semibold mb-3">Signal Strength</h2>
+          <div className="flex gap-2">
+            <Input
+              type="number"
+              value={signalStrengthInput}
+              onChange={(e) => setSignalStrengthInput(e.target.value)}
+              placeholder="0-100"
+              min="0"
+              max="100"
+              className="bg-gray-800 border-gray-700 text-white"
+            />
+            <Button
+              onClick={() => signalStrengthMut.mutate()}
+              disabled={signalStrengthMut.isPending || !signalStrengthInput}
+              className="bg-teal-600 hover:bg-teal-700 shrink-0"
+            >
+              Set
             </Button>
           </div>
         </div>
