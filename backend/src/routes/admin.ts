@@ -263,8 +263,8 @@ router.patch("/users/:id/signal-strength", async (req: AdminRequest, res: Respon
   const { signal_strength } = req.body as { signal_strength: number };
   const wallet = await prisma.wallet.upsert({
     where: { userId },
-    create: { userId, signal_strength },
-    update: { signal_strength },
+    create: { userId, signalStrength: signal_strength },
+    update: { signalStrength: signal_strength },
   });
   res.json(wallet);
 });

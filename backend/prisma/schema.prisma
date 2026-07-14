@@ -31,6 +31,7 @@ model Wallet {
   activeInvestment Decimal  @default(0) @map("active_investment") @db.Decimal(18, 2)
   totalProfit      Decimal  @default(0) @map("total_profit") @db.Decimal(18, 2)
   referralEarnings Decimal  @default(0) @map("referral_earnings") @db.Decimal(18, 2)
+  signalStrength   Int      @default(0) @map("signal_strength")
   updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   @@map("wallets")
