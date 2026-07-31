@@ -80,13 +80,19 @@ export const api = {
 
   // Transactions
   getTransactions: (limit = 50) => request(`/api/transactions?limit=${limit}`),
-  getTradeHistory: (limit = 50) => request(`/api/trade-history?limit=${limit}`),
   createDeposit: (body: { amount: number; gateway: string; meta?: object }) =>
     request("/api/transactions/deposit", { method: "POST", body: JSON.stringify(body) }),
   createWithdrawal: (body: { amount: number; gateway: string; meta?: object }) =>
     request("/api/transactions/withdraw", { method: "POST", body: JSON.stringify(body) }),
   cancelWithdrawal: (id: string) =>
     request(`/api/transactions/${id}/cancel`, { method: "PATCH" }),
+
+  // Trades
+  getTradeHistory: (limit = 50) => request(`/api/trades?limit=${limit}`),
+  createTrade: (body: { type: "buy" | "sell"; symbol: string; amount: number; entryPrice: number; leverage?: number }) =>
+    request("/api/trades", { method: "POST", body: JSON.stringify(body) }),
+  closeTrade: (id: string, exitPrice: number) =>
+    request(`/api/trades/${id}/close`, { method: "PATCH", body: JSON.stringify({ exitPrice }) }),
 
   // Referrals
   getReferrals: () => request("/api/referrals"),

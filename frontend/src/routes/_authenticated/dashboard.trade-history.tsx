@@ -19,7 +19,13 @@ function TradeHistory() {
     queryKey: ["trade-history"],
     queryFn: () => api.getTradeHistory() as any,
   });
-  const rows = ((data as any[]) ?? []).filter((t: any) => filter === "all" || t.type === filter);
+  const rows = ((data as any[]) ?? []).filter((t: any) => {
+    if (filter === "all") return true;
+    if (filter === "buy" || filter === "sell") return t.type === filter;
+    if (filter === "profit") return Number(t.profitLoss) > 0;
+    if (filter === "loss") return Number(t.profitLoss) < 0;
+    return true;
+  });
   return (
     <>
       <PageHeader title="Trade History" description="View all your trading activities." />
@@ -51,13 +57,13 @@ function TradeHistory() {
                   <tr key={t.id}>
                     <td className="px-5 py-3 capitalize">{t.type}</td>
                     <td className="px-5 py-3 font-semibold">{t.symbol}</td>
-                    <td className="px-5 py-3">{t.amount}</td>
-                    <td className="px-5 py-3">${Number(t.price).toLocaleString()}</td>
-                    <td className={`px-5 py-3 font-semibold ${t.profit_loss >= 0 ? "text-green-500" : "text-red-500"}`}>
-                      {t.profit_loss >= 0 ? "+" : ""}${Number(t.profit_loss).toLocaleString()}
+                    <td className="px-5 py-3">${Number(t.amount).toLocaleString()}</td>
+                    <td className="px-5 py-3">${Number(t.entryPrice).toLocaleString()}</td>
+                    <td className={`px-5 py-3 font-semibold ${Number(t.profitLoss) >= 0 ? "text-green-500" : "text-red-500"}`}>
+                      {Number(t.profitLoss) >= 0 ? "+" : ""}${Number(t.profitLoss).toLocaleString()}
                     </td>
                     <td className="px-5 py-3">
-                      <Badge variant={t.status === "completed" ? "default" : t.status === "pending" ? "secondary" : "destructive"}>
+                      <Badge variant={t.status === "closed" ? "default" : t.status === "open" ? "secondary" : "destructive"}>
                         {t.status}
                       </Badge>
                     </td>

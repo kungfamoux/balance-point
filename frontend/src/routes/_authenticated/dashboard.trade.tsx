@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { ArrowUp, ArrowDown } from "lucide-react";
+import { api } from "@/lib/api";
 
 export const Route = createFileRoute("/_authenticated/dashboard/trade")({
   component: TradePage,
@@ -25,11 +26,47 @@ function TradePage() {
   const [symbol, setSymbol] = useState(symbols[0]);
   const [amount, setAmount] = useState("100");
   const [leverage, setLeverage] = useState("10");
+  const [isPlacing, setIsPlacing] = useState(false);
 
-  function place(side: "buy" | "sell") {
+  async function place(side: "buy" | "sell") {
     const amt = Number(amount);
     if (!amt || amt <= 0) return toast.error("Enter a valid amount");
-    toast.success(`${side.toUpperCase()} ${amt} on ${symbol} @ ${leverage}x submitted`);
+
+    setIsPlacing(true);
+    try {
+      // Simplified entry price estimation (in real system, this would come from market data)
+      const entryPrice = getEstimatedPrice(symbol);
+      
+      await api.createTrade({
+        type: side,
+        symbol: symbol.split(":")[1], // Use the symbol part after the colon
+        amount: amt,
+        entryPrice,
+        leverage: Number(leverage),
+      });
+      
+      toast.success(`${side.toUpperCase()} ${amt} on ${symbol} @ ${leverage}x executed successfully`);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to execute trade");
+    } finally {
+      setIsPlacing(false);
+    }
+  }
+
+  // Simplified price estimation for demo purposes
+  function getEstimatedPrice(symbol: string): number {
+    const symbolName = symbol.split(":")[1];
+    const basePrices: Record<string, number> = {
+      "BTCUSD": 65000,
+      "ETHUSD": 3500,
+      "EURUSD": 1.08,
+      "GBPUSD": 1.27,
+      "AAPL": 175,
+      "TSLA": 240,
+      "NVDA": 850,
+      "SPXUSD": 5200,
+    };
+    return basePrices[symbolName] || 100;
   }
 
   return (
@@ -90,14 +127,21 @@ function TradePage() {
               </Select>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <Button className="bg-success text-success-foreground hover:bg-success/90" onClick={() => place("buy")}>
+              <Button 
+                className="bg-success text-success-foreground hover:bg-success/90" 
+                onClick={() => place("buy")}
+                disabled={isPlacing}
+              >
                 <ArrowUp className="mr-1 h-4 w-4" /> Buy
               </Button>
-              <Button className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => place("sell")}>
+              <Button 
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90" 
+                onClick={() => place("sell")}
+                disabled={isPlacing}
+              >
                 <ArrowDown className="mr-1 h-4 w-4" /> Sell
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground">Demo ticket — orders are not actually executed.</p>
           </CardContent>
         </Card>
       </div>

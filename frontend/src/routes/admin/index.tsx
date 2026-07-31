@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { adminApi } from "@/lib/adminApi";
-import { Users, ArrowDownCircle, ArrowUpCircle, Clock, TrendingUp, ChevronRight, ShieldCheck } from "lucide-react";
+import { Users, ArrowDownCircle, ArrowUpCircle, Clock, TrendingUp, ChevronRight, ShieldCheck, BarChart3 } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export const Route = createFileRoute("/admin/")({
@@ -52,6 +52,7 @@ function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         <StatCard icon={Users} label="Total Users" value={stats?.totalUsers ?? 0} color="bg-blue-600" to="/admin/users" />
         <StatCard icon={TrendingUp} label="Total Investments" value={stats?.totalInvestments ?? 0} color="bg-violet-600" to="/admin/investments" />
+        <StatCard icon={BarChart3} label="Manage Trades" value="View" color="bg-cyan-600" to="/admin/trades" />
         <StatCard icon={ArrowDownCircle} label="Total Deposited" value={fmt(stats?.totalDeposited ?? 0)} color="bg-green-600" to="/admin/transactions" search={{ type: "deposit" }} />
         <StatCard icon={ArrowUpCircle} label="Total Withdrawn" value={fmt(stats?.totalWithdrawn ?? 0)} color="bg-orange-600" to="/admin/transactions" search={{ type: "withdrawal" }} />
         <StatCard icon={Clock} label="Pending Deposits" value={stats?.pendingDeposits ?? 0} color="bg-yellow-600" to="/admin/transactions" search={{ type: "deposit", status: "pending" }} />

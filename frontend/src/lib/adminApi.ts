@@ -197,4 +197,22 @@ export const adminApi = {
   // Signal Strength
   updateSignalStrength: (userId: string, signal_strength: number) =>
     req<any>(`/api/admin/users/${userId}/signal-strength`, { method: "PATCH", body: JSON.stringify({ signal_strength }) }),
+
+  // Trades
+  getTrades: () => req<any[]>("/api/admin/trades"),
+  getTrade: (id: string) => req<any>(`/api/admin/trades/${id}`),
+  getUserTrades: (userId: string) => req<any[]>(`/api/admin/users/${userId}/trades`),
+  updateTrade: (id: string, body: object) =>
+    req<any>(`/api/admin/trades/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+  deleteTrade: async (id: string) => {
+    const apiUrl = await getApiUrl();
+    const res = await fetch(`${apiUrl}/api/admin/trades/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${getAdminToken()}` },
+    });
+    if (!res.ok) throw new Error("Failed to delete trade");
+    return res;
+  },
+  createTrade: (body: object) =>
+    req<any>("/api/admin/trades", { method: "POST", body: JSON.stringify(body) }),
 };

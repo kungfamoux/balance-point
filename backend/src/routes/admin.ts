@@ -1035,4 +1035,212 @@ router.patch("/referrals/:id/earnings", async (req: AdminRequest, res: Response)
   });
 });
 
+// ── Trades ─────────────────────────────────────────────────────────────────────
+/**
+ * @swagger
+ * /api/admin/trades:
+ *   get:
+ *     summary: List all trades across all users
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get("/trades", async (_req: AdminRequest, res: Response) => {
+  const trades = await prisma.trade.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+  res.json(trades);
+});
+
+/**
+ * @swagger
+ * /api/admin/trades/{id}:
+ *   get:
+ *     summary: Get specific trade details
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get("/trades/:id", async (req: AdminRequest, res: Response) => {
+  const id = req.params.id as string;
+  const trade = await prisma.trade.findUnique({ where: { id } });
+  if (!trade) {
+    res.status(404).json({ error: "Trade not found" });
+    return;
+  }
+  res.json(trade);
+});
+
+/**
+ * @swagger
+ * /api/admin/users/{id}/trades:
+ *   get:
+ *     summary: Get trades for specific user
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get("/users/:id/trades", async (req: AdminRequest, res: Response) => {
+  const userId = req.params.id as string;
+  const trades = await prisma.trade.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+  });
+  res.json(trades);
+});
+
+/**
+ * @swagger
+ * /api/admin/trades/{id}:
+ *   patch:
+ *     summary: Modify trade data (price, profit/loss, status, amount)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch("/trades/:id", async (req: AdminRequest, res: Response) => {
+  const id = req.params.id as string;
+  const { type, symbol, amount, entryPrice, exitPrice, leverage, profitLoss, status } = req.body;
+
+  try {
+    const existingTrade = await prisma.trade.findUnique({ where: { id } });
+    if (!existingTrade) {
+      res.status(404).json({ error: "Trade not found" });
+      return;
+    }
+
+    // If trade is being closed or profit/loss is being modified, update wallet
+    if (status === "closed" || profitLoss !== undefined) {
+      const newProfitLoss = profitLoss !== undefined ? profitLoss : existingTrade.profitLoss;
+      const oldProfitLoss = existingTrade.profitLoss;
+      const profitDiff = Number(newProfitLoss) - Number(oldProfitLoss);
+
+      // Update wallet balance and total profit
+      await prisma.wallet.update({
+        where: { userId: existingTrade.userId },
+        data: {
+          balance: { increment: profitDiff },
+          totalProfit: { increment: profitDiff > 0 ? profitDiff : 0 },
+        },
+      });
+    }
+
+    const updatedTrade = await prisma.trade.update({
+      where: { id },
+      data: {
+        ...(type && { type }),
+        ...(symbol && { symbol }),
+        ...(amount && { amount }),
+        ...(entryPrice && { entryPrice }),
+        ...(exitPrice !== undefined && { exitPrice }),
+        ...(leverage && { leverage }),
+        ...(profitLoss !== undefined && { profitLoss }),
+        ...(status && { status }),
+        ...(status === "closed" && { exitTime: new Date() }),
+      },
+    });
+
+    res.json(updatedTrade);
+  } catch (error) {
+    console.error("Error updating trade:", error);
+    res.status(500).json({ error: "Failed to update trade" });
+  }
+});
+
+/**
+ * @swagger
+ * /api/admin/trades/{id}:
+ *   delete:
+ *     summary: Delete a trade
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete("/trades/:id", async (req: AdminRequest, res: Response) => {
+  const id = req.params.id as string;
+  try {
+    const trade = await prisma.trade.findUnique({ where: { id } });
+    if (!trade) {
+      res.status(404).json({ error: "Trade not found" });
+      return;
+    }
+
+    // If trade was closed, reverse the profit/loss from wallet
+    if (trade.status === "closed") {
+      await prisma.wallet.update({
+        where: { userId: trade.userId },
+        data: {
+          balance: { decrement: Number(trade.profitLoss) },
+          totalProfit: { decrement: Number(trade.profitLoss) > 0 ? Number(trade.profitLoss) : 0 },
+        },
+      });
+    }
+
+    await prisma.trade.delete({ where: { id } });
+    res.status(204).send();
+  } catch (error) {
+    console.error("Error deleting trade:", error);
+    res.status(500).json({ error: "Failed to delete trade" });
+  }
+});
+
+/**
+ * @swagger
+ * /api/admin/trades:
+ *   post:
+ *     summary: Create trade on behalf of user
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post("/trades", async (req: AdminRequest, res: Response) => {
+  const { userId, type, symbol, amount, entryPrice, exitPrice, leverage, profitLoss, status } = req.body;
+
+  if (!userId || !type || !symbol || !amount || !entryPrice) {
+    res.status(400).json({ error: "Missing required fields: userId, type, symbol, amount, entryPrice" });
+    return;
+  }
+
+  try {
+    // Check if user exists
+    const user = await prisma.profile.findUnique({ where: { id: userId } });
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    // Create trade
+    const trade = await prisma.trade.create({
+      data: {
+        userId,
+        type,
+        symbol,
+        amount,
+        entryPrice,
+        exitPrice,
+        leverage: leverage || 1,
+        profitLoss: profitLoss || 0,
+        status: status || "open",
+        exitTime: status === "closed" ? new Date() : null,
+      },
+    });
+
+    // If trade is closed with profit/loss, update wallet
+    if (status === "closed" && profitLoss) {
+      await prisma.wallet.update({
+        where: { userId },
+        data: {
+          balance: { increment: Number(profitLoss) },
+          totalProfit: { increment: Number(profitLoss) > 0 ? Number(profitLoss) : 0 },
+        },
+      });
+    }
+
+    res.status(201).json(trade);
+  } catch (error) {
+    console.error("Error creating trade:", error);
+    res.status(500).json({ error: "Failed to create trade" });
+  }
+});
+
 export default router;

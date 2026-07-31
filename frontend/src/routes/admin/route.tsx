@@ -20,9 +20,10 @@ export const Route = createFileRoute("/admin")({
 const NAV = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/users", label: "Users", icon: Users },
+  { to: "/admin/trades", label: "Trades", icon: BarChart3 },
   { to: "/admin/transactions", label: "Transactions", icon: ArrowLeftRight },
   { to: "/admin/investments", label: "Investments", icon: TrendingUp },
-  { to: "/admin/plans", label: "Plans", icon: BarChart3 },
+  { to: "/admin/plans", label: "Plans", icon: BookOpen },
   { to: "/admin/tickets", label: "Tickets", icon: Ticket },
   { to: "/admin/sessions", label: "Live Sessions", icon: Video },
   { to: "/admin/ledger", label: "Ledger", icon: BookOpen },
