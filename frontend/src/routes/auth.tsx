@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { login, register } from "@/lib/auth";
 import { toast } from "sonner";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Eye, EyeOff, Upload } from "lucide-react";
 
 const search = z.object({
   tab: z.enum(["login", "register"]).optional(),
@@ -333,11 +333,51 @@ function RegisterForm({ defaultRef }: { defaultRef?: string }) {
   const [referralCode, setReferralCode] = useState(defaultRef ?? "");
   const [showPw, setShowPw] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [idCardFile, setIdCardFile] = useState<File | null>(null);
+  const [uploadingId, setUploadingId] = useState(false);
 
   function handleCountryChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const selected = COUNTRIES.find((c) => c.code === e.target.value);
     setCountry(selected?.name ?? "");
     setDialCode(selected?.dial ?? "");
+  }
+
+  async function uploadIdCard(file: File): Promise<string> {
+    // Convert file to base64
+    const reader = new FileReader();
+    const base64Promise = new Promise<string>((resolve, reject) => {
+      reader.onload = () => {
+        const result = reader.result as string;
+        resolve(result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const base64Data = await base64Promise;
+
+    const apiUrl = (import.meta.env.VITE_PRIMARY_API_URL as string | undefined) ?? "https://balance-point-kfg3.onrender.com";
+    const fallbackApiUrl = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:4000";
+
+    try {
+      const res = await fetch(`${apiUrl}/api/upload/id-card/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ file: base64Data, documentType: "id_front" }),
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      return data.fileUrl;
+    } catch {
+      // Try fallback
+      const res = await fetch(`${fallbackApiUrl}/api/upload/id-card/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ file: base64Data, documentType: "id_front" }),
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      return data.fileUrl;
+    }
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -349,9 +389,26 @@ function RegisterForm({ defaultRef }: { defaultRef?: string }) {
     if (password !== confirmPassword) { toast.error("Passwords do not match."); return; }
 
     setLoading(true);
+    let idCardUrl: string | undefined;
+    
+    // Upload ID card if provided
+    if (idCardFile) {
+      setUploadingId(true);
+      try {
+        idCardUrl = await uploadIdCard(idCardFile);
+        toast.success("ID card uploaded successfully");
+      } catch (err: any) {
+        toast.error(err?.message ?? "Failed to upload ID card");
+        setLoading(false);
+        setUploadingId(false);
+        return;
+      }
+      setUploadingId(false);
+    }
+
     try {
       const fullPhone = `${dialCode}${phone.replace(/^0/, "")}`;
-      await register(email, password, fullName, fullPhone, country, referralCode || undefined);
+      await register(email, password, fullName, fullPhone, country, referralCode || undefined, idCardUrl);
       toast.success("Account created successfully!");
       navigate({ to: "/dashboard" });
     } catch (err: any) {
@@ -444,9 +501,39 @@ function RegisterForm({ defaultRef }: { defaultRef?: string }) {
           className="mt-1.5" placeholder="e.g. ABC12345" />
       </div>
 
-      <Button type="submit" disabled={loading} className="w-full">
+      {/* ID Card Upload (optional) */}
+      <div>
+        <Label htmlFor="reg-idcard">ID Card <span className="text-muted-foreground text-xs font-normal">(optional - for faster verification)</span></Label>
+        <div className="mt-1.5 flex items-center gap-3 rounded-lg border border-dashed border-border bg-secondary/30 p-4">
+          <Upload className="h-5 w-5 text-muted-foreground" />
+          <Input 
+            id="reg-idcard" 
+            type="file" 
+            accept="image/*,application/pdf" 
+            className="border-0 bg-transparent p-0"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                  toast.error("File size must be less than 5MB");
+                  return;
+                }
+                setIdCardFile(file);
+              }
+            }}
+          />
+          {idCardFile && (
+            <span className="text-xs text-muted-foreground truncate max-w-[150px]">
+              {idCardFile.name}
+            </span>
+          )}
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">Upload a valid ID card (JPEG, PNG, or PDF, max 5MB)</p>
+      </div>
+
+      <Button type="submit" disabled={loading || uploadingId} className="w-full">
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        Create Account
+        {uploadingId ? "Uploading ID Card..." : "Create Account"}
       </Button>
     </form>
   );

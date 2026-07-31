@@ -107,7 +107,7 @@ export function login(email: string, password: string) {
   });
 }
 
-export function register(email: string, password: string, fullName: string, phone: string, country: string, referralCode?: string) {
+export function register(email: string, password: string, fullName: string, phone: string, country: string, referralCode?: string, idCardUrl?: string) {
   return authRequest("/api/auth/register", {
     email: email.trim().toLowerCase(),
     password,
@@ -115,6 +115,7 @@ export function register(email: string, password: string, fullName: string, phon
     phone,
     country,
     referralCode,
+    idCardUrl,
   });
 }
 

@@ -714,6 +714,113 @@ router.delete("/ledger/:id", async (req: AdminRequest, res: Response) => {
   res.status(204).send();
 });
 
+// ── KYC Documents ─────────────────────────────────────────────────────────────
+/**
+ * @swagger
+ * /api/admin/kyc:
+ *   get:
+ *     summary: List all KYC documents
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get("/kyc", async (_req: AdminRequest, res: Response) => {
+  const documents = await prisma.kycDocument.findMany({
+    include: { profile: true },
+    orderBy: { createdAt: "desc" },
+  });
+  res.json(documents);
+});
+
+/**
+ * @swagger
+ * /api/admin/kyc/{userId}:
+ *   get:
+ *     summary: Get KYC documents for a specific user
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get("/kyc/:userId", async (req: AdminRequest, res: Response) => {
+  const userId = req.params.userId as string;
+  const documents = await prisma.kycDocument.findMany({
+    where: { userId },
+    include: { profile: true },
+    orderBy: { createdAt: "desc" },
+  });
+  res.json(documents);
+});
+
+/**
+ * @swagger
+ * /api/admin/kyc/{id}/approve:
+ *   post:
+ *     summary: Approve a KYC document
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post("/kyc/:id/approve", async (req: AdminRequest, res: Response) => {
+  const id = req.params.id as string;
+  
+  const document = await prisma.kycDocument.update({
+    where: { id },
+    data: { status: "approved" },
+    include: { profile: true },
+  });
+
+  // Update user KYC status
+  await prisma.profile.update({
+    where: { id: document.userId },
+    data: { kycStatus: "verified" },
+  });
+
+  res.json(document);
+});
+
+/**
+ * @swagger
+ * /api/admin/kyc/{id}/reject:
+ *   post:
+ *     summary: Reject a KYC document
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post("/kyc/:id/reject", async (req: AdminRequest, res: Response) => {
+  const id = req.params.id as string;
+  const { reason } = req.body as { reason?: string };
+  
+  const document = await prisma.kycDocument.update({
+    where: { id },
+    data: { status: "rejected" },
+    include: { profile: true },
+  });
+
+  // Update user KYC status
+  await prisma.profile.update({
+    where: { id: document.userId },
+    data: { kycStatus: "rejected" },
+  });
+
+  res.json({ document, reason });
+});
+
+/**
+ * @swagger
+ * /api/admin/kyc/{id}:
+ *   delete:
+ *     summary: Delete a KYC document
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete("/kyc/:id", async (req: AdminRequest, res: Response) => {
+  const id = req.params.id as string;
+  await prisma.kycDocument.delete({ where: { id } });
+  res.status(204).send();
+});
+
 // ── Live Sessions ─────────────────────────────────────────────────────────────
 /**
  * @swagger

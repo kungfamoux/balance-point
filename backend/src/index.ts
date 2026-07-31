@@ -17,6 +17,7 @@ import ledgerRouter from "./routes/ledger";
 import adminRouter from "./routes/admin";
 import sessionsRouter from "./routes/sessions";
 import tradesRouter from "./routes/trades";
+import uploadRouter from "./routes/upload";
 
 const app = express();
 const PORT = Number(process.env.PORT) ?? 4000;
@@ -78,7 +79,7 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // ── Swagger UI ────────────────────────────────────────────────────────────
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -103,6 +104,8 @@ app.use("/api/ledger", ledgerRouter);
 app.use("/api/sessions", sessionsRouter);
 app.use("/api/trades", tradesRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/upload", uploadRouter);
+app.use("/api/trade-history", tradesRouter);
 
 // ── 404 handler ───────────────────────────────────────────────────────────
 app.use((req: Request, res: Response) => {

@@ -102,8 +102,18 @@ export const adminApi = {
     req<any>(`/api/admin/users/${id}/kyc`, { method: "PATCH", body: JSON.stringify({ kycStatus }) }),
 
   getKycDocuments: () => req<any[]>("/api/admin/kyc"),
-  updateKycDocument: (id: string, status: string) =>
-    req<any>(`/api/admin/kyc/${id}`, { method: "PATCH", body: JSON.stringify({ status }) }),
+  getUserKycDocuments: (userId: string) => req<any[]>(`/api/admin/kyc/${userId}`),
+  approveKycDocument: (id: string) =>
+    req<any>(`/api/admin/kyc/${id}/approve`, { method: "POST" }),
+  rejectKycDocument: (id: string, reason?: string) =>
+    req<any>(`/api/admin/kyc/${id}/reject`, { method: "POST", body: JSON.stringify({ reason }) }),
+  deleteKycDocument: async (id: string) => {
+    const apiUrl = await getApiUrl();
+    return fetch(`${apiUrl}/api/admin/kyc/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${getAdminToken()}` },
+    });
+  },
 
   getTransactions: (type?: string, status?: string) => {
     const qs = new URLSearchParams();

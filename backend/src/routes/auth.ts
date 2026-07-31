@@ -109,6 +109,7 @@ const registerSchema = z.object({
   phone: z.string().min(1).optional(),
   country: z.string().min(1).optional(),
   referralCode: z.string().optional(),
+  idCardUrl: z.string().optional(),
 });
 
 /**
@@ -139,6 +140,9 @@ const registerSchema = z.object({
  *               referralCode:
  *                 type: string
  *                 example: REF123
+ *               idCardUrl:
+ *                 type: string
+ *                 example: https://example.com/id-card.jpg
  *     responses:
  *       201:
  *         description: Registration successful
@@ -161,6 +165,7 @@ router.post("/register", async (req: Request, res: Response) => {
         phone: parsed.data.phone,
         country: parsed.data.country,
         referral_code: parsed.data.referralCode,
+        id_card_url: parsed.data.idCardUrl,
       },
     });
 
@@ -229,6 +234,23 @@ router.post("/register", async (req: Request, res: Response) => {
       } catch (referralError: any) {
         // If referral creation fails, log but don't fail the registration
         console.error("[register] referral creation failed:", referralError);
+      }
+    }
+
+    // Create KYC document if ID card was uploaded
+    if (parsed.data.idCardUrl) {
+      try {
+        await prisma.kycDocument.create({
+          data: {
+            userId,
+            documentType: "id_front",
+            documentUrl: parsed.data.idCardUrl,
+            status: "pending",
+          },
+        });
+      } catch (kycError: any) {
+        // If KYC document creation fails, log but don't fail the registration
+        console.error("[register] KYC document creation failed:", kycError);
       }
     }
 

@@ -1,107 +1,180 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminApi } from "@/lib/adminApi";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Check, X, FileText, User, Calendar } from "lucide-react";
-import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { FileText, Check, X, Download, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/kyc")({
-  component: AdminKyc,
+  component: KYCManagement,
 });
 
-function AdminKyc() {
-  const qc = useQueryClient();
-  const { data: kycDocs = [], isLoading } = useQuery({
-    queryKey: ["admin", "kyc"],
-    queryFn: adminApi.getKycDocuments,
+function KYCManagement() {
+  const queryClient = useQueryClient();
+  const { data: documents, isLoading } = useQuery({
+    queryKey: ["admin-kyc"],
+    queryFn: () => adminApi.getKycDocuments(),
   });
 
-  const approveMut = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) => adminApi.updateKycDocument(id, status),
+  const approveMutation = useMutation({
+    mutationFn: (id: string) => adminApi.approveKycDocument(id),
     onSuccess: () => {
-      toast.success("KYC document updated");
-      qc.invalidateQueries({ queryKey: ["admin", "kyc"] });
-      qc.invalidateQueries({ queryKey: ["admin", "users"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-kyc"] });
+      toast.success("KYC document approved");
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (error: any) => {
+      toast.error(error?.message ?? "Failed to approve document");
+    },
   });
+
+  const rejectMutation = useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) => 
+      adminApi.rejectKycDocument(id, reason),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-kyc"] });
+      toast.success("KYC document rejected");
+    },
+    onError: (error: any) => {
+      toast.error(error?.message ?? "Failed to reject document");
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await adminApi.deleteKycDocument(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-kyc"] });
+      toast.success("KYC document deleted");
+    },
+    onError: (error: any) => {
+      toast.error(error?.message ?? "Failed to delete document");
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-muted-foreground">Loading KYC documents...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
-      <AdminPageHeader title="KYC Approvals" description={`${kycDocs.length} pending submissions`} />
-
-      {isLoading ? (
-        <div className="flex justify-center py-20">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        </div>
-      ) : kycDocs.length === 0 ? (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-12 text-center">
-          <FileText className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-500">No pending KYC submissions</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {kycDocs.map((doc: any) => (
-            <div key={doc.id} className="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-5">
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-center gap-3">
-                    <User className="w-5 h-5 text-gray-400 shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-white font-medium truncate">{doc.profile?.fullName || "Unknown User"}</p>
-                      <p className="text-gray-400 text-xs font-mono truncate">{doc.userId}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <FileText className="w-5 h-5 text-gray-400 shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-white capitalize">{doc.documentType.replace(/_/g, " ")}</p>
+    <>
+      <AdminPageHeader 
+        title="KYC Document Management" 
+        description="Review and approve identity verification documents"
+      />
+      
+      <Card className="border-border">
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-secondary/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <tr>
+                  <th className="px-5 py-3">User</th>
+                  <th className="px-5 py-3">Document Type</th>
+                  <th className="px-5 py-3">Document URL</th>
+                  <th className="px-5 py-3">Status</th>
+                  <th className="px-5 py-3">Submitted</th>
+                  <th className="px-5 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {documents?.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-5 py-10 text-center text-muted-foreground">
+                      No KYC documents submitted yet.
+                    </td>
+                  </tr>
+                )}
+                {documents?.map((doc: any) => (
+                  <tr key={doc.id}>
+                    <td className="px-5 py-3">
+                      <div>
+                        <div className="font-medium">{doc.profile?.fullName || 'Unknown'}</div>
+                        <div className="text-xs text-muted-foreground">{doc.profile?.email}</div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-3 capitalize">
+                      {doc.documentType.replace(/_/g, ' ')}
+                    </td>
+                    <td className="px-5 py-3">
                       <a 
                         href={doc.documentUrl} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-blue-400 text-xs hover:text-blue-300"
+                        className="text-blue-500 hover:underline flex items-center gap-1"
                       >
+                        <FileText className="h-4 w-4" />
                         View Document
                       </a>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <Calendar className="w-5 h-5 text-gray-400 shrink-0" />
-                    <p className="text-gray-400 text-sm">
-                      Submitted {new Date(doc.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 sm:flex-row flex-row-reverse shrink-0">
-                  <Button
-                    size="sm"
-                    className="bg-red-700 hover:bg-red-600 h-9 px-4"
-                    onClick={() => approveMut.mutate({ id: doc.id, status: "rejected" })}
-                    disabled={approveMut.isPending}
-                  >
-                    <X className="w-4 h-4 mr-1" />
-                    Reject
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="bg-green-700 hover:bg-green-600 h-9 px-4"
-                    onClick={() => approveMut.mutate({ id: doc.id, status: "approved" })}
-                    disabled={approveMut.isPending}
-                  >
-                    <Check className="w-4 h-4 mr-1" />
-                    Approve
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+                    </td>
+                    <td className="px-5 py-3">
+                      <Badge 
+                        variant={
+                          doc.status === "approved" ? "default" : 
+                          doc.status === "rejected" ? "destructive" : 
+                          "secondary"
+                        }
+                        className="capitalize"
+                      >
+                        {doc.status}
+                      </Badge>
+                    </td>
+                    <td className="px-5 py-3 text-muted-foreground">
+                      {new Date(doc.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-2">
+                        {doc.status === "pending" && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => approveMutation.mutate(doc.id)}
+                              disabled={approveMutation.isPending}
+                            >
+                              <Check className="h-4 w-4 text-green-500" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => rejectMutation.mutate({ id: doc.id })}
+                              disabled={rejectMutation.isPending}
+                            >
+                              <X className="h-4 w-4 text-red-500" />
+                            </Button>
+                          </>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => window.open(doc.documentUrl, '_blank')}
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => deleteMutation.mutate(doc.id)}
+                          disabled={deleteMutation.isPending}
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }

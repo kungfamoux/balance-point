@@ -115,4 +115,22 @@ export const api = {
 
   // Live sessions
   getSessions: () => request("/api/sessions"),
+
+  // KYC Documents
+  getKycDocuments: () => request("/api/upload/documents"),
+  uploadKycDocument: async (file: File, documentType: string) => {
+    // Convert file to base64
+    const reader = new FileReader();
+    const base64Promise = new Promise<string>((resolve, reject) => {
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const base64Data = await base64Promise;
+
+    return request("/api/upload/id-card/register", {
+      method: "POST",
+      body: JSON.stringify({ file: base64Data, documentType }),
+    });
+  },
 };
