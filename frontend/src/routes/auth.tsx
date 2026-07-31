@@ -501,9 +501,9 @@ function RegisterForm({ defaultRef }: { defaultRef?: string }) {
           className="mt-1.5" placeholder="e.g. ABC12345" />
       </div>
 
-      {/* ID Card Upload (optional) */}
+      {/* ID Card Upload */}
       <div>
-        <Label htmlFor="reg-idcard">ID Card <span className="text-muted-foreground text-xs font-normal">(optional - for faster verification)</span></Label>
+        <Label htmlFor="reg-idcard">ID Card</Label>
         <div className="mt-1.5 flex items-center gap-3 rounded-lg border border-dashed border-border bg-secondary/30 p-4">
           <Upload className="h-5 w-5 text-muted-foreground" />
           <Input 

@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/dashboard/DashboardShell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Wallet, TrendingUp, ArrowDownRight, DollarSign, Package, Signal, X } from "lucide-react";
+import { Wallet, TrendingUp, ArrowDownRight, DollarSign, Package, Signal, X, Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { TradingViewWidget } from "@/components/site/TradingViewWidget";
@@ -17,6 +17,8 @@ export const Route = createFileRoute("/_authenticated/dashboard/")({
 function Overview() {
   const navigate = useNavigate();
   const [signalDialogOpen, setSignalDialogOpen] = useState(false);
+  const [depositDialogOpen, setDepositDialogOpen] = useState(false);
+  const [depositAmount, setDepositAmount] = useState("");
   
   const { data } = useQuery({
     queryKey: ["dashboard-overview"],
@@ -44,6 +46,24 @@ function Overview() {
     navigate({ to: "/dashboard/deposit", search: { amount: price, plan: undefined } });
   };
 
+  const handleQuickDeposit = async () => {
+    const amount = Number(depositAmount);
+    if (!amount || amount <= 0) {
+      alert("Please enter a valid amount");
+      return;
+    }
+    try {
+      await api.createDeposit({ amount, gateway: "Direct Deposit" });
+      alert("Deposit successful!");
+      setDepositAmount("");
+      setDepositDialogOpen(false);
+      // Refresh wallet data
+      window.location.reload();
+    } catch (error: any) {
+      alert(error?.message || "Deposit failed");
+    }
+  };
+
   return (
     <>
       <PageHeader title="Dashboard" description="">
@@ -65,11 +85,43 @@ function Overview() {
         />
       </div>
 
+      {/* Quick Deposit Card */}
+      <Card className="border-border bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500 text-white">
+                <Wallet className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">Quick Deposit</h3>
+                <p className="text-sm text-muted-foreground">Add funds to your wallet instantly</p>
+              </div>
+            </div>
+            <Button 
+              onClick={() => setDepositDialogOpen(true)}
+              className="bg-blue-500 hover:bg-blue-600"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Deposit
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       <SignalBoostDialog 
         open={signalDialogOpen} 
         onOpenChange={setSignalDialogOpen} 
         options={signalBoostOptions}
         onSelect={handleSignalBoost}
+      />
+
+      <QuickDepositDialog 
+        open={depositDialogOpen} 
+        onOpenChange={setDepositDialogOpen}
+        amount={depositAmount}
+        onAmountChange={setDepositAmount}
+        onDeposit={handleQuickDeposit}
       />
 
 
@@ -159,6 +211,47 @@ function SignalBoostDialog({ open, onOpenChange, options, onSelect }: any) {
               </div>
             </button>
           ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function QuickDepositDialog({ open, onOpenChange, amount, onAmountChange, onDeposit }: any) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Quick Deposit</DialogTitle>
+          <DialogDescription>
+            Enter the amount you want to deposit to your wallet
+          </DialogDescription>
+        </DialogHeader>
+        <div className="mt-4 space-y-4">
+          <div>
+            <label className="text-sm font-medium">Amount (USD)</label>
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => onAmountChange(e.target.value)}
+              placeholder="Enter amount"
+              className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {[100, 500, 1000, 2500, 5000, 10000].map((preset) => (
+              <button
+                key={preset}
+                onClick={() => onAmountChange(String(preset))}
+                className="rounded-md border border-border bg-secondary/50 px-3 py-2 text-sm hover:bg-secondary"
+              >
+                ${preset}
+              </button>
+            ))}
+          </div>
+          <Button onClick={onDeposit} className="w-full bg-blue-500 hover:bg-blue-600">
+            Deposit Now
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
