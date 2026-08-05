@@ -24,11 +24,10 @@ export const Route = createFileRoute("/_authenticated/dashboard/deposit")({
 });
 
 const gateways = [
-  { id: "Bitcoin (BTC)",  symbol: "BTC",  coinId: "bitcoin",  address: "bc1qwudxts5a5p6njxjkcujh0pmz7flqznxwddcusx",          trustWalletLink: "https://link.trustwallet.com/send?address=bc1qwudxts5a5p6njxjkcujh0pmz7flqznxwddcusx&asset=c0", icon: "₿",  color: "#F7931A" },
-  { id: "Ethereum (ETH)", symbol: "ETH",  coinId: "ethereum", address: "0x5E0075153409278ecFf5B1ED7a65F472855c84DE",           trustWalletLink: "https://link.trustwallet.com/send?address=0x5E0075153409278ecFf5B1ED7a65F472855c84DE&asset=c60", icon: "Ξ",  color: "#627EEA" },
-  { id: "Solana (SOL)",   symbol: "SOL",  coinId: "solana",   address: "8QdbtaSuFssh2B5fjZQZfNCJqcqDaejrhnYRjvPivKAz",        trustWalletLink: "https://link.trustwallet.com/send?address=8QdbtaSuFssh2B5fjZQZfNCJqcqDaejrhnYRjvPivKAz&asset=c501", icon: "◎",  color: "#9945FF" },
-  { id: "USDT (ERC-20)",  symbol: "USDT", coinId: "tether",   address: "0x5E0075153409278ecFf5B1ED7a65F472855c84DE",           trustWalletLink: "https://link.trustwallet.com/send?address=0x5E0075153409278ecFf5B1ED7a65F472855c84DE&asset=c60_t0xdAC17F958D2ee523a2206206994597C13D831ec7", icon: "₮",  color: "#26A17B" },
-  { id: "XRP",            symbol: "XRP",  coinId: "ripple",   address: "r59V8nHMmmt6MAsj1L3mnmq4ELJdDkYQD",                   trustWalletLink: "https://link.trustwallet.com/send?address=r59V8nHMmmt6MAsj1L3mnmq4ELJdDkYQD&asset=c144", icon: "✕",  color: "#346AA9" },
+  { id: "Bitcoin (BTC)",  symbol: "BTC",  coinId: "bitcoin",  address: "3JSvqZRkhN9Do3aVjXUJsM8fKDP1Bcgfoz",                  trustWalletLink: "https://link.trustwallet.com/send?address=3JSvqZRkhN9Do3aVjXUJsM8fKDP1Bcgfoz&asset=c0", icon: "₿",  color: "#F7931A" },
+  { id: "Ethereum (ETH)", symbol: "ETH",  coinId: "ethereum", address: "0xD1AD2d7BCa4238DEd58a0079c5e369c3E2bdecf3",           trustWalletLink: "https://link.trustwallet.com/send?address=0xD1AD2d7BCa4238DEd58a0079c5e369c3E2bdecf3&asset=c60", icon: "Ξ",  color: "#627EEA" },
+  { id: "USDT (ERC-20)",  symbol: "USDT", coinId: "tether",   address: "0xc510605A9aDdb77D4eD2c94701f4Cdd8714b4553",           trustWalletLink: "https://link.trustwallet.com/send?address=0xc510605A9aDdb77D4eD2c94701f4Cdd8714b4553&asset=c60_t0xdAC17F958D2ee523a2206206994597C13D831ec7", icon: "₮",  color: "#26A17B" },
+  { id: "Litecoin (LTC)", symbol: "LTC",  coinId: "litecoin", address: "MSMJoNhCwG7Wvq1UbSQavWRZG46shY8jXo",                    trustWalletLink: "https://link.trustwallet.com/send?address=MSMJoNhCwG7Wvq1UbSQavWRZG46shY8jXo&asset=c2", icon: "Ł",  color: "#345D9D" },
 ];
 
 const COIN_IDS = gateways.map((g) => g.coinId).join(",");

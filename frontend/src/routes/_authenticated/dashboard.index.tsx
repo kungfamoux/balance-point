@@ -71,7 +71,7 @@ function Overview() {
       </PageHeader>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat icon={DollarSign} label="Balance" value={`$${num(w?.balance)}`} accent="text-blue-500" iconColor="bg-blue-500" />
+        <Stat icon={DollarSign} label="Deposit" value={`$${num(w?.balance)}`} accent="text-blue-500" iconColor="bg-blue-500" />
         <Stat icon={TrendingUp} label="Profits" value={`$${num(w?.totalProfit)}`} accent="text-green-500" iconColor="bg-green-500" />
         <Stat icon={Package} label="Active Plan" value={activePlan?.name || "None"} accent="text-orange-500" iconColor="bg-orange-500" />
         <Stat 
